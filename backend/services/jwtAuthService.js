@@ -105,8 +105,16 @@ class JwtAuthService {
    */
   static async login(identifier, password, res = null) {
     try {
+      console.log('🔍 JwtAuthService.login called with identifier:', identifier);
+      console.log('🔍 Environment check:', {
+        NODE_ENV: process.env.NODE_ENV,
+        DB_CONNECTION_STRING: process.env.DB_CONNECTION_STRING ? 'Present' : 'Missing',
+        JWT_SECRET: process.env.JWT_SECRET ? 'Present' : 'Missing'
+      });
+
       // Determine if identifier is email or username
       const isEmail = identifier.includes('@');
+      console.log('🔍 Identifier type:', isEmail ? 'email' : 'username');
 
       // For email logins, verify credentials with Supabase Auth first
       if (isEmail) {
@@ -124,24 +132,33 @@ class JwtAuthService {
         console.log('Supabase Auth verification successful');
 
         // Now get user from our custom table
+        console.log('🔍 Getting user from custom table for email:', identifier);
         const user = await Usuario.getByEmail(identifier);
         if (!user) {
+          console.error('❌ User not found in custom table for email:', identifier);
           throw new Error('Usuario no encontrado en tabla personalizada');
         }
+        console.log('✅ User found in custom table:', { id: user.id, rol: user.rol, nombre_real: user.nombre_real });
 
         // Note: We don't sign out from Supabase immediately to avoid session conflicts
       } else {
         // For username logins, find user and verify password with our custom table
+        console.log('🔍 Getting user from custom table for username:', identifier);
         const user = await Usuario.getByUsername(identifier);
         if (!user) {
+          console.error('❌ User not found in custom table for username:', identifier);
           throw new Error('Usuario no encontrado');
         }
+        console.log('✅ User found in custom table:', { id: user.id, rol: user.rol, nombre_real: user.nombre_real });
 
         // Verify password
+        console.log('🔍 Verifying password for user:', user.id);
         const isPasswordValid = await Usuario.verifyPassword(password, user.contraseña_hash);
         if (!isPasswordValid) {
+          console.error('❌ Password verification failed for user:', user.id);
           throw new Error('Contraseña incorrecta');
         }
+        console.log('✅ Password verified successfully for user:', user.id);
       }
 
       // Get user data for token generation

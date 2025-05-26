@@ -542,6 +542,69 @@ router.get('/me', requireAuth, async (req, res) => {
   }
 });
 
+// Diagnostic endpoint to check database connection and table
+router.get('/diagnostic', async (req, res) => {
+  try {
+    const diagnostics = {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      database: {
+        connectionString: process.env.DB_CONNECTION_STRING ? 'Present' : 'Missing',
+        connectionStringLength: process.env.DB_CONNECTION_STRING?.length || 0
+      },
+      jwt: {
+        secret: process.env.JWT_SECRET ? 'Present' : 'Missing'
+      }
+    };
+
+    // Test database connection
+    try {
+      const result = await db.query('SELECT NOW() as current_time');
+      diagnostics.database.connection = 'Success';
+      diagnostics.database.currentTime = result.rows[0].current_time;
+    } catch (dbError) {
+      diagnostics.database.connection = 'Failed';
+      diagnostics.database.error = dbError.message;
+    }
+
+    // Test usuarios table
+    try {
+      const result = await db.query('SELECT COUNT(*) as user_count FROM usuarios');
+      diagnostics.database.usuariosTable = 'Exists';
+      diagnostics.database.userCount = parseInt(result.rows[0].user_count);
+    } catch (tableError) {
+      diagnostics.database.usuariosTable = 'Missing or Error';
+      diagnostics.database.tableError = tableError.message;
+    }
+
+    // Test specific user
+    try {
+      const user = await Usuario.getByEmail('llavesukeprogram@gmail.com');
+      diagnostics.database.testUser = user ? 'Found' : 'Not Found';
+      if (user) {
+        diagnostics.database.testUserData = {
+          id: user.id,
+          rol: user.rol,
+          nombre_real: user.nombre_real,
+          centro_id: user.centro_id
+        };
+      }
+    } catch (userError) {
+      diagnostics.database.testUser = 'Error';
+      diagnostics.database.userError = userError.message;
+    }
+
+    res.json(diagnostics);
+  } catch (error) {
+    console.error('Error in diagnostic endpoint:', error);
+    res.status(500).json({
+      error: 'Diagnostic failed',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Get current user from Supabase session
 router.get('/current-user-from-supabase', async (req, res) => {
   try {

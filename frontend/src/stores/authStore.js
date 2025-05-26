@@ -50,7 +50,7 @@ const getCompleteUserDataFromBackend = async (email) => {
 };
 
 // Try to load user from localStorage
-const loadUserFromStorage = () => {
+const loadUserFromStorage = async () => {
   try {
     const storedUser = localStorage.getItem('tutoria_user');
     const storedToken = localStorage.getItem('tutoria_token');
@@ -192,7 +192,7 @@ const initializeAuth = async () => {
   loading.value = true;
   try {
     // First try to load from localStorage
-    const hasStoredUser = loadUserFromStorage();
+    const hasStoredUser = await loadUserFromStorage();
 
     if (hasStoredUser && token.value) {
       // If we have a stored user and JWT token, validate the token with the backend

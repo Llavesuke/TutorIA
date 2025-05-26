@@ -1,0 +1,58 @@
+/*
+ * Main Sass file for TutorIA application
+ * This file uses modern Sass modules with @use and @forward
+ */
+
+// Utilities (variables, mixins, functions)
+@use 'utilities/variables';
+@use 'utilities/mixins';
+@use 'utilities/functions';
+
+// Base styles
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/base';
+
+// Layouts
+@use 'layouts/grid';
+@use 'layouts/header';
+@use 'layouts/footer';
+@use 'layouts/sidebar';
+@use 'layouts/forms';
+
+// Components
+@use 'components/buttons';
+@use 'components/cards';
+@use 'components/navigation';
+@use 'components/alerts';
+@use 'components/modals';
+@use 'components/icons';
+@use 'components/professor_header';
+@use 'components/mobile_menu';
+@use 'components/user_table';
+@use 'components/form_controls';
+
+// Pages
+@use 'pages/home';
+@use 'pages/login';
+@use 'pages/dashboard';
+@use 'pages/landing';
+@use 'pages/landing_sections';
+@use 'pages/floating_cards';
+@use 'pages/teacher_dashboard';
+@use 'pages/manage_users';
+@use 'pages/manage_table';
+
+// Mobile carousel styles (loaded after pages for higher specificity)
+@use 'components/mobile_carousel';
+
+// Mobile brand colors override (loaded for mobile specificity)
+@use 'components/mobile_brand_colors';
+
+// Desktop brand colors override (loaded last for maximum specificity)
+@use 'components/desktop_brand_colors';
+
+// Views
+@use 'views/tutor';
+@use 'views/student';
+@use 'views/admin';

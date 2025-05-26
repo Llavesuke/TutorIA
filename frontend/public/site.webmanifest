@@ -1,0 +1,22 @@
+{
+  "name": "TutorIA - Revoluciona el Aprendizaje con IA",
+  "short_name": "TutorIA",
+  "description": "Plataforma educativa inteligente con tutores virtuales impulsados por IA",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#E6531D",
+  "background_color": "#171717",
+  "orientation": "portrait-primary"
+}

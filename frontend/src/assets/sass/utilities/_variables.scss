@@ -1,0 +1,111 @@
+/*
+ * Variables
+ * Global variables for the application
+ */
+
+// Colors
+:root {
+  // Brand colors from design reference
+  --color-carbon: #171717;       // Background
+  --color-carbon-variant: #0a0c09; // Darker variant
+  --color-cashmere: #fef0d1;     // Text color
+  --color-vivid-orange: #e6531d; // Color 1
+  --color-forest-green: #007142; // Color 2 (renamed for clarity)
+  --color-deep-koamaru: #34307b; // Color 3
+
+  // Additional brand colors
+  --color-high: #2ed573;         // High interaction
+  --color-medium: #ffa502;       // Medium interaction
+  --color-low: #ff4757;          // Low interaction
+
+  // Additional UI colors
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+
+  // Neutral colors
+  --color-background: var(--color-carbon);
+  --color-background-light: #2f2f2f;
+  --color-text: var(--color-cashmere);
+  --color-text-light: rgba(254, 240, 209, 0.7);
+  --color-border: rgba(255, 255, 255, 0.1);
+
+  // Light mode colors
+  --color-background-light-mode: #ffffff;
+  --color-text-light-mode: #213547;
+  --color-border-light-mode: rgba(0, 0, 0, 0.1);
+
+  // Typography
+  --font-family-primary: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-family-heading: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-family-monospace: monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-large: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-h1: 2.5rem;
+  --font-size-h2: 2rem;
+  --font-size-h3: 1.75rem;
+  --font-size-h4: 1.5rem;
+  --font-size-h5: 1.25rem;
+  --font-size-h6: 1rem;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  // Spacing
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+
+  // Layout
+  --container-max-width: 1280px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-pill: 9999px;
+
+  // Z-index
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  // Transitions
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  // Additional design system variables
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  // Animation easing
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  // Focus styles
+  --focus-ring-width: 2px;
+  --focus-ring-color: var(--color-vivid-orange);
+  --focus-ring-offset: 2px;
+}

@@ -1,0 +1,254 @@
+/*
+ * Mobile Brand Colors Override
+ * Ensures brand colors are applied correctly on mobile carousel components
+ */
+
+@use "sass:color";
+
+// Mobile carousel brand color overrides with maximum specificity
+.mobile-carousel.is-mobile {
+  .carousel-container .carousel-track {
+
+    // Testimonial cards brand colors
+    .carousel-item:nth-child(3n+1) .testimonial-card {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-vivid-orange) !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    .carousel-item:nth-child(3n+2) .testimonial-card {
+      background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-forest-green) !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    .carousel-item:nth-child(3n+3) .testimonial-card {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-deep-koamaru) !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    // Fun learning cards brand colors
+    .carousel-item:nth-child(3n+1) .fun-learning-card {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-vivid-orange) !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(3n+2) .fun-learning-card {
+      background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-forest-green) !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(3n+3) .fun-learning-card {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-deep-koamaru) !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+  }
+}
+
+// Floating cards carousel brand colors
+.floating-cards-carousel.is-mobile {
+  .mobile-carousel-container .carousel-track {
+
+    .carousel-item:nth-child(5n+1) .mobile-card.floating-card {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-vivid-orange) !important;
+      color: white !important;
+
+      .card-content h3,
+      .card-content p {
+        color: white !important;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(5n+2) .mobile-card.floating-card {
+      background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-forest-green) !important;
+      color: white !important;
+
+      .card-content h3,
+      .card-content p {
+        color: white !important;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(5n+3) .mobile-card.floating-card {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-deep-koamaru) !important;
+      color: white !important;
+
+      .card-content h3,
+      .card-content p {
+        color: white !important;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(5n+4) .mobile-card.floating-card {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-vivid-orange) !important;
+      color: white !important;
+
+      .card-content h3,
+      .card-content p {
+        color: white !important;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+    }
+
+    .carousel-item:nth-child(5n+5) .mobile-card.floating-card {
+      background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid var(--color-forest-green) !important;
+      color: white !important;
+
+      .card-content h3,
+      .card-content p {
+        color: white !important;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+    }
+  }
+}
+
+// Remove all interactions and hover effects on mobile carousels
+@media (max-width: 768px) {
+  .mobile-carousel.is-mobile .carousel-track .carousel-item {
+    .testimonial-card,
+    .fun-learning-card,
+    .feature-card {
+      // Completely disable interactions
+      pointer-events: none !important;
+      cursor: default !important;
+      user-select: none !important;
+
+      // Remove all hover effects
+      &:hover {
+        transform: none !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+      }
+
+      // Remove pseudo-elements
+      &::before {
+        display: none !important;
+      }
+
+      // Disable child interactions
+      * {
+        pointer-events: none !important;
+        cursor: default !important;
+        user-select: none !important;
+      }
+
+      // Specifically disable icon scaling
+      .card-icon {
+        &:hover {
+          transform: none !important;
+        }
+      }
+
+      // Disable any click events
+      &:active,
+      &:focus {
+        transform: none !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+      }
+    }
+  }
+}

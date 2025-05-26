@@ -1,0 +1,102 @@
+/*
+ * Manage Table Pages
+ * Shared styles for manage professors and students pages
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+
+.manage-table-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  color: var(--color-cashmere);
+  font-family: var(--font-family-heading);
+  background: linear-gradient(135deg, var(--color-carbon) 0%, rgba(23, 23, 23, 0.95) 100%);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(230, 83, 29, 0.02) 0%,
+    rgba(0, 113, 66, 0.02) 50%,
+    rgba(52, 48, 123, 0.02) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.manage-main {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.welcome-section {
+  margin-bottom: 2rem;
+
+  .title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-cashmere);
+    }
+
+    .back-link {
+      color: var(--color-vivid-orange);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      transition: color var(--transition-normal);
+
+      &:hover {
+        color: #ff6b3d; /* Color más claro que --color-vivid-orange (#e6531d) */
+      }
+    }
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: rgba(254, 240, 209, 0.7);
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-section {
+    .title-section {
+      flex-direction: column;
+      align-items: flex-start;
+
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="768" viewBox="0 0 1024 768" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Forma morada (esquina superior izquierda) -->
+  <path
+    d="M0,0 L250,0 Q300,50 250,150 Q150,250 50,200 Q0,150 0,50 Z"
+    fill="#34307b"
+  />
+  
+  <!-- Forma verde (esquina superior derecha) -->
+  <path
+    d="M750,0 L1024,0 L1024,200 Q950,250 850,150 Q750,100 750,50 Z"
+    fill="#007142"
+  />
+  
+  <!-- Forma naranja (esquina inferior izquierda) -->
+  <path
+    d="M0,450 Q100,400 200,550 Q250,650 150,750 Q50,768 0,768 L0,450 Z"
+    fill="#e6531d"
+  />
+  
+  <!-- Forma morada (parte inferior) -->
+  <path
+    d="M400,600 Q500,550 600,600 Q700,650 550,768 Q450,768 400,700 Z"
+    fill="#34307b"
+  />
+  
+  <!-- Forma verde (esquina inferior derecha) -->
+  <path
+    d="M750,500 Q850,450 950,550 Q1024,650 950,768 Q850,768 750,700 Z"
+    fill="#007142"
+  />
+  
+  <!-- Forma naranja (borde derecho) -->
+  <path
+    d="M950,350 Q1024,300 1024,350 L1024,450 Q950,500 900,450 Q900,400 950,350 Z"
+    fill="#e6531d"
+  />
+</svg>

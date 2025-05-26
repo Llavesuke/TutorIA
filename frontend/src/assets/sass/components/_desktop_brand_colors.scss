@@ -1,0 +1,122 @@
+/*
+ * Desktop Brand Colors Override
+ * Maximum specificity rules for desktop testimonials and fun learning cards
+ */
+
+@use "sass:color";
+
+// Desktop testimonials brand colors with maximum specificity
+@media (min-width: 769px) {
+  .landing-page .testimonials .testimonials-grid {
+    .testimonial-card:nth-child(3n+1) {
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid #e6531d !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    .testimonial-card:nth-child(3n+2) {
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid #007142 !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    .testimonial-card:nth-child(3n+3) {
+      background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%)) !important;
+      border-top: 4px solid #34307b !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+  }
+
+  // Desktop fun learning brand colors with maximum specificity
+  .landing-page .fun-learning .fun-learning-grid {
+    .fun-learning-card:nth-child(3n+1) {
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+      border-top: 4px solid #e6531d !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    .fun-learning-card:nth-child(3n+2) {
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+      border-top: 4px solid #007142 !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    .fun-learning-card:nth-child(3n+3) {
+      background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%)) !important;
+      border-top: 4px solid #34307b !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+  }
+}

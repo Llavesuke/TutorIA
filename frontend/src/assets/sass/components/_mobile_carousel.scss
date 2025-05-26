@@ -1,0 +1,540 @@
+/*
+ * Mobile Carousel Component Styles
+ * Responsive carousel styles for mobile devices
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+
+// Mobile Carousel Base Styles
+.mobile-carousel {
+  width: 100%;
+  position: relative;
+
+  // Desktop grid styles
+  .desktop-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+
+    &.features-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+      @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    &.testimonials-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+
+      @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    &.fun-learning-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+      @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  }
+
+  // Mobile carousel styles
+  &.is-mobile {
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      padding: 0 var(--spacing-md);
+
+      .carousel-track {
+        display: flex;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: var(--spacing-md);
+        padding: var(--spacing-sm) 0;
+        touch-action: pan-x;
+
+        .carousel-item {
+          flex: 0 0 85%;
+          max-width: 85%;
+
+          @media (max-width: 480px) {
+            flex: 0 0 90%;
+            max-width: 90%;
+          }
+
+          @media (max-width: 320px) {
+            flex: 0 0 95%;
+            max-width: 95%;
+          }
+
+          // Ensure cards maintain their styling
+          .feature-card,
+          .testimonial-card,
+          .fun-learning-card {
+            width: 100%;
+            height: auto;
+            margin: 0;
+          }
+
+          // Apply brand colors to mobile carousel items based on nth-child pattern
+          // Using higher specificity to override base styles
+          // Orange cards (1st, 4th, 7th, etc.)
+          &:nth-child(3n+1) {
+            .testimonial-card {
+              background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+              border-top: 4px solid #e6531d !important;
+              color: white !important;
+
+              .testimonial-content p,
+              .testimonial-author .author-info h4,
+              .testimonial-author .author-info p {
+                color: white !important;
+              }
+
+              .testimonial-author .author-avatar {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              .quote-icon {
+                color: rgba(255, 255, 255, 0.9) !important;
+              }
+            }
+
+            .fun-learning-card {
+              background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+              border-top: 4px solid #e6531d !important;
+              color: white !important;
+
+              .card-icon {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              h3, p {
+                color: white !important;
+              }
+            }
+          }
+
+          // Green cards (2nd, 5th, 8th, etc.)
+          &:nth-child(3n+2) {
+            .testimonial-card {
+              background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+              border-top: 4px solid #007142 !important;
+              color: white !important;
+
+              .testimonial-content p,
+              .testimonial-author .author-info h4,
+              .testimonial-author .author-info p {
+                color: white !important;
+              }
+
+              .testimonial-author .author-avatar {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              .quote-icon {
+                color: rgba(255, 255, 255, 0.9) !important;
+              }
+            }
+
+            .fun-learning-card {
+              background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+              border-top: 4px solid #007142 !important;
+              color: white !important;
+
+              .card-icon {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              h3, p {
+                color: white !important;
+              }
+            }
+          }
+
+          // Purple cards (3rd, 6th, 9th, etc.)
+          &:nth-child(3n+3) {
+            .testimonial-card {
+              background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%)) !important;
+              border-top: 4px solid #34307b !important;
+              color: white !important;
+
+              .testimonial-content p,
+              .testimonial-author .author-info h4,
+              .testimonial-author .author-info p {
+                color: white !important;
+              }
+
+              .testimonial-author .author-avatar {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              .quote-icon {
+                color: rgba(255, 255, 255, 0.9) !important;
+              }
+            }
+
+            .fun-learning-card {
+              background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%)) !important;
+              border-top: 4px solid #34307b !important;
+              color: white !important;
+
+              .card-icon {
+                background-color: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
+              }
+
+              h3, p {
+                color: white !important;
+              }
+            }
+          }
+
+          // Completely disable all interactions for mobile carousel cards
+          .testimonial-card,
+          .fun-learning-card {
+            // Remove all interactions and hover states
+            pointer-events: none !important;
+            cursor: default !important;
+            user-select: none !important;
+            touch-action: none !important;
+
+            // Force no hover effects
+            &:hover,
+            &:focus,
+            &:active {
+              transform: none !important;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+              background: inherit !important;
+            }
+
+            // Remove all pseudo-elements
+            &::before,
+            &::after {
+              display: none !important;
+            }
+
+            // Disable all child element interactions
+            *,
+            *::before,
+            *::after {
+              pointer-events: none !important;
+              cursor: default !important;
+              user-select: none !important;
+              touch-action: none !important;
+            }
+
+            // Specifically disable button and link interactions
+            button,
+            a,
+            .btn {
+              pointer-events: none !important;
+              cursor: default !important;
+              user-select: none !important;
+            }
+          }
+        }
+      }
+
+      .carousel-indicators {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-xs);
+        margin-top: var(--spacing-lg);
+        padding: var(--spacing-sm) 0;
+
+        .indicator {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: none;
+          background-color: rgba(255, 255, 255, 0.3);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          min-width: 44px; // Touch-friendly size
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: currentColor;
+            transition: all 0.3s ease;
+          }
+
+          &.active {
+            color: var(--color-vivid-orange);
+
+            &::before {
+              transform: scale(1.2);
+            }
+          }
+
+          &:hover {
+            color: rgba(230, 83, 29, 0.7);
+          }
+
+          // Touch device optimizations
+          @media (hover: none) and (pointer: coarse) {
+            min-width: 48px;
+            min-height: 48px;
+          }
+        }
+      }
+
+      .carousel-navigation {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        pointer-events: none;
+        padding: 0 var(--spacing-sm);
+
+        .nav-button {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          border: none;
+          background-color: rgba(0, 0, 0, 0.6);
+          color: white;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          pointer-events: auto;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+
+          &:hover:not(:disabled) {
+            background-color: var(--color-vivid-orange);
+            transform: scale(1.1);
+          }
+
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+          }
+
+          &:focus {
+            outline: 2px solid var(--color-vivid-orange);
+            outline-offset: 2px;
+          }
+
+          // Touch device optimizations
+          @media (hover: none) and (pointer: coarse) {
+            width: 48px;
+            height: 48px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Floating Cards Carousel Specific Styles
+.floating-cards-carousel {
+  width: 100%;
+  position: relative;
+
+  &.is-mobile {
+    .mobile-carousel-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      padding: 0 var(--spacing-md);
+
+      .carousel-track {
+        display: flex;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: var(--spacing-lg);
+        padding: var(--spacing-lg) 0;
+        touch-action: pan-x;
+
+        .carousel-item {
+          flex: 0 0 90%;
+          max-width: 90%;
+
+          @media (max-width: 480px) {
+            flex: 0 0 95%;
+            max-width: 95%;
+          }
+
+          @media (max-width: 320px) {
+            flex: 0 0 98%;
+            max-width: 98%;
+          }
+
+          .mobile-card {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+
+            // Ensure floating cards maintain their special styling with brand colors
+            &.floating-card {
+              position: relative;
+              border-radius: var(--border-radius-lg);
+              padding: var(--spacing-lg);
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+              transition: all 0.3s ease;
+              color: white;
+
+              &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+              }
+
+              .card-content h3,
+              .card-content p {
+                color: white;
+              }
+
+              .card-icon {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+              }
+            }
+          }
+
+          // Apply brand colors to floating cards based on carousel item position
+          &:nth-child(5n+1) .mobile-card.floating-card {
+            background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+            border-top: 4px solid #e6531d !important;
+          }
+
+          &:nth-child(5n+2) .mobile-card.floating-card {
+            background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+            border-top: 4px solid #007142 !important;
+          }
+
+          &:nth-child(5n+3) .mobile-card.floating-card {
+            background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%)) !important;
+            border-top: 4px solid #34307b !important;
+          }
+
+          &:nth-child(5n+4) .mobile-card.floating-card {
+            background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%)) !important;
+            border-top: 4px solid #e6531d !important;
+          }
+
+          &:nth-child(5n+5) .mobile-card.floating-card {
+            background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%)) !important;
+            border-top: 4px solid #007142 !important;
+          }
+        }
+      }
+
+      // Indicators and navigation inherit from base mobile carousel
+      .carousel-indicators {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-xs);
+        margin-top: var(--spacing-lg);
+
+        .indicator {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: none;
+          background-color: rgba(255, 255, 255, 0.3);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          min-width: 44px;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: currentColor;
+            transition: all 0.3s ease;
+          }
+
+          &.active {
+            color: var(--color-vivid-orange);
+
+            &::before {
+              transform: scale(1.2);
+            }
+          }
+
+          &:hover {
+            color: rgba(230, 83, 29, 0.7);
+          }
+        }
+      }
+
+      .carousel-navigation {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        pointer-events: none;
+        padding: 0 var(--spacing-sm);
+
+        .nav-button {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          border: none;
+          background-color: rgba(0, 0, 0, 0.6);
+          color: white;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          pointer-events: auto;
+          backdrop-filter: blur(10px);
+
+          &:hover:not(:disabled) {
+            background-color: var(--color-vivid-orange);
+            transform: scale(1.1);
+          }
+
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Touch interaction improvements
+@media (hover: none) and (pointer: coarse) {
+  .mobile-carousel,
+  .floating-cards-carousel {
+    .carousel-indicators .indicator {
+      min-width: 48px;
+      min-height: 48px;
+    }
+
+    .carousel-navigation .nav-button {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}

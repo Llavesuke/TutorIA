@@ -1,0 +1,198 @@
+/*
+ * Mixins
+ * Reusable Sass mixins for the application
+ */
+
+@use "sass:map";
+
+// Responsive breakpoints
+$breakpoints: (
+  'xs': 0,
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+  'xxl': 1400px
+);
+
+// Media query mixin
+@mixin media-breakpoint-up($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (min-width: map.get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @error "Invalid breakpoint: #{$breakpoint}. Available breakpoints are: #{map.keys($breakpoints)}";
+  }
+}
+
+@mixin media-breakpoint-down($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (max-width: map.get($breakpoints, $breakpoint) - 0.02) {
+      @content;
+    }
+  } @else {
+    @error "Invalid breakpoint: #{$breakpoint}. Available breakpoints are: #{map.keys($breakpoints)}";
+  }
+}
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Typography mixins
+@mixin font-size($size, $line-height: 1.5) {
+  font-size: $size;
+  line-height: $line-height;
+}
+
+@mixin truncate($width: 100%) {
+  max-width: $width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Positioning mixins
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin absolute-fill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+// Animation mixins
+@mixin transition($properties: all, $duration: var(--transition-normal), $timing-function: ease) {
+  transition-property: $properties;
+  transition-duration: $duration;
+  transition-timing-function: $timing-function;
+}
+
+// Shadow mixins
+@mixin box-shadow($shadow: var(--shadow-md)) {
+  box-shadow: $shadow;
+}
+
+// Border mixins
+@mixin border-radius($radius: var(--border-radius-md)) {
+  border-radius: $radius;
+}
+
+// Grid mixins
+@mixin grid($columns: 1, $gap: var(--spacing-md)) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Accessibility mixins
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@mixin focus-ring {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+// Typography mixins
+@mixin heading($level: 1) {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+
+  @if $level == 1 {
+    font-size: var(--font-size-h1);
+  } @else if $level == 2 {
+    font-size: var(--font-size-h2);
+  } @else if $level == 3 {
+    font-size: var(--font-size-h3);
+  } @else if $level == 4 {
+    font-size: var(--font-size-h4);
+  } @else if $level == 5 {
+    font-size: var(--font-size-h5);
+  } @else if $level == 6 {
+    font-size: var(--font-size-h6);
+  }
+}
+
+@mixin body-text($size: base) {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+
+  @if $size == xs {
+    font-size: var(--font-size-xs);
+  } @else if $size == small {
+    font-size: var(--font-size-small);
+  } @else if $size == base {
+    font-size: var(--font-size-base);
+  } @else if $size == large {
+    font-size: var(--font-size-large);
+  } @else if $size == xl {
+    font-size: var(--font-size-xl);
+  }
+}
+
+// Card mixin
+@mixin card($padding: var(--spacing-lg)) {
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: $padding;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal) ease;
+}
+
+// Button mixin
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6em 1.2em;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  font-family: inherit;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-normal) ease;
+
+  &:focus {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

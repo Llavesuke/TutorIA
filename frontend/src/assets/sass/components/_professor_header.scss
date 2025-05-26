@@ -1,0 +1,158 @@
+/*
+ * Professor Header Component
+ * Styles for the professor dashboard header
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+
+.professor-header {
+  position: sticky;
+  top: 20px; // Bajado desde 0 a 20px
+  z-index: var(--z-index-sticky);
+  font-family: var(--font-family-heading);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px; // Añadido margen inferior
+
+  .container {
+    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    background-color: var(--color-carbon);
+    border-radius: var(--border-radius-pill);
+    padding: 0.6rem 1.8rem; // Aumentado el padding para más espacio
+    height: 54px; // Aumentado ligeramente la altura
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 6px 15px rgba(0, 0, 0, 0.1); // Sombra más suave y profesional
+    border: none;
+    /* backdrop-filter: blur(5px); */ /* ELIMINADO: Efecto blur que causaba lag */
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; // Add consistent spacing between child elements
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+
+    .logo-image {
+      height: 30px; // Ligeramente más grande
+      width: auto;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); // Añadir sombra suave al logo
+    }
+  }
+
+  .header-nav {
+    display: none;
+
+    @include mixins.media-breakpoint-up(md) {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--color-cashmere);
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      font-weight: var(--font-weight-medium);
+      font-size: 0.85rem;
+      transition: color var(--transition-normal);
+
+      &:hover {
+        color: var(--color-vivid-orange);
+      }
+
+      &.active {
+        color: var(--color-vivid-orange);
+        font-weight: var(--font-weight-bold);
+      }
+    }
+  }
+
+  .header-right {
+    margin-left: 0.75rem;
+
+    @media (max-width: 767px) {
+      margin-left: 0; // Eliminar margen izquierdo en móvil
+    }
+
+    .create-btn {
+      background-color: var(--color-forest-green); // Using forest-green variable for consistency
+      color: var(--color-cashmere);
+      border: none;
+      border-radius: var(--border-radius-pill);
+      padding: 0.4rem 1.3rem;
+      font-weight: var(--font-weight-medium);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Añadir sombra al botón
+      height: 36px; // Altura fija para mejor alineación vertical
+
+      @media (max-width: 767px) {
+        height: 36px; // Mantener altura consistente en móvil
+        display: inline-flex; // Asegurar que se muestre correctamente
+        align-items: center; // Centrar contenido verticalmente
+      }
+
+      &:hover {
+        background-color: color.adjust(#007142, $lightness: -10%);
+        transform: translateY(-2px); // Efecto de elevación al pasar el mouse
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); // Sombra más pronunciada al pasar el mouse
+      }
+    }
+  }
+
+  .mobile-menu-toggle {
+    display: none; // Oculto por defecto
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 1rem; // Alineado a la derecha
+
+    @media (max-width: 767px) {
+      display: flex; // Solo mostrar en móvil
+      align-self: center; // Centrar verticalmente
+      margin-top: 0; // Eliminar margen superior
+      margin-bottom: 0; // Eliminar margen inferior
+    }
+
+    .bar {
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-cashmere);
+      transition: all var(--transition-normal);
+    }
+
+    &.active {
+      .bar:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+      }
+
+      .bar:nth-child(2) {
+        opacity: 0;
+      }
+
+      .bar:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+      }
+    }
+  }
+}

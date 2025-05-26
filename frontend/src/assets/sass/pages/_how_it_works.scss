@@ -1,0 +1,478 @@
+/*
+ * How It Works Section - Completely Redesigned with Bento Grid
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+@use "sass:math";
+
+// How It Works Section
+.how-it-works {
+  background-color: transparent; // Transparent background to show page background
+  padding: var(--spacing-xl) 0;
+  position: relative;
+  overflow: visible !important; // Force content visibility
+  min-height: 100vh; // Set to 100vh to match other sections for proper snap scrolling
+  height: 100vh; // Fixed height for proper snap scrolling
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; // Start from top to ensure all content is visible
+  align-items: center; // Center horizontally
+  opacity: 1 !important; // Force visibility for snap scrolling
+  visibility: visible !important; // Force visibility
+  z-index: 10; // Higher z-index to ensure it's above the background
+  scroll-snap-align: start; // Ensure proper snap scrolling
+
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    position: relative;
+    height: 100%;
+    overflow-y: auto; // Allow scrolling within the container
+    overflow-x: hidden; // Prevent horizontal scrolling
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  }
+
+  // Section title styles
+  .section-title {
+    color: #FEF0D1; // Light cream/beige color
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 1 !important; // Force visibility
+    position: relative;
+    scroll-margin-top: 150px; // For scroll-snap targeting
+    scroll-snap-align: start; // Add scroll snap alignment
+    visibility: visible !important; // Force visibility
+
+    // Add decorative underline
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(
+        to right,
+        var(--color-vivid-orange),
+        var(--color-deep-green),
+        var(--color-deep-koamaru)
+      );
+      border-radius: 3px;
+    }
+  }
+
+  .section-subtitle {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--color-cashmere);
+    opacity: 0.9;
+    font-size: 1.3rem;
+    font-weight: 300;
+
+    // Increase spacing between title (with decorative line) and subtitle on mobile
+    @include mixins.media-breakpoint-down(md) {
+      margin-top: var(--spacing-xxl); // Much more space after title and decorative line on mobile
+      margin-bottom: var(--spacing-lg);
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      margin-top: 4rem; // Even more space on small mobile for better separation
+      margin-bottom: var(--spacing-md);
+    }
+
+    @media (max-width: 320px) {
+      margin-top: 5rem; // Maximum spacing on very small screens
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+
+  // Bento Grid Layout
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    width: 100%;
+    max-width: 1100px; // Slightly smaller to ensure it fits
+    margin-left: auto;
+    margin-right: auto;
+
+    // Define grid areas for different screen sizes
+    grid-template-areas:
+      "item1 item2 item3"
+      "item4 item5 featured"
+      "featured featured featured";
+
+    @include mixins.media-breakpoint-down(lg) {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-areas:
+        "item1 item2"
+        "item3 item4"
+        "item5 featured"
+        "featured featured";
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "item1"
+        "item2"
+        "item3"
+        "item4"
+        "item5"
+        "featured";
+    }
+  }
+
+  // Bento Item Base Styles - Standardized to match other card sections
+  .bento-item {
+    position: relative;
+    border-radius: var(--border-radius-lg); // Same as other cards
+    padding: var(--spacing-xl); // Same padding as testimonial/fun learning cards
+    transition: all var(--transition-normal) ease; // Same transition as other cards
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 250px; // Increased to match other card sections
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); // Same shadow as other cards
+    border: 1px solid var(--color-border); // Same border as other cards
+    scroll-margin-top: 100px; // For scroll-snap targeting
+    scroll-snap-align: start; // Add scroll snap alignment
+    opacity: 1 !important; // Force visibility
+    visibility: visible !important; // Force visibility
+    transform: translateZ(0); // Hardware acceleration
+    will-change: transform; // Optimize for animations
+
+    // Standardized hover effect to match other cards
+    &:hover {
+      transform: translateY(-4px); // Same as other cards
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18); // Same as other cards
+      will-change: transform, box-shadow;
+      contain: layout style paint;
+
+      .bento-icon {
+        transform: scale(1.05); // More subtle like other cards
+      }
+
+      .bento-number {
+        transform: scale(1.05); // More subtle
+      }
+    }
+
+    // Disable hover effects on touch devices like other cards
+    @media (hover: none) and (pointer: coarse) {
+      &:hover {
+        transform: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+    }
+
+    // Number indicator
+    .bento-number {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+
+    // Icon styles - Standardized to match other card sections with WHITE icons
+    .bento-icon {
+      width: 80px; // Same as fun learning cards
+      height: 80px; // Same as fun learning cards
+      border-radius: var(--border-radius-lg); // Same as other cards
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-md); // Center and add margin like other cards
+      font-size: 2.5rem; // Same as other cards
+      color: white !important; // Force white color for icons
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Same shadow as other cards
+      transition: transform var(--transition-normal) ease; // Same transition as other cards
+      background-color: rgba(255, 255, 255, 0.2); // Same background as other cards
+
+      i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: white !important; // Force white color for FontAwesome icons
+      }
+    }
+
+    // Content styles - Standardized to match other card sections
+    .bento-content {
+      flex: 1;
+      text-align: center; // Center text like fun learning cards
+
+      h3 {
+        font-size: var(--font-size-h4); // Same as fun learning cards
+        font-family: var(--font-family-heading); // Same as other cards
+        font-weight: var(--font-weight-bold); // Same as other cards
+        margin-bottom: var(--spacing-sm); // Same as other cards
+        color: white; // White text on colored backgrounds
+      }
+
+      p {
+        opacity: 0.9; // Same as other cards
+        line-height: 1.6; // Same as other cards
+        font-family: var(--font-family-primary); // Same as other cards
+        font-size: var(--font-size-base); // Same as other cards
+        color: white; // White text on colored backgrounds
+        margin: 0;
+      }
+    }
+
+    // Assign grid areas and colors using established brand colors
+    &.bento-item-1 {
+      grid-area: item1;
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid #e6531d;
+      color: white;
+
+      .bento-number, .bento-icon {
+        background-color: #e6531d;
+      }
+
+      .bento-content h3,
+      .bento-content p {
+        color: white;
+      }
+    }
+
+    &.bento-item-2 {
+      grid-area: item2;
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%));
+      border-top: 4px solid #007142;
+      color: white;
+
+      .bento-number, .bento-icon {
+        background-color: #007142;
+      }
+
+      .bento-content h3,
+      .bento-content p {
+        color: white;
+      }
+    }
+
+    &.bento-item-3 {
+      grid-area: item3;
+      background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%));
+      border-top: 4px solid #34307b;
+      color: white;
+
+      .bento-number, .bento-icon {
+        background-color: #34307b;
+      }
+
+      .bento-content h3,
+      .bento-content p {
+        color: white;
+      }
+    }
+
+    &.bento-item-4 {
+      grid-area: item4;
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid #e6531d;
+      color: white;
+
+      .bento-number, .bento-icon {
+        background-color: #e6531d;
+      }
+
+      .bento-content h3,
+      .bento-content p {
+        color: white;
+      }
+    }
+
+    &.bento-item-5 {
+      grid-area: item5;
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%));
+      border-top: 4px solid #007142;
+      color: white;
+
+      .bento-number, .bento-icon {
+        background-color: #007142;
+      }
+
+      .bento-content h3,
+      .bento-content p {
+        color: white;
+      }
+    }
+
+    // Featured item (CTA)
+    &.bento-item-featured {
+      grid-area: featured;
+      background: rgba(255, 255, 255, 0.05); // Semi-transparent background
+      border-top: 4px solid;
+      border-image: linear-gradient(to right,
+        var(--color-vivid-orange),
+        var(--color-deep-green),
+        var(--color-deep-koamaru)
+      ) 1;
+      padding: var(--spacing-lg);
+      min-height: 150px; // Reduced height
+      max-height: 180px; // Maximum height
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translateZ(0); // Hardware acceleration
+      will-change: transform; // Optimize for animations
+
+      .bento-featured-content {
+        max-width: 600px;
+
+        h3 {
+          font-size: 1.6rem; // Reduced size
+          color: #FEF0D1;
+          margin-bottom: var(--spacing-sm); // Reduced margin
+          font-weight: 700;
+        }
+
+        p {
+          color: var(--color-cashmere);
+          font-size: 1rem; // Reduced size
+          margin-bottom: var(--spacing-md); // Reduced margin
+          opacity: 0.9;
+          line-height: 1.4; // Tighter line height
+        }
+
+        .bento-cta {
+          margin-top: var(--spacing-sm); // Reduced margin
+
+          .btn-glow {
+            padding: 8px 20px; // Reduced padding
+            font-size: 1rem; // Reduced font size
+            font-weight: 600;
+            border-radius: 20px; // Reduced border radius
+            background: var(--color-vivid-orange); // Use brand orange color
+            border: none;
+            color: white;
+            box-shadow: 0 5px 15px rgba(230, 83, 29, 0.3); // Shadow with brand color
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0); // Hardware acceleration
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: -50%;
+              left: -50%;
+              width: 200%;
+              height: 200%;
+              background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+              opacity: 0;
+              transition: opacity 0.3s ease;
+            }
+
+            &:hover {
+              transform: translateY(-5px);
+              box-shadow: 0 15px 40px rgba(230, 83, 29, 0.4);
+              background: #f06633; // Slightly lighter orange on hover
+
+              &::before {
+                opacity: 1;
+                animation: glowRotate 2s infinite linear;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Animation for glow rotation
+  @keyframes glowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  // Responsive adjustments
+  @include mixins.media-breakpoint-down(md) {
+    padding: var(--spacing-md) 0;
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .bento-grid {
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
+    }
+
+    .bento-item {
+      min-height: 150px;
+      max-height: 170px;
+      padding: var(--spacing-sm);
+
+      .bento-icon {
+        font-size: 1.5rem;
+        width: 50px;
+        height: 50px;
+      }
+
+      .bento-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .bento-content p {
+        font-size: 0.9rem;
+        line-height: 1.3;
+      }
+
+      &.bento-item-featured {
+        padding: var(--spacing-md);
+        min-height: 120px;
+        max-height: 150px;
+
+        .bento-featured-content h3 {
+          font-size: 1.4rem;
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .bento-featured-content p {
+          font-size: 0.9rem;
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .bento-cta .btn-glow {
+          padding: 6px 15px;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}

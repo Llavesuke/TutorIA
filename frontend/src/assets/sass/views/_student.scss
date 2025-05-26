@@ -1,0 +1,228 @@
+/* 
+ * Student view styles
+ */
+
+.student-view {
+  padding: var(--spacing-lg) 0;
+  
+  .student-header {
+    margin-bottom: var(--spacing-xl);
+    
+    .student-title {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .student-description {
+      color: var(--color-text-light);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .student-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+  }
+  
+  .student-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    
+    @media (min-width: 992px) {
+      grid-template-columns: 300px 1fr;
+    }
+  }
+  
+  .student-sidebar {
+    background-color: var(--color-background-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    
+    .student-profile {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+      
+      .student-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--color-deep-koamaru);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-md);
+        color: white;
+        font-size: 2rem;
+        font-weight: var(--font-weight-bold);
+      }
+      
+      .student-name {
+        font-size: 1.25rem;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      .student-level {
+        color: var(--color-text-light);
+        margin-bottom: var(--spacing-sm);
+      }
+      
+      .progress-bar {
+        height: 8px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius-pill);
+        margin-bottom: var(--spacing-xs);
+        overflow: hidden;
+        
+        .progress {
+          height: 100%;
+          background-color: var(--color-vivid-orange);
+          border-radius: var(--border-radius-pill);
+        }
+      }
+      
+      .progress-text {
+        font-size: var(--font-size-small);
+        color: var(--color-text-light);
+      }
+    }
+    
+    .student-stats {
+      margin-bottom: var(--spacing-md);
+      
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-xs);
+        
+        .stat-label {
+          color: var(--color-text-light);
+        }
+        
+        .stat-value {
+          font-weight: var(--font-weight-medium);
+        }
+      }
+    }
+    
+    .student-nav {
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-sm);
+        color: var(--color-text);
+        text-decoration: none;
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--spacing-xs);
+        transition: background-color var(--transition-normal);
+        
+        .nav-icon {
+          margin-right: var(--spacing-sm);
+        }
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        &.active {
+          background-color: var(--color-vivid-orange);
+          color: white;
+        }
+      }
+    }
+  }
+  
+  .student-content {
+    background-color: var(--color-background-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    
+    .content-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--spacing-md);
+      
+      .tab-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+        color: var(--color-text-light);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition-normal);
+        
+        &:hover {
+          color: var(--color-text);
+        }
+        
+        &.active {
+          color: var(--color-vivid-orange);
+          border-bottom-color: var(--color-vivid-orange);
+        }
+      }
+    }
+    
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--spacing-md);
+      
+      .course-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: var(--border-radius-md);
+        overflow: hidden;
+        transition: transform var(--transition-normal);
+        
+        &:hover {
+          transform: translateY(-5px);
+        }
+        
+        .course-image {
+          height: 150px;
+          background-color: var(--color-deep-green);
+          position: relative;
+          
+          .course-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+            
+            .progress {
+              height: 100%;
+              background-color: var(--color-vivid-orange);
+            }
+          }
+        }
+        
+        .course-content {
+          padding: var(--spacing-md);
+          
+          .course-title {
+            font-size: 1.125rem;
+            margin-bottom: var(--spacing-xs);
+          }
+          
+          .course-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
+            margin-bottom: var(--spacing-sm);
+          }
+          
+          .course-description {
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-small);
+            color: var(--color-text-light);
+          }
+          
+          .course-button {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

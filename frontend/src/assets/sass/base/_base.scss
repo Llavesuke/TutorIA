@@ -1,0 +1,64 @@
+/* 
+ * Base styles
+ * General styles for the application
+ */
+
+html {
+  font-size: 16px; // Base font size
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+// Utility classes for spacing
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+// Responsive container
+.container-fluid {
+  width: 100%;
+  padding: 0 var(--spacing-md);
+}
+
+// Section spacing
+.section {
+  padding: var(--spacing-xl) 0;
+}
+
+// Accessibility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// Focus styles for accessibility
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

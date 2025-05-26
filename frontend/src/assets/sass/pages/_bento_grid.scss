@@ -1,0 +1,283 @@
+/*
+ * Bento Grid Styles for How It Works Section
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+@use "sass:math";
+
+// Bento Item Base Styles
+.bento-item {
+  position: relative;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: all 0.3s var(--ease-out);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  scroll-margin-top: 150px; // For scroll-snap targeting
+  scroll-snap-align: start; // Add scroll snap alignment
+  opacity: 1 !important; // Force visibility
+  visibility: visible !important; // Force visibility
+
+  // Hover effect
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+
+    .bento-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .bento-number {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  // Number indicator
+  .bento-number {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  // Icon styles
+  .bento-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+    transition: all 0.3s ease;
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    color: white;
+  }
+
+  // Content styles
+  .bento-content {
+    flex: 1;
+
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: var(--spacing-sm);
+      color: #FEF0D1;
+      font-weight: 700;
+    }
+
+    p {
+      color: var(--color-cashmere);
+      font-size: 1rem;
+      line-height: 1.5;
+      margin: 0;
+      opacity: 0.9;
+    }
+  }
+
+  // Assign grid areas and colors using established brand colors
+  &.bento-item-1 {
+    grid-area: item1;
+    background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%));
+    border-top: 4px solid var(--color-vivid-orange);
+    color: white;
+
+    .bento-number, .bento-icon {
+      background-color: var(--color-vivid-orange);
+    }
+
+    .bento-content h3,
+    .bento-content p {
+      color: white;
+    }
+  }
+
+  &.bento-item-2 {
+    grid-area: item2;
+    background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%));
+    border-top: 4px solid var(--color-forest-green);
+    color: white;
+
+    .bento-number, .bento-icon {
+      background-color: var(--color-forest-green);
+    }
+
+    .bento-content h3,
+    .bento-content p {
+      color: white;
+    }
+  }
+
+  &.bento-item-3 {
+    grid-area: item3;
+    background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%));
+    border-top: 4px solid var(--color-deep-koamaru);
+    color: white;
+
+    .bento-number, .bento-icon {
+      background-color: var(--color-deep-koamaru);
+    }
+
+    .bento-content h3,
+    .bento-content p {
+      color: white;
+    }
+  }
+
+  &.bento-item-4 {
+    grid-area: item4;
+    background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%));
+    border-top: 4px solid var(--color-vivid-orange);
+    color: white;
+
+    .bento-number, .bento-icon {
+      background-color: var(--color-vivid-orange);
+    }
+
+    .bento-content h3,
+    .bento-content p {
+      color: white;
+    }
+  }
+
+  &.bento-item-5 {
+    grid-area: item5;
+    background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%));
+    border-top: 4px solid var(--color-forest-green);
+    color: white;
+
+    .bento-number, .bento-icon {
+      background-color: var(--color-forest-green);
+    }
+
+    .bento-content h3,
+    .bento-content p {
+      color: white;
+    }
+  }
+
+  // Featured item (CTA)
+  &.bento-item-featured {
+    grid-area: featured;
+    background: linear-gradient(135deg,
+      rgba(230, 83, 29, 0.8) 0%,
+      rgba(52, 48, 123, 0.8) 100%
+    );
+    padding: var(--spacing-xl);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .bento-featured-content {
+      max-width: 600px;
+
+      h3 {
+        font-size: 2rem;
+        color: #FEF0D1;
+        margin-bottom: var(--spacing-md);
+        font-weight: 700;
+      }
+
+      p {
+        color: var(--color-cashmere);
+        font-size: 1.2rem;
+        margin-bottom: var(--spacing-lg);
+        opacity: 0.9;
+      }
+
+      .bento-cta {
+        margin-top: var(--spacing-md);
+
+        .btn-glow {
+          padding: 12px 30px;
+          font-size: 1.2rem;
+          font-weight: 600;
+          border-radius: 30px;
+          background: linear-gradient(135deg, var(--color-vivid-orange), var(--color-deep-koamaru));
+          border: none;
+          color: white;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+
+          &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+
+            &::before {
+              opacity: 1;
+              animation: glowRotate 2s infinite linear;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animation for glow rotation
+@keyframes glowRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Responsive adjustments
+@include mixins.media-breakpoint-down(md) {
+  .bento-item {
+    min-height: 180px;
+    padding: var(--spacing-md);
+
+    .bento-icon {
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+    }
+
+    .bento-content h3 {
+      font-size: 1.3rem;
+    }
+
+    &.bento-item-featured {
+      padding: var(--spacing-lg);
+
+      .bento-featured-content h3 {
+        font-size: 1.8rem;
+      }
+
+      .bento-featured-content p {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}

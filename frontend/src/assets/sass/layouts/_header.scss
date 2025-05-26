@@ -1,0 +1,116 @@
+/*
+ * Header
+ * Main header layout styles
+ */
+
+@use "../utilities/mixins" as mixins;
+
+.header {
+  background-color: var(--color-background-light);
+  padding: var(--spacing-md) 0;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  // Logo area
+  .header-logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 2.5rem;
+      width: auto;
+    }
+
+    .logo-text {
+      font-size: var(--font-size-large);
+      font-weight: var(--font-weight-bold);
+      margin-left: var(--spacing-sm);
+      color: var(--color-primary);
+    }
+  }
+
+  // Navigation
+  .header-nav {
+    display: none;
+
+    @include mixins.media-breakpoint-up(md) {
+      display: flex;
+      align-items: center;
+    }
+
+    ul {
+      display: flex;
+      gap: var(--spacing-md);
+
+      li {
+        a {
+          color: var(--color-text);
+          text-decoration: none;
+          font-weight: var(--font-weight-medium);
+          padding: var(--spacing-xs) var(--spacing-sm);
+          border-radius: var(--border-radius-sm);
+          transition: color var(--transition-normal), background-color var(--transition-normal);
+
+          &:hover, &.active {
+            color: var(--color-primary);
+            background-color: rgba(100, 108, 255, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  // Actions area (buttons, user menu, etc.)
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .btn {
+      margin-left: var(--spacing-sm);
+    }
+
+    .user-menu {
+      position: relative;
+
+      .user-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: var(--spacing-sm);
+        min-width: 200px;
+      }
+    }
+  }
+
+  // Mobile menu toggle
+  .mobile-menu-toggle {
+    display: block;
+
+    @include mixins.media-breakpoint-up(md) {
+      display: none;
+    }
+  }
+}

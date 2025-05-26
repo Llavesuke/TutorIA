@@ -1,0 +1,469 @@
+/*
+ * Modals
+ * Modal component styles
+ */
+
+// Modal backdrop
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.85) 0%, /* Aumentada opacidad para compensar la eliminación del blur */
+    rgba(23, 23, 23, 0.9) 50%, /* Aumentada opacidad para compensar la eliminación del blur */
+    rgba(52, 48, 123, 0.2) 100% /* Aumentada opacidad para compensar la eliminación del blur */
+  );
+  /* backdrop-filter: blur(8px); */ /* ELIMINADO: Efecto blur que causaba lag */
+  z-index: var(--z-index-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Modal container
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  background: linear-gradient(135deg, var(--color-carbon) 0%, rgba(23, 23, 23, 0.98) 100%);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(230, 83, 29, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+  z-index: var(--z-index-modal);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+
+  &.active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  // Modal sizes
+  &.modal-sm {
+    max-width: 300px;
+  }
+
+  &.modal-md {
+    max-width: 500px;
+  }
+
+  &.modal-lg {
+    max-width: 800px;
+  }
+
+  &.modal-xl {
+    max-width: 1140px;
+  }
+
+  // Modal fullscreen
+  &.modal-fullscreen {
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+// Modal header
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background: var(--color-deep-koamaru);
+  position: relative;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+
+  .modal-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-cashmere);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-close {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.8), #ff3742);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+    border-radius: 8px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #ff6b77, #ff5a5a);
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(255, 71, 87, 0.4);
+    }
+  }
+}
+
+// Modal body
+.modal-body {
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+  background: linear-gradient(135deg, var(--color-carbon) 0%, rgba(23, 23, 23, 0.95) 100%);
+
+  // Custom scrollbar styling for TutorIA design
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(23, 23, 23, 0.8);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--color-deep-koamaru), var(--color-vivid-orange));
+    border-radius: 8px;
+    border: 1px solid rgba(23, 23, 23, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, var(--color-vivid-orange), var(--color-forest-green));
+      transform: scaleX(1.2);
+    }
+
+    &:active {
+      background: var(--color-forest-green);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: rgba(23, 23, 23, 0.8);
+  }
+
+  // Firefox scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-deep-koamaru) rgba(23, 23, 23, 0.8);
+}
+
+// Modal footer
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(23, 23, 23, 0.95) 0%, var(--color-carbon) 100%);
+  border-top: 2px solid rgba(0, 113, 66, 0.3);
+  gap: var(--spacing-sm);
+}
+
+// Modal animations
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+// Modal with animation classes
+.modal-fade {
+  .modal-backdrop {
+    animation: modal-fade-in var(--transition-normal) forwards;
+
+    &.closing {
+      animation: modal-fade-in var(--transition-normal) reverse forwards;
+    }
+  }
+
+  .modal {
+    animation: modal-slide-in var(--transition-normal) forwards;
+
+    &.closing {
+      animation: modal-slide-out var(--transition-normal) forwards;
+    }
+  }
+}
+
+// Modal buttons
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition-normal);
+  border: 2px solid transparent;
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover::before {
+      left: -100%;
+    }
+  }
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  color: var(--color-cashmere);
+  border-color: rgba(255, 255, 255, 0.2);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--color-deep-koamaru), #2a2568);
+    border-color: rgba(52, 48, 123, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(52, 48, 123, 0.3);
+  }
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-forest-green), #00a676);
+  color: white;
+  border-color: rgba(0, 113, 66, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 113, 66, 0.3);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #00a676, var(--color-forest-green));
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 113, 66, 0.4);
+  }
+}
+
+// Form elements in modals
+.modal .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.modal .form-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--color-cashmere);
+  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+  font-family: var(--font-family-heading);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.modal .form-control {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--color-carbon);
+  border: 2px solid rgba(52, 48, 123, 0.3);
+  border-radius: 10px;
+  color: var(--color-cashmere);
+  font-family: var(--font-family-heading);
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  &::placeholder {
+    color: rgba(254, 240, 209, 0.6);
+    font-weight: var(--font-weight-normal);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-vivid-orange);
+    background: rgba(23, 23, 23, 0.95);
+    box-shadow: 0 4px 12px rgba(230, 83, 29, 0.25), 0 0 0 3px rgba(230, 83, 29, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgba(52, 48, 123, 0.5);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  // Purple input variant for special cases
+  &.purple-input {
+    background: var(--color-deep-koamaru);
+    border-color: rgba(52, 48, 123, 0.6);
+    color: var(--color-cashmere);
+
+    &::placeholder {
+      color: rgba(254, 240, 209, 0.8);
+    }
+
+    &:focus {
+      border-color: var(--color-forest-green);
+      box-shadow: 0 4px 12px rgba(0, 113, 66, 0.25), 0 0 0 3px rgba(0, 113, 66, 0.1);
+    }
+  }
+
+  // Orange input variant
+  &.orange-input {
+    background: var(--color-vivid-orange);
+    border-color: rgba(230, 83, 29, 0.6);
+    color: var(--color-cashmere);
+
+    &::placeholder {
+      color: rgba(254, 240, 209, 0.8);
+    }
+
+    &:focus {
+      border-color: var(--color-forest-green);
+      box-shadow: 0 4px 12px rgba(0, 113, 66, 0.25), 0 0 0 3px rgba(0, 113, 66, 0.1);
+    }
+  }
+}
+
+// Custom scrollbar styling for all scrollable elements in modals
+.modal {
+  // Apply custom scrollbars to textareas
+  textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(23, 23, 23, 0.6);
+      border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-deep-koamaru);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: var(--color-vivid-orange);
+      }
+    }
+
+    // Firefox scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-deep-koamaru) rgba(23, 23, 23, 0.6);
+  }
+
+  // Apply custom scrollbars to select elements with multiple options
+  select.form-control[multiple] {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(23, 23, 23, 0.6);
+      border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-forest-green);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: var(--color-vivid-orange);
+      }
+    }
+
+    // Firefox scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-forest-green) rgba(23, 23, 23, 0.6);
+  }
+
+  // Apply custom scrollbars to any other scrollable content
+  .scrollable-content {
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(23, 23, 23, 0.8);
+      border-radius: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), var(--color-vivid-orange));
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, var(--color-vivid-orange), var(--color-forest-green));
+      }
+    }
+
+    // Firefox scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-deep-koamaru) rgba(23, 23, 23, 0.8);
+  }
+}

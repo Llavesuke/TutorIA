@@ -1,0 +1,2115 @@
+/*
+ * Enhanced Landing Page Section Styles
+ * Professional styles for each section of the immersive landing page
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+@use "sass:math";
+
+// Hero Section - Enhanced with professional styling
+.hero {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+
+  // Removed gradient background since we now have the SVG shapes
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; // Space between content and image
+    gap: var(--spacing-xl);
+    perspective: var(--perspective);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 80vh; // Ensure container has enough height
+
+    // Critical mobile fixes for hero container - move content much lower for better centering
+    @include mixins.media-breakpoint-down(md) {
+      flex-direction: column;
+      text-align: center;
+      gap: 6rem; // Even more spacing between text and logo
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding-top: 30vh; // Move content even lower on mobile
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      gap: 7rem; // Extra spacing for smaller screens
+      padding-top: 35vh; // Move content even lower on small mobile
+    }
+
+    @media (max-width: 320px) {
+      gap: 8rem; // Maximum spacing for very small screens
+      padding-top: 40vh; // Move content to bottom half of screen
+    }
+
+    // Extra small screens (576px and down)
+    @media (max-width: 575px) {
+      flex-direction: column;
+      text-align: center;
+      gap: 6rem; // Even more spacing between text and logo on small screens
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding-top: 30vh; // Move content much lower on small mobile
+    }
+
+    // Very small screens (320px and up)
+    @media (max-width: 320px) {
+      gap: 7rem; // Maximum spacing for very small screens
+      padding: 0.75rem;
+      min-height: 100vh;
+      padding-top: 35vh; // Move content significantly lower on very small screens
+    }
+  }
+
+  .hero-content {
+    flex: 1;
+    max-width: 600px;
+    transform-style: preserve-3d;
+    z-index: 5; // Ensure content is above decorations
+    align-self: center; // Ensure vertical centering
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    order: 1; // Asegurar que aparezca primero en móviles
+
+    // Add subtle parallax effect on scroll
+    &[data-parallax] {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      margin-bottom: 0; // Eliminar margin para mejor centrado
+      margin-top: 0;
+      max-width: 100%;
+      width: 100%;
+      padding: 0 2rem; // Padding lateral para contenido
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+
+    // Extra small screens
+    @media (max-width: 575px) {
+      margin-bottom: 0;
+      margin-top: 0;
+      max-width: 100%;
+      width: 100%;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem; // Padding para evitar colisión con bordes
+    }
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem); // Responsive font size
+    font-weight: var(--font-weight-extrabold); // Usar variable del sistema
+    font-family: var(--font-family-heading); // Tipografía consistente
+    line-height: 1.2;
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.5px;
+    color: var(--color-cashmere); // Usar variable del sistema
+    opacity: 1 !important; /* Forzar visibilidad */
+    visibility: visible !important; /* Forzar visibilidad */
+    text-align: center;
+    width: 100%;
+
+    /* Estructura simplificada para mejor fiabilidad */
+    span {
+      display: block;
+      margin-bottom: 10px;
+      opacity: 1 !important; /* Forzar visibilidad */
+      visibility: visible !important; /* Forzar visibilidad */
+    }
+
+    /* Asegurar que el highlight sea visible */
+    .highlight {
+      position: relative;
+      display: inline-block;
+      color: var(--color-vivid-orange);
+      font-weight: 900;
+      opacity: 1 !important; /* Forzar visibilidad */
+      visibility: visible !important; /* Forzar visibilidad */
+
+      /* Subrayado simplificado siempre visible */
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background-color: var(--color-vivid-orange);
+        opacity: 0.3;
+        border-radius: 3px;
+        z-index: -1;
+        transform: scaleX(1); // Asegurar que esté visible
+      }
+    }
+
+    /* Make TutorIA orange */
+    .tutoria-text {
+      color: var(--color-vivid-orange);
+      font-weight: 900;
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      text-align: center;
+      width: 100%;
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      margin-bottom: var(--spacing-md);
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  /* Eliminada la animación scaleIn que podría causar problemas */
+
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem); // Responsive font size
+    font-family: var(--font-family-primary); // Tipografía consistente
+    margin-bottom: var(--spacing-xl);
+    opacity: 1 !important; /* Forzar opacidad completa para asegurar visibilidad */
+    line-height: 1.6;
+    font-weight: var(--font-weight-normal); // Usar variable del sistema
+    max-width: 90%;
+    color: var(--color-text-light); // Usar variable del sistema
+    visibility: visible !important; /* Forzar visibilidad */
+    display: block !important; /* Asegurar que siempre se muestre */
+    position: relative; /* Asegurar posicionamiento correcto */
+    z-index: 2; /* Asegurar que esté por encima del fondo */
+    text-shadow: none !important; /* Eliminar cualquier sombra de texto */
+    text-align: center;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+
+    // Palabras clave con color naranja (sin efectos)
+    strong, b, em {
+      color: var(--color-vivid-orange);
+      font-weight: 600;
+      text-shadow: none !important; /* Eliminar cualquier sombra de texto */
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      max-width: 100%;
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+      width: 100%;
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      margin-bottom: var(--spacing-md);
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  /* Estilos para animaciones de texto */
+  .text-highlight {
+    color: var(--color-vivid-orange);
+    font-weight: 600;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      text-shadow: 0 0 8px rgba(230, 83, 29, 0.7);
+    }
+  }
+
+  /* Animaciones adicionales para el texto */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes highlightPulse {
+    0%, 100% {
+      color: var(--color-vivid-orange);
+    }
+    50% {
+      color: #FEF0D1;
+    }
+  }
+
+  @keyframes textReveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: var(--spacing-lg);
+    position: relative; // Para animaciones
+    overflow: hidden; // Contener efectos de hover dentro de los límites
+    flex-wrap: wrap; // Permitir wrap en pantallas pequeñas
+    justify-content: flex-start; // Alineación por defecto
+    padding: 4px; // Espacio para efectos de hover
+
+    // Efecto de línea de conexión
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        rgba(230, 83, 29, 0) 0%,
+        rgba(230, 83, 29, 0.7) 50%,
+        rgba(230, 83, 29, 0) 100%
+      );
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.6s ease;
+      opacity: 0.5;
+    }
+
+    &:hover::after {
+      transform: scaleX(1);
+    }
+
+    // Add subtle hover effect to container
+    &:hover .btn:not(:hover) {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-md);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      flex-direction: column;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      gap: 1rem; // Better spacing between buttons
+      align-items: center;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+
+    // Extra small screens - ensure buttons work properly
+    @media (max-width: 575px) {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      gap: 1rem;
+      padding: 0 1rem; // Add padding to prevent edge collision
+      text-align: center;
+
+      .btn {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+        min-height: 48px;
+        font-size: clamp(0.9rem, 4vw, 1rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // Disable complex hover effects on touch devices
+        @media (hover: none) and (pointer: coarse) {
+          &:hover {
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+    }
+
+    // Very small screens (320px)
+    @media (max-width: 320px) {
+      gap: 0.875rem;
+      padding: 0 0.75rem;
+
+      .btn {
+        max-width: 260px;
+        font-size: clamp(0.85rem, 4vw, 0.95rem);
+      }
+    }
+
+    // Enhanced button styles with more dramatic effects
+    .btn {
+      min-width: 160px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Transición más dinámica
+      transform-origin: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); // Sombra inicial
+
+      // Efecto de brillo
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.3) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transition: all 0.6s ease;
+        z-index: 1;
+      }
+
+      // Borde de color sólido (sin gradiente ni glow)
+      &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: var(--color-vivid-orange);
+        z-index: -1;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      &:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); // Sombra más sutil
+
+        &::before {
+          left: 100%;
+        }
+
+        &::after {
+          opacity: 0.3; // Opacidad más baja para un efecto más sutil
+        }
+      }
+
+      &:active {
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  .hero-image {
+    flex: 1;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    z-index: 10; // Ensure it's visible
+    margin: 0 auto; // Center horizontally
+    align-self: center; // Ensure vertical centering in the container
+
+    // Add floating animation
+    &[data-animation="float"] {
+      animation: float 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    // Add subtle shadow for depth
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 20px;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    // Enhanced glow effect behind mascot
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(
+        circle,
+        var(--color-vivid-orange-20) 0%,
+        var(--color-deep-koamaru-10) 60%,
+        transparent 80%
+      );
+      /* filter: blur(var(--blur-medium)); */ /* ELIMINADO: Efecto blur que causaba lag */
+      z-index: -1;
+      border-radius: 50%;
+      opacity: 0.8;
+      mix-blend-mode: screen;
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      width: 60%; // Optimal size for tablet/mobile
+      margin: 0 auto; // Center without top margin for better spacing
+      max-width: 350px;
+      order: 2; // Ensure it appears after content on mobile
+    }
+
+    // Small screens (576px and down)
+    @media (max-width: 575px) {
+      width: 65%; // Slightly smaller for better proportion
+      margin: 0 auto;
+      max-width: 260px;
+
+      .tutor-mascot {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto;
+
+        .tutoria-logo {
+          width: 65%;
+        }
+      }
+    }
+
+    // Very small screens (320px and up)
+    @media (max-width: 320px) {
+      width: 70%;
+      max-width: 220px;
+
+      .tutor-mascot {
+        width: 160px;
+        height: 160px;
+
+        .tutoria-logo {
+          width: 60%;
+        }
+      }
+    }
+
+    // New mascot using the TutorIA logo with morphing bubble effect
+    .tutor-mascot {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      background-color: #34307b; /* Purple/blue background as requested */
+      border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; /* Organic shape instead of perfect circle */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      transform: rotateY(-10deg) rotateX(5deg);
+      transition: transform 0.5s ease-out;
+      animation: morphShape 12s ease-in-out infinite, float 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      z-index: 15; // Ensure it's visible
+      margin: 0 auto; // Center horizontally
+      top: 0; // Reset any top positioning
+      overflow: hidden;
+
+      &:hover {
+        transform: rotateY(10deg) rotateX(-5deg);
+      }
+
+      // Logo image styling
+      .tutoria-logo {
+        width: 80%;
+        height: auto;
+        object-fit: contain;
+        transform-style: preserve-3d;
+        transform: translateZ(20px);
+        transition: transform 0.3s ease;
+        animation: logoFloat 3s ease-in-out infinite;
+      }
+
+      &:hover .tutoria-logo {
+        transform: translateZ(30px) scale(1.05);
+        animation-play-state: paused;
+      }
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      .tutor-mascot {
+        width: 250px;
+        height: 250px;
+        margin: 0 auto; // Ensure centered on mobile
+
+        .tutoria-logo {
+          width: 80%;
+        }
+      }
+    }
+  }
+
+  // Mascot animations
+  @keyframes blink {
+    0%, 45%, 55%, 100% { transform: translateX(-50%) scaleY(1); }
+    50% { transform: translateX(-50%) scaleY(0.1); }
+  }
+
+  // Logo floating animation - subtle movement for the logo inside the bubble
+  @keyframes logoFloat {
+    0% { transform: translateZ(20px) rotate(0deg); }
+    25% { transform: translateZ(22px) rotate(1deg); }
+    50% { transform: translateZ(25px) rotate(0deg); }
+    75% { transform: translateZ(22px) rotate(-1deg); }
+    100% { transform: translateZ(20px) rotate(0deg); }
+  }
+
+  // Morphing shape animation for the mascot - more pronounced and fluid
+  @keyframes morphShape {
+    0% {
+      border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+      transform: rotate(0deg) scale(1);
+    }
+    20% {
+      border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%;
+      transform: rotate(3deg) scale(1.02);
+    }
+    40% {
+      border-radius: 30% 70% 40% 60% / 60% 30% 70% 40%;
+      transform: rotate(6deg) scale(1.04);
+    }
+    60% {
+      border-radius: 60% 40% 30% 70% / 40% 70% 30% 60%;
+      transform: rotate(3deg) scale(1.02);
+    }
+    80% {
+      border-radius: 40% 60% 70% 30% / 70% 30% 60% 40%;
+      transform: rotate(-3deg) scale(1);
+    }
+    100% {
+      border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+      transform: rotate(0deg) scale(1);
+    }
+  }
+
+  // Hero decorative elements
+  .hero-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+
+    .decoration-circle {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border: 2px solid rgba(230, 83, 29, 0.1);
+      border-radius: 50%;
+      top: 20%;
+      right: 10%;
+      opacity: 0.5;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%;
+        border: 1px solid rgba(0, 113, 66, 0.1);
+        border-radius: 50%;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 60%;
+        border: 1px solid rgba(52, 48, 123, 0.1);
+        border-radius: 50%;
+      }
+    }
+
+    .decoration-dots {
+      position: absolute;
+      bottom: 15%;
+      left: 10%;
+      width: 200px;
+      height: 100px;
+      background-image: radial-gradient(circle, rgba(230, 83, 29, 0.2) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+    }
+
+    .decoration-line {
+      position: absolute;
+      top: 30%;
+      left: 0;
+      width: 150px;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        var(--color-vivid-orange-20),
+        transparent
+      );
+      transform-origin: left;
+      animation: lineGrow 3s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes lineGrow {
+    from { transform: scaleX(0.5); opacity: 0.3; }
+    to { transform: scaleX(1); opacity: 0.8; }
+  }
+}
+
+// Features Section - Usar sistema de diseño consistente
+.features {
+  background-color: transparent; // Changed to transparent to show the background shapes
+  padding: var(--spacing-xxl) 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  // Reducir padding en móviles para que las tarjetas quepan mejor
+  @media (max-width: 768px) {
+    padding: var(--spacing-lg) 0;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  @media (max-width: 575px) {
+    padding: var(--spacing-md) 0; // Padding mínimo en móviles pequeños
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+
+    @media (max-width: 768px) {
+      padding: 0 var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media (max-width: 575px) {
+      padding: 0 var(--spacing-sm);
+    }
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); // Aumentar tamaño mínimo
+    gap: var(--spacing-xl); // Más espacio entre tarjetas
+    margin-top: var(--spacing-xl);
+    padding: 0 1rem; // Add padding to prevent edge collision
+
+    @include mixins.media-breakpoint-down(lg) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+      padding: 0 1rem;
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+      padding: 0 1rem;
+      max-width: 600px; // Limit width for better readability
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+      padding: 0 1rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    // Extra small screens - optimizado para que las tarjetas se vean completas
+    @media (max-width: 575px) {
+      grid-template-columns: 1fr;
+      gap: 1rem; // Espacio reducido entre tarjetas
+      padding: 0 1rem; // Padding lateral reducido
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    // Ultra small screens - máxima optimización de espacio
+    @media (max-width: 320px) {
+      grid-template-columns: 1fr;
+      gap: 0.75rem; // Espacio mínimo entre tarjetas
+      padding: 0 0.5rem; // Padding mínimo
+      max-width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  .feature-card {
+    border-radius: var(--border-radius-lg); // Usar variable del sistema
+    padding: var(--spacing-xl); // More padding
+    transition: all var(--transition-normal) ease; // Usar variable del sistema
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border); // Usar variable del sistema
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); // Sombra consistente con el sistema
+    opacity: 1 !important; // Force visibility
+    min-height: 320px; // Ensure minimum height
+    display: flex;
+    flex-direction: column;
+
+    // Apply brand color backgrounds based on card type
+    &.personalized-learning {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid var(--color-vivid-orange);
+      color: white;
+
+      .feature-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      h3, p {
+        color: white;
+      }
+    }
+
+    &.progress-tracking {
+      background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%));
+      border-top: 4px solid var(--color-forest-green);
+      color: white;
+
+      .feature-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      h3, p {
+        color: white;
+      }
+    }
+
+    &.ai-powered {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%));
+      border-top: 4px solid var(--color-deep-koamaru);
+      color: white;
+
+      .feature-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      h3, p {
+        color: white;
+      }
+    }
+
+    &.ethical-ai {
+      background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%));
+      border-top: 4px solid var(--color-deep-koamaru);
+      color: white;
+
+      .feature-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      h3, p {
+        color: white;
+      }
+    }
+
+    &.gamification {
+      background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid var(--color-vivid-orange);
+      color: white;
+
+      .feature-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      h3, p {
+        color: white;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(230, 83, 29, 0.1) 0%, // More visible gradient
+        rgba(0, 113, 66, 0.1) 50%,
+        rgba(52, 48, 123, 0.1) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 0; // Ensure it's behind content
+    }
+
+    &:hover {
+      transform: translateY(-4px); // Más sutil
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25); // Sombra consistente con el sistema
+      // Ensure hover effects stay within container bounds
+      will-change: transform, box-shadow;
+      contain: layout style paint;
+
+      &::before {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        transform: scale(1.05); // Efecto sutil en el icono
+        // Ensure icon scaling stays within bounds
+        will-change: transform;
+        contain: layout style paint;
+      }
+    }
+
+    // Disable hover effects on touch devices to prevent sticky hover states
+    @media (hover: none) and (pointer: coarse) {
+      &:hover {
+        transform: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+        .feature-icon {
+          transform: none;
+        }
+      }
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--border-radius-lg); // Usar variable del sistema
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--spacing-md);
+      margin-left: auto;
+      margin-right: auto; // Center the icon in the card
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra consistente con el sistema
+      overflow: hidden; // Ensure icon stays within bounds
+      position: relative; // For pseudo-elements
+      transition: transform var(--transition-normal) ease; // Transición suave
+
+      // Add subtle inner glow
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.2);
+        border-radius: inherit;
+        pointer-events: none;
+      }
+
+      i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-size: 2.2rem; // Slightly smaller for better proportions
+        position: relative; // Ensure proper stacking
+        z-index: 1; // Place above pseudo-elements
+      }
+    }
+
+    // Apply vibrant brand colors to feature cards with exact hex values
+    &.personalized-learning .feature-icon {
+      background-color: #e6531d; // Exact vivid orange hex
+      color: white;
+
+      i {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Add shadow to icon for better visibility
+      }
+    }
+
+    &.progress-tracking .feature-icon {
+      background-color: #007142; // Exact deep green hex
+      color: white;
+
+      i {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    &.ethical-ai .feature-icon {
+      background-color: #34307b; // Exact deep koamaru hex
+      color: white;
+
+      i {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    &.gamification .feature-icon {
+      background-color: #e6531d; // Exact vivid orange hex
+      color: white;
+
+      i {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    h3 {
+      font-size: var(--font-size-h4); // Usar variable del sistema
+      font-family: var(--font-family-heading); // Tipografía consistente
+      margin-bottom: var(--spacing-md); // More space
+      text-align: center;
+      color: var(--color-cashmere); // Usar variable del sistema
+      font-weight: var(--font-weight-bold); // Usar variable del sistema
+      opacity: 1 !important; // Force visibility
+      position: relative; // For z-index
+      z-index: 1; // Above background
+    }
+
+    p {
+      opacity: 0.9; // More visible
+      line-height: 1.6;
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 90%;
+      font-size: var(--font-size-base); // Usar variable del sistema
+      font-family: var(--font-family-primary); // Tipografía consistente
+      color: var(--color-text-light); // Usar variable del sistema
+      position: relative; // For z-index
+      z-index: 1; // Above background
+    }
+
+    // Responsive adjustments for feature cards
+    @include mixins.media-breakpoint-down(md) {
+      padding: var(--spacing-lg);
+      min-height: 280px;
+
+      .feature-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: var(--spacing-sm);
+
+        i {
+          font-size: 2rem;
+        }
+      }
+
+      h3 {
+        font-size: var(--font-size-h5);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      p {
+        font-size: var(--font-size-small);
+      }
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      padding: var(--spacing-lg);
+      min-height: 300px;
+      margin: 0 0.5rem; // Add horizontal margin to prevent edge collision
+      width: calc(100% - 1rem); // Account for margins
+
+      .feature-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: var(--spacing-md);
+
+        i {
+          font-size: 2rem;
+        }
+      }
+
+      h3 {
+        font-size: var(--font-size-h5);
+        margin-bottom: var(--spacing-md);
+        line-height: 1.3;
+      }
+
+      p {
+        font-size: var(--font-size-base);
+        max-width: 100%;
+        line-height: 1.5;
+        padding: 0 0.5rem;
+      }
+    }
+
+    // Extra small screens - ensure cards fit properly and are fully visible
+    @media (max-width: 575px) {
+      padding: 1.5rem 1rem; // Padding más compacto pero suficiente
+      min-height: 280px; // Altura reducida para que quepan en pantalla
+      margin: 0; // Sin márgenes laterales
+      width: 100%; // Ancho completo
+      box-sizing: border-box;
+
+      .feature-icon {
+        width: 70px; // Icono más pequeño
+        height: 70px;
+        margin-bottom: 1rem; // Espaciado reducido
+
+        i {
+          font-size: 1.8rem; // Icono más pequeño
+        }
+      }
+
+      h3 {
+        font-size: 1.1rem; // Título más pequeño
+        margin-bottom: 0.75rem; // Menos espacio
+        line-height: 1.3;
+        padding: 0 0.5rem;
+      }
+
+      p {
+        font-size: 0.9rem; // Texto más pequeño
+        line-height: 1.4; // Interlineado más compacto
+        padding: 0 0.5rem;
+        margin: 0; // Sin márgenes adicionales
+      }
+    }
+
+    // Ultra small screens (320px) - máxima optimización
+    @media (max-width: 320px) {
+      padding: 1rem 0.75rem; // Padding mínimo
+      min-height: 250px; // Altura mínima para que quepa
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+
+      .feature-icon {
+        width: 60px; // Icono aún más pequeño
+        height: 60px;
+        margin-bottom: 0.75rem;
+
+        i {
+          font-size: 1.6rem;
+        }
+      }
+
+      h3 {
+        font-size: 1rem; // Título compacto
+        margin-bottom: 0.5rem;
+        padding: 0 0.25rem;
+      }
+
+      p {
+        font-size: 0.85rem; // Texto muy compacto
+        line-height: 1.3;
+        padding: 0 0.25rem;
+      }
+    }
+  }
+}
+
+// How It Works Section - Styles moved to _floating_cards.scss
+// This section is now handled by the floating cards component
+
+// Testimonials Section
+.testimonials {
+  background-color: transparent; // Changed to transparent to show the background shapes
+  padding: var(--spacing-xxl) 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-lg) 0;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  @media (max-width: 575px) {
+    padding: var(--spacing-md) 0;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+
+    @media (max-width: 768px) {
+      padding: 0 var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media (max-width: 575px) {
+      padding: 0 var(--spacing-sm);
+    }
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); // Aumentar tamaño mínimo
+    gap: var(--spacing-xl); // Más espacio entre tarjetas
+    margin-top: var(--spacing-xl);
+
+    @include mixins.media-breakpoint-down(lg) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md);
+    }
+
+    // Ensure desktop grid shows brand colors correctly with maximum specificity
+    @media (min-width: 769px) {
+      .testimonial-card:nth-child(3n+1) {
+        background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-vivid-orange) !important;
+        color: white !important;
+
+        .testimonial-content p,
+        .testimonial-author .author-info h4,
+        .testimonial-author .author-info p {
+          color: white !important;
+        }
+
+        .testimonial-author .author-avatar {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        .quote-icon {
+          color: rgba(255, 255, 255, 0.9) !important;
+        }
+      }
+
+      .testimonial-card:nth-child(3n+2) {
+        background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-forest-green) !important;
+        color: white !important;
+
+        .testimonial-content p,
+        .testimonial-author .author-info h4,
+        .testimonial-author .author-info p {
+          color: white !important;
+        }
+
+        .testimonial-author .author-avatar {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        .quote-icon {
+          color: rgba(255, 255, 255, 0.9) !important;
+        }
+      }
+
+      .testimonial-card:nth-child(3n+3) {
+        background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-deep-koamaru) !important;
+        color: white !important;
+
+        .testimonial-content p,
+        .testimonial-author .author-info h4,
+        .testimonial-author .author-info p {
+          color: white !important;
+        }
+
+        .testimonial-author .author-avatar {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        .quote-icon {
+          color: rgba(255, 255, 255, 0.9) !important;
+        }
+      }
+    }
+  }
+
+  // BASE TESTIMONIAL CARD CLASS - Brand color rotation implementation
+  .testimonial-card {
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    transition: all var(--transition-normal) ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    background: var(--color-background-light); // Default background
+
+    // BRAND COLOR ROTATION - Orange cards (1st, 4th, 7th, etc.)
+    &:nth-child(3n+1) {
+      background: linear-gradient(135deg, #e6531d, #d14a1a) !important;
+      border-top: 4px solid #e6531d !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    // BRAND COLOR ROTATION - Green cards (2nd, 5th, 8th, etc.)
+    &:nth-child(3n+2) {
+      background: linear-gradient(135deg, #007142, #005a35) !important;
+      border-top: 4px solid #007142 !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    // BRAND COLOR ROTATION - Purple cards (3rd, 6th, 9th, etc.)
+    &:nth-child(3n+3) {
+      background: linear-gradient(135deg, #34307b, #2a2562) !important;
+      border-top: 4px solid #34307b !important;
+      color: white !important;
+
+      .testimonial-content p,
+      .testimonial-author .author-info h4,
+      .testimonial-author .author-info p {
+        color: white !important;
+      }
+
+      .testimonial-author .author-avatar {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      .quote-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(230, 83, 29, 0.05) 0%,
+        rgba(0, 113, 66, 0.05) 50%,
+        rgba(52, 48, 123, 0.05) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    &:hover {
+      transform: translateY(-4px); // Más sutil
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18); // Sombra consistente con el sistema
+      // Ensure hover effects stay within container bounds
+      will-change: transform, box-shadow;
+      contain: layout style paint;
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    // Disable hover effects on touch devices to prevent sticky hover states
+    @media (hover: none) and (pointer: coarse) {
+      &:hover {
+        transform: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+        &::before {
+          opacity: 0;
+        }
+      }
+    }
+
+    .testimonial-content {
+      position: relative;
+      padding-left: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+
+      .quote-icon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 1.5rem;
+        color: var(--color-vivid-orange);
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+      }
+
+      p {
+        font-style: italic;
+        font-family: var(--font-family-primary); // Tipografía consistente
+        font-size: var(--font-size-base); // Usar variable del sistema
+        line-height: 1.6;
+        margin-top: 5px;
+        color: var(--color-text-light); // Usar variable del sistema
+      }
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+
+      .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: var(--spacing-sm);
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+        // Default avatar styling - colors are handled by parent card
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .author-info {
+        h4 {
+          font-size: var(--font-size-base); // Usar variable del sistema
+          font-family: var(--font-family-heading); // Tipografía consistente
+          font-weight: var(--font-weight-medium); // Usar variable del sistema
+          color: var(--color-cashmere); // Usar variable del sistema
+          margin-bottom: 2px;
+        }
+
+        p {
+          font-size: var(--font-size-small); // Usar variable del sistema
+          font-family: var(--font-family-primary); // Tipografía consistente
+          color: var(--color-text-light); // Usar variable del sistema
+          opacity: 0.7;
+        }
+      }
+    }
+
+    // Responsive adjustments for testimonial cards
+    @include mixins.media-breakpoint-down(md) {
+      padding: var(--spacing-lg);
+
+      .testimonial-content {
+        padding-left: var(--spacing-md);
+
+        .quote-icon {
+          width: 25px;
+          height: 25px;
+          font-size: 1.3rem;
+        }
+
+        p {
+          font-size: var(--font-size-small);
+        }
+      }
+
+      .testimonial-author {
+        .author-avatar {
+          width: 45px;
+          height: 45px;
+          font-size: 1.3rem;
+        }
+
+        .author-info {
+          h4 {
+            font-size: var(--font-size-small);
+          }
+
+          p {
+            font-size: var(--font-size-xs);
+          }
+        }
+      }
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      padding: var(--spacing-md);
+
+      .testimonial-content {
+        padding-left: var(--spacing-sm);
+
+        .quote-icon {
+          width: 20px;
+          height: 20px;
+          font-size: 1.1rem;
+        }
+
+        p {
+          font-size: var(--font-size-small);
+        }
+      }
+
+      .testimonial-author {
+        .author-avatar {
+          width: 40px;
+          height: 40px;
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+}
+
+// Fun Learning Section
+.fun-learning {
+  background-color: transparent; // Changed to transparent to show the background shapes
+  padding: var(--spacing-xxl) 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-lg) 0;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  @media (max-width: 575px) {
+    padding: var(--spacing-md) 0;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+
+    @media (max-width: 768px) {
+      padding: 0 var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media (max-width: 575px) {
+      padding: 0 var(--spacing-sm);
+    }
+  }
+
+  .fun-learning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+
+    @include mixins.media-breakpoint-down(lg) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md);
+    }
+
+    @include mixins.media-breakpoint-down(xs) {
+      gap: var(--spacing-sm);
+    }
+
+    // Ensure desktop grid shows brand colors correctly with maximum specificity
+    @media (min-width: 769px) {
+      .fun-learning-card:nth-child(3n+1) {
+        background: linear-gradient(135deg, var(--color-vivid-orange), color.adjust(#e6531d, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-vivid-orange) !important;
+        color: white !important;
+
+        .card-icon {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        h3, p {
+          color: white !important;
+        }
+      }
+
+      .fun-learning-card:nth-child(3n+2) {
+        background: linear-gradient(135deg, var(--color-forest-green), color.adjust(#007142, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-forest-green) !important;
+        color: white !important;
+
+        .card-icon {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        h3, p {
+          color: white !important;
+        }
+      }
+
+      .fun-learning-card:nth-child(3n+3) {
+        background: linear-gradient(135deg, var(--color-deep-koamaru), color.adjust(#34307b, $lightness: -10%)) !important;
+        border-top: 4px solid var(--color-deep-koamaru) !important;
+        color: white !important;
+
+        .card-icon {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+          color: white !important;
+        }
+
+        h3, p {
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  // BASE FUN LEARNING CARD CLASS - Brand color rotation implementation
+  .fun-learning-card {
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: all var(--transition-normal) ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    background: var(--color-background-light); // Default background
+
+    // BRAND COLOR ROTATION - Orange cards (1st, 4th, 7th, etc.)
+    &:nth-child(3n+1) {
+      background: linear-gradient(135deg, #e6531d, #d14a1a) !important;
+      border-top: 4px solid #e6531d !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    // BRAND COLOR ROTATION - Green cards (2nd, 5th, 8th, etc.)
+    &:nth-child(3n+2) {
+      background: linear-gradient(135deg, #007142, #005a35) !important;
+      border-top: 4px solid #007142 !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    // BRAND COLOR ROTATION - Purple cards (3rd, 6th, 9th, etc.)
+    &:nth-child(3n+3) {
+      background: linear-gradient(135deg, #34307b, #2a2562) !important;
+      border-top: 4px solid #34307b !important;
+      color: white !important;
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+      }
+
+      h3, p {
+        color: white !important;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        135deg,
+        rgba(230, 83, 29, 0.05) 0%,
+        rgba(0, 113, 66, 0.05) 50%,
+        rgba(52, 48, 123, 0.05) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+      // Ensure hover effects stay within container bounds
+      will-change: transform, box-shadow;
+      contain: layout style paint;
+
+      &::before {
+        opacity: 1;
+      }
+
+      .card-icon {
+        transform: scale(1.05);
+      }
+    }
+
+    // Disable hover effects on touch devices to prevent sticky hover states
+    @media (hover: none) and (pointer: coarse) {
+      &:hover {
+        transform: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+        &::before {
+          opacity: 0;
+        }
+      }
+    }
+
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-md);
+      font-size: 2.5rem;
+      color: white !important;
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform var(--transition-normal) ease;
+
+      i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: white !important;
+      }
+    }
+
+    h3 {
+      font-size: var(--font-size-h4);
+      font-family: var(--font-family-heading);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--spacing-sm);
+      color: var(--color-cashmere);
+    }
+
+    p {
+      opacity: 0.9;
+      line-height: 1.6;
+      font-family: var(--font-family-primary);
+      font-size: var(--font-size-base);
+      color: var(--color-text-light);
+    }
+
+
+
+    // Responsive adjustments for fun learning cards
+    @include mixins.media-breakpoint-down(md) {
+      padding: var(--spacing-lg);
+
+      .card-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 2.2rem;
+        margin-bottom: var(--spacing-sm);
+      }
+
+      h3 {
+        font-size: var(--font-size-h5);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      p {
+        font-size: var(--font-size-small);
+      }
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      padding: var(--spacing-md);
+
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: var(--font-size-h6);
+      }
+
+      p {
+        font-size: var(--font-size-small);
+      }
+    }
+
+    @include mixins.media-breakpoint-down(xs) {
+      padding: var(--spacing-sm);
+
+      .card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+        margin-bottom: var(--spacing-xs);
+      }
+
+      h3 {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      p {
+        font-size: var(--font-size-xs);
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// CTA Section
+.cta-section {
+  background-color: transparent; // Changed to transparent to show the background shapes
+  padding: var(--spacing-xxl) 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh; // Ensure full viewport height
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform; // Optimize for GPU acceleration
+  transform: translateZ(0); // Force hardware acceleration
+  backface-visibility: hidden; // Prevent flickering
+  perspective: 1000px; // Enhance 3D rendering
+
+  // Removed gradient background since we now have the SVG shapes
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    transform: translateZ(0); // Force hardware acceleration
+    will-change: transform; // Optimize for GPU acceleration
+
+    // Move CTA content much lower on mobile for better centering
+    @include mixins.media-breakpoint-down(md) {
+      padding-top: 30vh; // Move content lower for better centering
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      padding-top: 35vh; // Move content even lower on small mobile
+    }
+
+    @media (max-width: 320px) {
+      padding-top: 40vh; // Move content to bottom half of screen
+    }
+  }
+
+  .cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    transform: translateZ(0); // Force hardware acceleration
+    will-change: transform; // Optimize for GPU acceleration
+    position: relative;
+    z-index: 10; // Higher z-index to ensure it's above the background
+    padding: var(--spacing-xl);
+    // Removed black background container and related styles
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem); // Responsive font size
+      font-family: var(--font-family-heading); // Tipografía consistente
+      margin-bottom: var(--spacing-md);
+      color: var(--color-cashmere); // Usar variable del sistema
+      font-weight: var(--font-weight-bold); // Usar variable del sistema
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); // Add subtle text shadow
+      position: relative;
+      display: inline-block;
+
+      // Add decorative underline
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(
+          to right,
+          var(--color-vivid-orange),
+          var(--color-deep-koamaru)
+        );
+        border-radius: 3px;
+      }
+
+      @include mixins.media-breakpoint-down(md) {
+        font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      }
+
+      @include mixins.media-breakpoint-down(sm) {
+        font-size: clamp(1.6rem, 3vw, 2rem);
+      }
+    }
+
+    p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem); // Responsive font size
+      font-family: var(--font-family-primary); // Tipografía consistente
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.9;
+      color: var(--color-text-light); // Usar variable del sistema
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+
+      @include mixins.media-breakpoint-down(md) {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        max-width: 100%;
+      }
+    }
+
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-lg); // Más espacio entre botones
+      margin-top: var(--spacing-xl); // Más espacio arriba
+      flex-wrap: wrap; // Permitir wrap en pantallas pequeñas
+
+      .btn {
+        padding: 0.8em 1.6em; // Usar em para escalabilidad
+        font-size: var(--font-size-large); // Usar variable del sistema
+        font-weight: var(--font-weight-medium); // Usar variable del sistema
+        border-radius: var(--border-radius-lg); // Usar variable del sistema
+        transition: all var(--transition-normal) ease; // Usar variable del sistema
+        transform: translateZ(0); // Force hardware acceleration
+
+        &.btn-primary {
+          background: var(--color-vivid-orange); // Usar color sólido consistente
+          border: none;
+          color: white;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra consistente con el sistema
+
+          &:hover {
+            background-color: color.adjust(#e6531d, $lightness: -10%);
+            transform: translateY(-2px); // Más sutil
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+          }
+        }
+
+        &.btn-secondary {
+          background: var(--color-forest-green); // Usar color sólido consistente
+          border: none;
+          color: white;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra consistente con el sistema
+
+          &:hover {
+            background-color: color.adjust(#007142, $lightness: -10%);
+            transform: translateY(-2px); // Más sutil
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+
+      @include mixins.media-breakpoint-down(md) {
+        gap: var(--spacing-md);
+      }
+
+      @include mixins.media-breakpoint-down(sm) {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem; // Better spacing between buttons
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 1rem; // Better padding for mobile
+
+        .btn {
+          width: 100%;
+          max-width: 280px;
+          min-width: auto;
+          margin: 0 auto;
+          min-height: 50px; // Larger buttons for better touch
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      // Extra small screens - ensure perfect centering
+      @media (max-width: 575px) {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem; // Generous spacing between buttons
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 1rem; // Proper padding to prevent edge collision
+
+        .btn {
+          width: 100%;
+          max-width: 280px; // Optimal button width
+          margin: 0 auto;
+          min-height: 52px; // Larger buttons for better usability
+          font-size: 1rem; // Larger text
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      // Very small screens (320px)
+      @media (max-width: 320px) {
+        padding: 0 0.75rem;
+
+        .btn {
+          max-width: 260px;
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+}
+
+// Stack element effect
+.stack-element {
+  position: relative;
+  z-index: 1;
+
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    border-radius: inherit;
+    background-color: inherit;
+    z-index: -1;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  &::before {
+    top: 5px;
+    left: 5px;
+    right: -5px;
+    bottom: -5px;
+    opacity: 0.3;
+  }
+
+  &::after {
+    top: 10px;
+    left: 10px;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.15;
+  }
+
+  &:hover {
+    &::before {
+      transform: translate(-2px, -2px);
+    }
+
+    &::after {
+      transform: translate(-4px, -4px);
+    }
+  }
+}

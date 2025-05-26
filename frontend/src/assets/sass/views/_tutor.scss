@@ -1,0 +1,224 @@
+/*
+ * Tutor view styles
+ */
+@use 'sass:color';
+
+.tutor-view {
+  padding: var(--spacing-lg) 0;
+
+  .tutor-header {
+    margin-bottom: var(--spacing-xl);
+
+    .tutor-title {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .tutor-description {
+      color: var(--color-text-light);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .tutor-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+  }
+
+  .tutor-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+
+    @media (min-width: 992px) {
+      grid-template-columns: 300px 1fr;
+    }
+  }
+
+  .tutor-sidebar {
+    background-color: var(--color-background-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+
+    .tutor-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: var(--color-deep-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--spacing-md);
+      color: white;
+      font-size: 2rem;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .tutor-name {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .tutor-specialty {
+      color: var(--color-text-light);
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .tutor-stats {
+      margin-bottom: var(--spacing-md);
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-xs);
+
+        .stat-label {
+          color: var(--color-text-light);
+        }
+
+        .stat-value {
+          font-weight: var(--font-weight-medium);
+        }
+      }
+    }
+
+    .tutor-nav {
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-sm);
+        color: var(--color-text);
+        text-decoration: none;
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--spacing-xs);
+        transition: background-color var(--transition-normal);
+
+        .nav-icon {
+          margin-right: var(--spacing-sm);
+        }
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        &.active {
+          background-color: var(--color-vivid-orange);
+          color: white;
+        }
+      }
+    }
+  }
+
+  .tutor-content {
+    background-color: var(--color-background-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+
+    .content-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--spacing-md);
+
+      .tab-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+        color: var(--color-text-light);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition-normal);
+
+        &:hover {
+          color: var(--color-text);
+        }
+
+        &.active {
+          color: var(--color-vivid-orange);
+          border-bottom-color: var(--color-vivid-orange);
+        }
+      }
+    }
+
+    .chat-container {
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+
+        .message {
+          margin-bottom: var(--spacing-md);
+          max-width: 80%;
+
+          .message-content {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+          }
+
+          .message-time {
+            font-size: var(--font-size-small);
+            color: var(--color-text-light);
+            margin-top: var(--spacing-xs);
+          }
+
+          &.user-message {
+            margin-left: auto;
+
+            .message-content {
+              background-color: var(--color-vivid-orange);
+              color: white;
+              border-radius: var(--border-radius-md) var(--border-radius-md) 0 var(--border-radius-md);
+            }
+          }
+
+          &.tutor-message {
+            margin-right: auto;
+
+            .message-content {
+              background-color: rgba(255, 255, 255, 0.1);
+              border-radius: var(--border-radius-md) var(--border-radius-md) var(--border-radius-md) 0;
+            }
+          }
+        }
+      }
+
+      .chat-input {
+        display: flex;
+        gap: var(--spacing-sm);
+
+        .input-field {
+          flex: 1;
+          padding: var(--spacing-sm) var(--spacing-md);
+          background-color: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--color-border);
+          border-radius: var(--border-radius-md);
+          color: var(--color-text);
+
+          &:focus {
+            border-color: var(--color-vivid-orange);
+            outline: none;
+          }
+        }
+
+        .send-button {
+          background-color: var(--color-vivid-orange);
+          color: white;
+          border: none;
+          border-radius: var(--border-radius-md);
+          padding: var(--spacing-sm) var(--spacing-md);
+          cursor: pointer;
+          transition: background-color var(--transition-normal);
+
+          &:hover {
+            background-color: color.adjust(#e6531d, $lightness: -10%);
+          }
+        }
+      }
+    }
+  }
+}

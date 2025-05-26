@@ -1,0 +1,46 @@
+/*
+ * Functions
+ * Sass functions for the application
+ */
+
+@use "sass:map";
+
+// Convert pixels to rem
+@function rem($pixels, $context: 16) {
+  @return ($pixels / $context) * 1rem;
+}
+
+// Convert pixels to em
+@function em($pixels, $context: 16) {
+  @return ($pixels / $context) * 1em;
+}
+
+// Get color from map
+@function color($color-name) {
+  @return var(--color-#{$color-name});
+}
+
+// Lighten color by percentage
+@function lighten-color($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+// Darken color by percentage
+@function darken-color($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+// Z-index function
+@function z-index($key) {
+  @return var(--z-index-#{$key});
+}
+
+// Spacing function
+@function spacing($key) {
+  @return var(--spacing-#{$key});
+}
+
+// Get breakpoint value
+@function breakpoint($key) {
+  @return map.get($breakpoints, $key);
+}

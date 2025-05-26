@@ -1,0 +1,509 @@
+/*
+ * Floating Cards Design for How It Works Section
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+@use "sass:math";
+
+// How It Works Section with Floating Cards
+.how-it-works {
+  background-color: transparent; /* Transparent to match other sections */
+  padding: var(--spacing-xxl) 0;
+  position: relative;
+  overflow: hidden; /* Hide any potential scrollbars */
+  min-height: auto; /* Natural height based on content */
+  height: auto; /* Auto height to fit content */
+  width: 100%; /* Full width */
+  display: block; /* Normal block layout */
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 5;
+
+  /* Hide scrollbars in all browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+    position: relative;
+    width: 100%;
+    overflow: hidden; /* Hide any potential scrollbars */
+
+    /* Hide scrollbars in all browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+  }
+
+  // Section title styles - Usar sistema de diseño consistente
+  .section-title {
+    color: var(--color-cashmere); // Usar variable del sistema
+    font-family: var(--font-family-heading); // Tipografía consistente
+    font-weight: var(--font-weight-bold); // Usar variable del sistema
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 3rem); // Responsive font size
+    margin-bottom: var(--spacing-xl); // Increased spacing
+    opacity: 1 !important;
+    position: relative;
+    visibility: visible !important;
+
+    // Add decorative underline
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(
+        to right,
+        var(--color-vivid-orange),
+        var(--color-forest-green),
+        var(--color-deep-koamaru)
+      );
+      border-radius: 3px;
+    }
+  }
+
+  .section-subtitle {
+    text-align: center;
+    margin-bottom: var(--spacing-xxl); // Increased spacing significantly
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--color-text-light); // Usar variable del sistema
+    font-family: var(--font-family-primary); // Tipografía consistente
+    opacity: 0.9;
+    font-size: clamp(1rem, 2.5vw, 1.3rem); // Responsive font size
+    font-weight: var(--font-weight-normal); // Usar variable del sistema
+
+    // Extra spacing on mobile between title and subtitle
+    @include mixins.media-breakpoint-down(md) {
+      margin-top: var(--spacing-xl); // More space from title
+      margin-bottom: var(--spacing-xl);
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      margin-top: var(--spacing-xxl); // Even more space on small mobile
+      margin-bottom: var(--spacing-lg);
+    }
+  }
+
+  // Floating Cards Container
+  .floating-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) 0;
+    perspective: 1000px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    overflow: hidden; /* Hide any potential scrollbars */
+    min-height: auto; /* Natural height based on content */
+    height: auto; /* Auto height to fit all cards */
+
+    /* Hide scrollbars in all browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+  }
+
+  // Base Floating Card - Standardized to match other sections
+  .floating-card {
+    width: calc(33.333% - var(--spacing-lg));
+    min-height: 320px; // Match other card sections
+    max-height: none; // Allow natural height expansion
+    position: relative;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl); // Match other sections padding
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); // Consistent shadow
+    overflow: hidden;
+    transition: all var(--transition-normal) ease; // Simplified transition
+    border: 1px solid var(--color-border);
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-bottom: var(--spacing-md);
+    box-sizing: border-box;
+    background: var(--color-background-light); // Default background like other cards
+
+    /* Hide scrollbars in all browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+
+    // Apply brand color backgrounds based on card position
+    &:nth-child(5n+1) {
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid #e6531d;
+      color: white;
+
+      .card-content h3,
+      .card-content p {
+        color: white;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .card-number {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+
+    &:nth-child(5n+2) {
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%));
+      border-top: 4px solid #007142;
+      color: white;
+
+      .card-content h3,
+      .card-content p {
+        color: white;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .card-number {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+
+    &:nth-child(5n+3) {
+      background: linear-gradient(135deg, #34307b, color.adjust(#34307b, $lightness: -10%));
+      border-top: 4px solid #34307b;
+      color: white;
+
+      .card-content h3,
+      .card-content p {
+        color: white;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .card-number {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+
+    &:nth-child(5n+4) {
+      background: linear-gradient(135deg, #e6531d, color.adjust(#e6531d, $lightness: -10%));
+      border-top: 4px solid #e6531d;
+      color: white;
+
+      .card-content h3,
+      .card-content p {
+        color: white;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .card-number {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+
+    &:nth-child(5n+5) {
+      background: linear-gradient(135deg, #007142, color.adjust(#007142, $lightness: -10%));
+      border-top: 4px solid #007142;
+      color: white;
+
+      .card-content h3,
+      .card-content p {
+        color: white;
+      }
+
+      .card-icon {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .card-number {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+
+    @include mixins.media-breakpoint-down(lg) {
+      width: calc(50% - var(--spacing-md));
+      min-height: 280px; // Reduced height for better fit
+    }
+
+    @include mixins.media-breakpoint-down(md) {
+      width: 100%;
+      margin-bottom: var(--spacing-md); // Reduced margin
+      min-height: 260px; // Reduced height
+      padding: var(--spacing-md); // Reduced padding
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      padding: var(--spacing-sm); // Further reduced padding
+      min-height: 240px; // Reduced height for mobile
+      margin-bottom: var(--spacing-sm); // Reduced margin
+    }
+
+    // Extra small devices (320px and up)
+    @include mixins.media-breakpoint-down(xs) {
+      padding: var(--spacing-xs); // Minimal padding for very small screens
+      min-height: 220px; // Compact height for mobile
+      margin-bottom: var(--spacing-xs); // Minimal margin
+
+      .card-content {
+        .card-icon {
+          width: 45px;
+          height: 45px;
+          margin-bottom: var(--spacing-xs);
+          font-size: 1.4rem; // Smaller icon
+
+          i {
+            font-size: 1.4rem;
+          }
+        }
+
+        h3 {
+          font-size: var(--font-size-small);
+          margin-bottom: var(--spacing-xs);
+          line-height: 1.2; // Tighter line height
+        }
+
+        p {
+          font-size: var(--font-size-xs);
+          line-height: 1.3; // Compact line height
+        }
+      }
+    }
+
+    // Card Number
+    .card-number {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: white;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    // Card Content
+    .card-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      // Icon
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: var(--spacing-sm);
+        color: #0D0D0D; /* Changed to black as requested */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+
+        &.orange-gradient {
+          background: linear-gradient(135deg, #e6531d, #ff7e47);
+        }
+
+        &.green-gradient {
+          background: linear-gradient(135deg, #007142, #00a15f);
+        }
+
+        &.purple-gradient {
+          background: linear-gradient(135deg, #34307b, #5a54c9);
+        }
+      }
+
+      // Title
+      h3 {
+        font-size: var(--font-size-h4); // Usar variable del sistema
+        font-family: var(--font-family-heading); // Tipografía consistente
+        margin-bottom: var(--spacing-sm);
+        color: var(--color-cashmere); // Usar variable del sistema
+        font-weight: var(--font-weight-bold); // Usar variable del sistema
+      }
+
+      // Description
+      p {
+        color: var(--color-text-light); // Usar variable del sistema
+        font-family: var(--font-family-primary); // Tipografía consistente
+        font-size: var(--font-size-small); // Usar variable del sistema
+        line-height: 1.5; // Mejor legibilidad
+        margin: 0;
+        opacity: 0.9;
+      }
+    }
+
+    // Card Glow Effect
+    .card-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      opacity: 0.1;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+
+      &.orange-glow {
+        background: radial-gradient(circle at center, rgba(230, 83, 29, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+      }
+
+      &.green-glow {
+        background: radial-gradient(circle at center, rgba(0, 113, 66, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+      }
+
+      &.purple-glow {
+        background: radial-gradient(circle at center, rgba(52, 48, 123, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+      }
+    }
+
+    // Hover Effects - Standardized to match other sections
+    &:hover {
+      transform: translateY(-4px); // Match other sections
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18); // Match other sections
+      will-change: transform, box-shadow;
+      contain: layout style paint;
+
+      .card-number {
+        transform: scale(1.05);
+      }
+
+      .card-icon {
+        transform: scale(1.05);
+      }
+
+      .card-glow {
+        opacity: 0.2;
+      }
+    }
+
+    // Disable hover effects on touch devices to prevent sticky hover states
+    @media (hover: none) and (pointer: coarse) {
+      &:hover {
+        transform: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+        .card-number {
+          transform: none;
+        }
+
+        .card-icon {
+          transform: none;
+        }
+
+        .card-glow {
+          opacity: 0.1;
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments for floating cards container
+  @include mixins.media-breakpoint-down(md) {
+    padding: var(--spacing-lg) 0;
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      margin-bottom: var(--spacing-sm); // Reduced margin
+    }
+
+    .section-subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      margin-bottom: var(--spacing-md); // Reduced margin
+    }
+
+    .floating-cards-container {
+      gap: var(--spacing-md); // Reduced gap
+      padding: var(--spacing-md) 0; // Reduced padding
+    }
+  }
+
+  @include mixins.media-breakpoint-down(sm) {
+    padding: var(--spacing-md) 0;
+
+    .section-title {
+      margin-bottom: var(--spacing-xs); // Minimal margin
+    }
+
+    .section-subtitle {
+      margin-bottom: var(--spacing-sm); // Minimal margin
+    }
+
+    .floating-cards-container {
+      gap: var(--spacing-sm); // Smaller gap for mobile
+      padding: var(--spacing-sm) 0; // Reduced padding
+    }
+  }
+
+  @include mixins.media-breakpoint-down(xs) {
+    padding: var(--spacing-sm) 0; // Minimal padding for very small screens
+
+    .floating-cards-container {
+      gap: var(--spacing-xs); // Minimal gap
+      padding: var(--spacing-xs) 0; // Minimal padding
+    }
+  }
+}
+
+// Animations for floating cards
+
+// Float reveal animation
+[data-animation="float-reveal"] {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+
+  &.animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

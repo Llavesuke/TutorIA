@@ -1,0 +1,235 @@
+/*
+ * Manage Users Page
+ * Styles for the manage users page with professor and student cards
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+
+.manage-users-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  color: var(--color-cashmere);
+  font-family: var(--font-family-heading);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
+  z-index: 1;
+  pointer-events: none;
+}
+
+.manage-main {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 0.5rem;
+    color: var(--color-cashmere);
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: rgba(254, 240, 209, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.management-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.management-card {
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, background-color 0.3s ease;
+  text-decoration: none;
+  color: var(--color-cashmere);
+  min-height: 279px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+
+  // Pseudo-elemento para el efecto de brillo
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+    &::before {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+
+    // Efecto de sombra interna
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+
+    i {
+      color: white;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &:hover .card-icon {
+    transform: translateY(-5px) scale(1.1);
+
+    &::after {
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+    }
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  // Tarjeta de profesores - Verde
+  &:nth-child(1) {
+    background-color: var(--color-forest-green);
+
+    &:hover {
+      background-color: #005e36;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-icon {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // Tarjeta de estudiantes - Naranja
+  &:nth-child(2) {
+    background-color: var(--color-vivid-orange);
+
+    &:hover {
+      background-color: #d4471a;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-icon {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: var(--font-weight-bold);
+      margin-bottom: 0.75rem;
+      transition: transform 0.3s ease, letter-spacing 0.3s ease;
+    }
+
+    p {
+      color: rgba(254, 240, 209, 0.7);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  &:hover .card-content {
+    h3 {
+      transform: translateY(-2px);
+    }
+
+    p {
+      opacity: 0.9;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-section {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .management-cards {
+    grid-template-columns: 1fr;
+  }
+}

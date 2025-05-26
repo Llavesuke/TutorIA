@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tutoria-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DB_CONNECTION_STRING=postgresql://postgres.xxxceuscnfcxpfgnmdfe:tutorIA12@aws-0-us-east-2.pooler.supabase.com:6543/postgres
+      - PORT=3000
+      - SUPABASE_URL=https://xxxceuscnfcxpfgnmdfe.supabase.co
+      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGNldXNjbmZjeHBmZ25tZGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMjY2ODcsImV4cCI6MjA2MjcwMjY4N30.6RYRndtDsvVff4wOReKNutCnH0-hVxO2tvuuMeMH6rg
+      - FRONTEND_URL=http://localhost:5173
+      - CLOUDINARY_CLOUD_NAME=drhxjofkq
+      - CLOUDINARY_API_KEY=982762731681915
+      - CLOUDINARY_API_SECRET=g2XbZZ2VT3JKp1PzNr4Jbtq0uVk
+      - GEMINI_API_KEY=AIzaSyBP7_EVqHLldEZEfAEnFEouZqH2Zraq6wU
+      # Email configuration for Gmail
+      - EMAIL_USER=llavesukeprogram@gmail.com
+      - EMAIL_PASSWORD=lemattndbhgylfdc
+    networks:
+      - tutoria-network
+    restart: unless-stopped
+    command: sh -c "npm install && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tutoria-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_SUPABASE_URL=https://xxxceuscnfcxpfgnmdfe.supabase.co
+      - VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGNldXNjbmZjeHBmZ25tZGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMjY2ODcsImV4cCI6MjA2MjcwMjY4N30.6RYRndtDsvVff4wOReKNutCnH0-hVxO2tvuuMeMH6rg
+      # Use the service name for Docker networking
+      - VITE_BACKEND_URL=http://backend:3000
+    depends_on:
+      - backend
+    networks:
+      - tutoria-network
+    restart: unless-stopped
+    # Add extra hosts to resolve backend in Docker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  tutoria-network:
+    driver: bridge

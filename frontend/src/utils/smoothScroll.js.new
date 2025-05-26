@@ -1,0 +1,461 @@
+/**
+ * Implementación simplificada de scroll suave con Lenis
+ * https://github.com/studio-freight/lenis
+ *
+ * Características:
+ * - Scroll suave optimizado para rendimiento
+ * - Navegación por secciones
+ * - Integración con GSAP
+ */
+
+import Lenis from '@studio-freight/lenis';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/Observer';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
+// Registrar plugins de GSAP
+gsap.registerPlugin(ScrollTrigger, Observer, ScrollToPlugin);
+
+// Configuración optimizada para el comportamiento del scroll (snap perfecto)
+const SCROLL_CONFIG = {
+  duration: 0.8,             // Duración reducida para scroll más rápido y responsivo
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing mejorado para snap
+  wheelMultiplier: 1.0,      // Sensibilidad aumentada para mejor respuesta
+  touchMultiplier: 1.0,      // Sensibilidad aumentada para mejor respuesta
+  enableSnapping: true,      // Mantener snap scrolling
+  snapDuration: 0.6,         // Duración reducida para snap más rápido
+  throttleDelay: 1000 / 60,  // Reducido a 60 FPS para mejor rendimiento
+  snapThreshold: 0.2,        // Umbral aumentado para activar snap más fácilmente
+  debounceDelay: 50,         // Aumentado para mejor estabilidad
+  lockTimeout: 800,          // Tiempo de bloqueo aumentado para evitar scroll accidental
+};
+
+// Estado simplificado del scroll
+let scrollState = {
+  activeSection: null,       // Sección actualmente activa
+  isSnapping: false,         // Si estamos en una animación de snap
+};
+
+// Cache para secciones
+let sectionCache = null;
+let lastDetectionTime = 0;
+
+/**
+ * Inicializa Lenis para scroll suave con integración GSAP
+ * @returns {Lenis} Instancia de Lenis
+ */
+export function initSmoothScroll() {
+  // Crear instancia de Lenis con opciones optimizadas para snap scroll perfecto
+  const lenis = new Lenis({
+    duration: SCROLL_CONFIG.duration,
+    easing: SCROLL_CONFIG.easing,
+    orientation: 'vertical',
+    smoothWheel: true,
+    smoothTouch: true,
+    infinite: false,
+    wheelMultiplier: SCROLL_CONFIG.wheelMultiplier,
+    touchMultiplier: SCROLL_CONFIG.touchMultiplier,
+    syncTouch: true,
+    syncTouchLerp: 0.03, // Reducido para mayor estabilidad
+    lerp: 0.03, // Reducido para mayor estabilidad
+    gestureOrientation: 'vertical',
+    normalizeWheel: true, // Normalizar eventos de rueda para consistencia
+    wrapper: window, // Especificar el wrapper para mejor control
+    content: document.documentElement, // Especificar el contenido para mejor control
+  });
+
+  // Configurar detección de secciones activas (sin throttling excesivo)
+  let scrollThrottleTimer = null;
+
+  // Optimizar eventos de scroll para mejor rendimiento y navegación
+  let lastScrollTime = 0;
+  const scrollUpdateInterval = 100; // Intervalo reducido para mejor respuesta
+
+  lenis.on('scroll', (e) => {
+    const now = performance.now();
+
+    // Actualizar ScrollTrigger solo cuando sea necesario
+    if (now - lastScrollTime > scrollUpdateInterval) {
+      // Actualizar ScrollTrigger con menos frecuencia
+      ScrollTrigger.update();
+      lastScrollTime = now;
+
+      // Detección de sección activa solo cuando no estamos en snap
+      if (!scrollState.isSnapping) {
+        detectActiveSection();
+      }
+
+      // Asegurar que todas las secciones sean visibles
+      if (sectionCache) {
+        sectionCache.forEach(section => {
+          if (section.style.opacity !== '1') {
+            section.style.opacity = '1';
+            section.style.visibility = 'visible';
+          }
+        });
+      }
+    }
+  });
+
+  // Integrar con GSAP ticker para actualizaciones suaves
+  // Optimizar FPS para mejor rendimiento
+  gsap.ticker.fps(60);
+
+  // Función simplificada para actualizar Lenis
+  // Eliminamos el throttling manual para evitar problemas de sincronización
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+
+  // Configurar navegación por anclas
+  setupAnchorNavigation(lenis);
+
+  // Configurar snap scrolling si está habilitado
+  if (SCROLL_CONFIG.enableSnapping) {
+    setupSectionSnapping(lenis);
+  }
+
+  // Configurar indicador de scroll
+  setupScrollIndicator(lenis);
+
+  return lenis;
+}
+
+/**
+ * Detecta la sección activa basada en la visibilidad (optimizado para rendimiento)
+ */
+function detectActiveSection() {
+  // Usar caché de secciones si existe
+  if (!sectionCache) {
+    sectionCache = Array.from(document.querySelectorAll('section[id]'));
+  }
+
+  // Si no hay secciones, salir temprano
+  if (sectionCache.length === 0) return;
+
+  // Optimización: Almacenar altura de viewport
+  const viewportHeight = window.innerHeight;
+
+  // Optimización: Usar IntersectionObserver si está disponible
+  if (window.IntersectionObserver && !window._sectionObserver) {
+    // Crear observer una sola vez
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: [0.1, 0.2, 0.3, 0.4, 0.5]
+    };
+
+    let maxVisibility = 0;
+    let mostVisibleSection = null;
+
+    window._sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > maxVisibility) {
+          maxVisibility = entry.intersectionRatio;
+          mostVisibleSection = entry.target;
+        }
+      });
+
+      // Actualizar sección activa si encontramos una
+      if (mostVisibleSection && mostVisibleSection !== scrollState.activeSection) {
+        updateActiveSection(mostVisibleSection);
+      }
+    }, options);
+
+    // Observar todas las secciones
+    sectionCache.forEach(section => {
+      window._sectionObserver.observe(section);
+    });
+
+    return;
+  }
+
+  // Fallback al método tradicional si IntersectionObserver no está disponible
+  let currentSection = null;
+  let maxVisibility = 0;
+
+  // Usar un bucle for tradicional para mejor rendimiento
+  for (let i = 0; i < sectionCache.length; i++) {
+    const section = sectionCache[i];
+    const rect = section.getBoundingClientRect();
+
+    // Cálculos simplificados para mejor rendimiento
+    const visibleTop = Math.max(0, rect.top);
+    const visibleBottom = Math.min(viewportHeight, rect.bottom);
+    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+    const visibilityRatio = visibleHeight / viewportHeight;
+
+    if (visibilityRatio > 0.2 && visibilityRatio > maxVisibility) {
+      maxVisibility = visibilityRatio;
+      currentSection = section;
+    }
+  }
+
+  if (currentSection && currentSection !== scrollState.activeSection) {
+    updateActiveSection(currentSection);
+  }
+}
+
+// Función separada para actualizar la sección activa (mejora rendimiento y navegación)
+function updateActiveSection(currentSection) {
+  // Actualizar sección activa
+  if (scrollState.activeSection) {
+    scrollState.activeSection.classList.remove('active');
+  }
+
+  // Asegurar que la sección sea visible con optimizaciones anti-flickering
+  currentSection.style.opacity = '1';
+  currentSection.style.visibility = 'visible';
+  currentSection.style.display = 'flex';
+  currentSection.classList.add('active');
+
+  // Optimizaciones para prevenir flickering
+  currentSection.style.willChange = 'transform';
+  currentSection.style.transform = 'translateZ(0)';
+  currentSection.style.backfaceVisibility = 'hidden';
+
+  // Optimizaciones específicas para la sección CTA
+  if (currentSection.id === 'cta') {
+    currentSection.style.zIndex = '10';
+
+    // Simplificado para evitar flickering
+    const ctaContent = currentSection.querySelector('.cta-content');
+    if (ctaContent) {
+      ctaContent.style.opacity = '1';
+      ctaContent.style.visibility = 'visible';
+    }
+  }
+
+  scrollState.activeSection = currentSection;
+
+  // Asegurar que todas las secciones anteriores también sean visibles
+  if (sectionCache) {
+    const currentIndex = sectionCache.indexOf(currentSection);
+    for (let i = 0; i <= currentIndex; i++) {
+      if (sectionCache[i]) {
+        sectionCache[i].style.opacity = '1';
+        sectionCache[i].style.visibility = 'visible';
+        sectionCache[i].style.display = 'flex';
+
+        // Aplicar optimizaciones anti-flickering a todas las secciones
+        sectionCache[i].style.willChange = 'transform';
+        sectionCache[i].style.transform = 'translateZ(0)';
+        sectionCache[i].style.backfaceVisibility = 'hidden';
+      }
+    }
+  }
+
+  // Disparar evento personalizado para activar animaciones
+  // Usar requestAnimationFrame para mejor rendimiento
+  requestAnimationFrame(() => {
+    const event = new CustomEvent('sectionActivated', {
+      detail: { section: currentSection, id: currentSection.id }
+    });
+    document.dispatchEvent(event);
+  });
+
+  // Actualizar URL sin recargar la página (solo si es necesario)
+  if (currentSection.id && window.location.hash !== `#${currentSection.id}`) {
+    // Usar setTimeout para no bloquear el hilo principal
+    setTimeout(() => {
+      history.replaceState(null, null, `#${currentSection.id}`);
+    }, 0);
+  }
+
+  // Actualizar el indicador de scroll para mostrar la siguiente sección
+  // Usar requestAnimationFrame para mejor rendimiento
+  requestAnimationFrame(() => {
+    updateScrollIndicator(currentSection);
+  });
+}
+
+// Función para actualizar el indicador de scroll
+function updateScrollIndicator(currentSection) {
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (!scrollIndicator) return;
+
+  const sections = sectionCache || Array.from(document.querySelectorAll('section[id]'));
+  const currentIndex = sections.indexOf(currentSection);
+  const nextSection = sections[currentIndex + 1];
+
+  // Actualizar texto para mostrar la siguiente sección o "Volver arriba" si estamos al final
+  if (nextSection) {
+    scrollIndicator.setAttribute('data-next-section', `#${nextSection.id || ''}`);
+    scrollIndicator.querySelector('.scroll-text').textContent = 'Next Section';
+  } else {
+    scrollIndicator.setAttribute('data-next-section', '#hero');
+    scrollIndicator.querySelector('.scroll-text').textContent = 'Back to Top';
+  }
+}
+
+/**
+ * Configura la navegación por anclas
+ * @param {Lenis} lenis - Instancia de Lenis
+ */
+function setupAnchorNavigation(lenis) {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Obtener ID del elemento destino
+      const targetId = this.getAttribute('href');
+
+      // Si ya estamos en una animación, ignorar
+      if (scrollState.isSnapping) return;
+
+      // Si es un enlace vacío o "#", scroll al inicio
+      if (targetId === '#' || targetId === '') {
+        lenis.scrollTo(0, {
+          duration: SCROLL_CONFIG.duration,
+          lock: true
+        });
+        return;
+      }
+
+      // Encontrar elemento destino
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        // Scroll al destino
+        lenis.scrollTo(targetElement, {
+          offset: 0,
+          duration: SCROLL_CONFIG.duration,
+          lock: true
+        });
+      }
+    });
+  });
+}
+
+/**
+ * Configura el indicador de scroll
+ * @param {Lenis} lenis - Instancia de Lenis
+ */
+function setupScrollIndicator(lenis) {
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (!scrollIndicator) return;
+
+  // Centrar el indicador horizontalmente
+  scrollIndicator.style.left = '50%';
+  scrollIndicator.style.transform = 'translateX(-50%)';
+
+  // Añadir animación mejorada al indicador para mayor visibilidad
+  gsap.to(scrollIndicator, {
+    y: 10,
+    duration: 1.2,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+  });
+
+  // Manejar clic en el indicador con mejor feedback visual y navegación mejorada
+  scrollIndicator.addEventListener('click', () => {
+    // Si ya estamos en una animación, ignorar
+    if (scrollState.isSnapping) return;
+
+    // Obtener ID de la sección destino
+    const nextSectionId = scrollIndicator.getAttribute('data-next-section');
+    if (!nextSectionId) return;
+
+    // Encontrar sección destino
+    const nextSection = document.querySelector(nextSectionId);
+    if (!nextSection) return;
+
+    // Establecer flag de snapping
+    scrollState.isSnapping = true;
+
+    // Asegurar que la sección destino esté completamente visible
+    nextSection.style.opacity = '1';
+    nextSection.style.visibility = 'visible';
+    nextSection.style.display = 'flex';
+    nextSection.classList.add('active');
+
+    // Pausar Lenis durante la animación GSAP
+    lenis.stop();
+
+    // Usar GSAP para un scroll más preciso y controlado
+    gsap.to(window, {
+      duration: SCROLL_CONFIG.snapDuration,
+      scrollTo: {
+        y: nextSection,
+        autoKill: false,
+        offsetY: 0
+      },
+      ease: "power2.inOut",
+      onComplete: () => {
+        // Reactivar Lenis
+        lenis.start();
+
+        // Actualizar la sección activa
+        updateActiveSection(nextSection);
+
+        // Resetear flag después de un retraso adecuado
+        setTimeout(() => {
+          scrollState.isSnapping = false;
+        }, SCROLL_CONFIG.lockTimeout);
+      }
+    });
+  });
+}
+
+/**
+ * Configura el snap scrolling para navegación por secciones
+ * @param {Lenis} lenis - Instancia de Lenis
+ */
+function setupSectionSnapping(lenis) {
+  // Implementación simplificada para evitar problemas
+  // Usar caché de secciones si existe
+  const sections = sectionCache || Array.from(document.querySelectorAll('section[id]'));
+
+  // Guardar en caché para reutilizar
+  if (!sectionCache) {
+    sectionCache = sections;
+  }
+
+  // Asegurar que todas las secciones sean visibles
+  sections.forEach(section => {
+    section.style.opacity = '1';
+    section.style.visibility = 'visible';
+    section.style.display = 'flex';
+    section.style.minHeight = '100vh';
+    section.style.height = '100vh';
+
+    // Configuración especial para "How It Works"
+    if (section.id === 'how-it-works') {
+      section.style.overflow = 'visible';
+      section.style.zIndex = '10';
+      section.style.backgroundColor = 'transparent';
+    }
+  });
+}
+
+/**
+ * Destruye la instancia de Lenis y limpia todos los eventos y recursos
+ * @param {Lenis} lenis - Instancia de Lenis a destruir
+ */
+export function destroySmoothScroll(lenis) {
+  if (!lenis) return;
+
+  // Eliminar ticker de GSAP
+  gsap.ticker.remove(lenis.raf);
+
+  // Limpiar IntersectionObserver si existe
+  if (window._sectionObserver) {
+    window._sectionObserver.disconnect();
+    window._sectionObserver = null;
+  }
+
+  // Limpiar caché de secciones
+  if (sectionCache) {
+    sectionCache = null;
+  }
+
+  // Resetear estado
+  scrollState = {
+    activeSection: null,
+    isSnapping: false
+  };
+
+  // Destruir instancia de Lenis
+  lenis.destroy();
+}

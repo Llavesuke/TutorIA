@@ -1,0 +1,213 @@
+/*
+ * Home/Landing Page Styles
+ * Styles specific to the landing page
+ */
+
+@use "../utilities/mixins" as mixins;
+
+// Hero section
+.hero {
+  position: relative;
+  padding: 0; // Remove padding to allow container to control spacing
+  min-height: 100vh; // Ensure full viewport height
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-color: transparent; // Mantener transparente para mostrar las formas de fondo
+  color: var(--color-cashmere); // Cambiado a color claro para mejor contraste en fondo negro
+
+  // Removed the gradient background since we now have the SVG shapes
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+
+    @include mixins.media-breakpoint-down(md) {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+
+  .hero-content {
+    max-width: 600px;
+    flex: 1;
+    align-self: center;
+
+    @include mixins.media-breakpoint-down(md) {
+      text-align: center;
+      margin: 0 auto;
+      order: 1; // Move content above image on mobile
+    }
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.1;
+    margin-bottom: var(--spacing-md);
+
+    @include mixins.media-breakpoint-down(md) {
+      font-size: 2.5rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.9;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+
+    @include mixins.media-breakpoint-down(md) {
+      justify-content: center;
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      flex-direction: column;
+    }
+  }
+
+  .hero-image {
+    position: relative; // Changed from absolute to relative
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 40%;
+    flex: 1;
+
+    @include mixins.media-breakpoint-down(md) {
+      position: relative;
+      max-width: 80%;
+      margin: 0 auto; // Center horizontally
+      order: 2; // Place image below content on mobile
+    }
+  }
+}
+
+// Features section
+.features {
+  padding: var(--spacing-xxl) 0;
+  background-color: transparent; // Mantener transparente para mostrar las formas de fondo
+  color: var(--color-cashmere); // Cambiado a color claro para mejor contraste en fondo negro
+
+  .section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .feature-card {
+    background-color: rgba(255, 255, 255, 0.05); // Cambiado para mejor contraste en fondo negro
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    transition: transform var(--transition-normal);
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background-color: var(--color-vivid-orange);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--spacing-md);
+
+      &.green {
+        background-color: var(--color-deep-green);
+      }
+
+      &.blue {
+        background-color: var(--color-deep-koamaru);
+      }
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .feature-description {
+      opacity: 0.8;
+    }
+  }
+}
+
+// Why TutorIA section
+.why-tutoria {
+  padding: var(--spacing-xxl) 0;
+  background-color: transparent; // Mantener transparente para mostrar las formas de fondo
+  color: var(--color-cashmere); // Cambiado a color claro para mejor contraste en fondo negro
+
+  .section-title {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .benefits-list {
+    margin-bottom: var(--spacing-xl);
+
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+
+      .check-icon {
+        color: var(--color-vivid-orange);
+        margin-right: var(--spacing-sm);
+      }
+    }
+  }
+
+  .benefits-image {
+    max-width: 100%;
+    border-radius: var(--border-radius-lg);
+  }
+}
+
+// Fun learning section
+.fun-learning {
+  padding: var(--spacing-xxl) 0;
+  background-color: transparent; // Mantener transparente para mostrar las formas de fondo
+  color: var(--color-cashmere); // Cambiado a color claro para mejor contraste en fondo negro
+
+  .section-title {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+  }
+
+  .cta-button {
+    display: block;
+    max-width: 300px;
+    margin: var(--spacing-xl) auto 0;
+  }
+}
+
+// Responsive adjustments
+@include mixins.media-breakpoint-down(md) {
+  .hero, .features, .why-tutoria, .fun-learning {
+    padding: var(--spacing-xl) 0;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+  }
+}

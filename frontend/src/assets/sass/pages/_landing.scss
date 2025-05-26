@@ -1,0 +1,967 @@
+/*
+ * Enhanced Landing Page Styles
+ * Professional styles for the immersive landing page with advanced smooth scrolling
+ */
+
+@use "../utilities/mixins" as mixins;
+@use "../utilities/functions" as functions;
+@use "sass:color";
+@use "sass:math";
+
+// CSS Variables for animations and transitions
+:root {
+  // Animation speeds
+  --animation-speed-fast: 0.3s;
+  --animation-speed-normal: 0.5s;
+  --animation-speed-slow: 0.8s;
+
+  // Easing functions
+  --ease-smooth: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  // Scroll-related variables (updated by JS)
+  --scroll-progress: 0;
+  --scroll-direction: 1;
+  --scroll-velocity: 0;
+
+  // 3D perspective
+  --perspective: 1000px;
+  --rotation-limit: 15deg;
+
+  // Blur effects
+  --blur-light: 10px;
+  --blur-medium: 20px;
+  --blur-heavy: 40px;
+
+  // Brand colors with transparency
+  --color-vivid-orange-10: rgba(230, 83, 29, 0.1);
+  --color-vivid-orange-20: rgba(230, 83, 29, 0.2);
+  --color-vivid-orange-50: rgba(230, 83, 29, 0.5);
+
+  --color-deep-green-10: rgba(0, 113, 66, 0.1);
+  --color-deep-green-20: rgba(0, 113, 66, 0.2);
+  --color-deep-green-50: rgba(0, 113, 66, 0.5);
+
+  --color-deep-koamaru-10: rgba(52, 48, 123, 0.1);
+  --color-deep-koamaru-20: rgba(52, 48, 123, 0.2);
+  --color-deep-koamaru-50: rgba(52, 48, 123, 0.5);
+}
+
+// Estilos globales de la landing page
+.landing-page {
+  position: relative;
+  background-color: var(--color-carbon); // Usar variable del sistema de diseño
+  color: var(--color-cashmere); // Color de texto consistente
+  font-family: var(--font-family-primary); // Tipografía consistente
+  overflow-x: hidden;
+  min-height: 100vh;
+  opacity: 0; // Iniciar oculto para animación de entrada
+  scroll-behavior: smooth; // Smooth scrolling for better mobile experience
+  -webkit-overflow-scrolling: touch; // iOS momentum scrolling
+
+  // Dark overlay to reduce brightness
+  .dark-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); // Ajusta la opacidad según necesites
+    z-index: 2; // Por encima del fondo pero debajo del contenido
+    pointer-events: none; // Permite hacer clic a través de la capa
+  }
+
+  // Estilos de sección mejorados para snap scrolling
+  section {
+    position: relative;
+    min-height: 100vh;
+    height: auto; // Changed from 100vh to auto for better mobile support
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xxl) 0;
+    overflow: visible !important; // Forzar visibilidad del contenido
+    opacity: 1 !important; // Forzar visibilidad
+    visibility: visible !important; // Forzar visibilidad
+    transition: transform var(--transition-normal) ease;
+    z-index: 3; // Asegurar que esté por encima del fondo y la capa oscura
+    will-change: transform, opacity; // Optimización para rendimiento
+
+    // Critical: Ensure proper spacing between sections on all devices
+    margin-bottom: 0;
+    box-sizing: border-box;
+
+    // Mobile-first approach: ensure sections don't overlap
+    @media (max-width: 768px) {
+      height: auto;
+      min-height: auto;
+      padding: 3rem 0;
+      margin-bottom: 0;
+
+      // Ensure sections stack properly without overlap
+      &:not(:last-child) {
+        border-bottom: 1px solid transparent;
+      }
+    }
+
+    // Very small screens (320px+)
+    @media (max-width: 480px) {
+      padding: 2rem 0;
+      min-height: auto;
+    }
+
+    // Sección activa
+    &.active {
+      z-index: 4; // Mayor z-index para secciones activas
+      opacity: 1 !important; // Forzar visibilidad
+      visibility: visible !important; // Forzar visibilidad
+    }
+
+    // Asegurar que todas las secciones sean visibles
+    &[id] {
+      visibility: visible !important;
+      opacity: 1 !important;
+      display: flex !important;
+    }
+
+    // Contenedor con ancho máximo
+    .container {
+      width: 100%;
+      max-width: var(--container-max-width); // Usar variable del sistema
+      margin: 0 auto;
+      padding: var(--spacing-lg) var(--spacing-md);
+      position: relative;
+      z-index: 10; // Aumentado para asegurar que esté por encima del fondo
+      box-sizing: border-box;
+
+      // Critical mobile fixes
+      @media (max-width: 768px) {
+        padding: var(--spacing-md) var(--spacing-sm);
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      @media (max-width: 480px) {
+        padding: var(--spacing-sm) var(--spacing-xs);
+        margin: 0 auto;
+      }
+
+      @media (max-width: 360px) {
+        padding: 1rem 0.75rem;
+      }
+    }
+
+    // Ajustes responsivos
+    @include mixins.media-breakpoint-down(md) {
+      padding: var(--spacing-xl) 0;
+
+      .container {
+        padding: var(--spacing-md) var(--spacing-sm);
+        max-width: 100%;
+      }
+    }
+  }
+
+  // Estilos de título de sección
+  .section-title {
+    font-size: var(--font-size-h1); // Usar variable del sistema
+    font-weight: var(--font-weight-bold); // Usar variable del sistema
+    font-family: var(--font-family-heading); // Tipografía consistente
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    text-align: center;
+    color: var(--color-cashmere); // Usar variable del sistema
+    opacity: 1 !important; // Forzar visibilidad
+
+    // Mobile adjustments for better spacing
+    @media (max-width: 768px) {
+      margin-bottom: var(--spacing-md);
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+
+    @media (max-width: 575px) {
+      margin-bottom: var(--spacing-sm);
+      font-size: clamp(1.3rem, 6vw, 2rem);
+    }
+
+    // Resaltado para palabras específicas
+    .highlight, span {
+      color: var(--color-vivid-orange);
+    }
+
+    // Resaltado para TutorIA
+    .tutoria-text {
+      color: var(--color-vivid-orange);
+      font-weight: 900;
+    }
+
+    // Línea decorativa
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(
+        to right,
+        var(--color-vivid-orange),
+        var(--color-deep-koamaru)
+      );
+      border-radius: 2px;
+    }
+
+    // Ajustes responsivos
+    @include mixins.media-breakpoint-down(md) {
+      font-size: var(--font-size-h2);
+    }
+
+    @include mixins.media-breakpoint-down(sm) {
+      font-size: var(--font-size-h3);
+    }
+  }
+
+  // Section subtitle styles
+  .section-subtitle {
+    font-size: var(--font-size-large); // Usar variable del sistema
+    font-weight: var(--font-weight-normal); // Usar variable del sistema
+    font-family: var(--font-family-primary); // Tipografía consistente
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.9;
+    color: var(--color-text-light); // Usar variable del sistema
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 1 !important; // Forzar visibilidad
+
+    @include mixins.media-breakpoint-down(md) {
+      font-size: var(--font-size-base);
+      margin-bottom: var(--spacing-lg);
+      max-width: 90%;
+    }
+
+    @media (max-width: 575px) {
+      margin-bottom: var(--spacing-md);
+      max-width: 95%;
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+    }
+  }
+
+  // Estilos para secciones mejoradas
+  section {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: transform 0.8s var(--ease-out), opacity 0.8s var(--ease-out);
+
+    &.active {
+      z-index: 2;
+    }
+
+    &.visible {
+      will-change: transform, opacity;
+    }
+  }
+
+  // Estilos para efectos de parallax
+  [data-parallax] {
+    position: relative;
+    will-change: transform;
+    transition: transform 0.1s linear;
+
+    &[data-parallax="light"] {
+      transform: translateZ(10px);
+    }
+
+    &[data-parallax="medium"] {
+      transform: translateZ(20px);
+    }
+
+    &[data-parallax="deep"] {
+      transform: translateZ(30px);
+    }
+  }
+
+  // Scroll indicator styles - Enhanced for better visibility and interaction
+  .scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%; // Use left positioning for precise centering
+    transform: translateX(-50%); // Center horizontally
+    z-index: 1500; // Much higher z-index to ensure it's always visible above the dark overlay
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100px; // Fixed width for better centering
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1 !important; // Force visibility
+    visibility: visible !important; // Force visibility
+    animation: pulse 2s infinite ease-in-out; // Add pulsing animation for attention
+    text-align: center; // Ensure text is centered
+
+    // Ensure perfect centering on all mobile devices
+    @media (max-width: 768px) {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: 25px;
+      width: 90px;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    @media (max-width: 480px) {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: 20px;
+      width: 80px;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    @media (max-width: 320px) {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: 15px;
+      width: 70px;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .scroll-arrow {
+      width: 50px; // Larger size
+      height: 50px; // Larger size
+      border-radius: 50%;
+      background-color: var(--color-vivid-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 25px rgba(230, 83, 29, 0.5); // Stronger shadow for better visibility
+      position: relative; // For pseudo-element
+
+      // Add pulsing ring effect
+      &::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 50%;
+        border: 2px solid var(--color-vivid-orange);
+        opacity: 0.5;
+        animation: pulse-ring 2s infinite;
+      }
+
+      i {
+        color: white;
+        font-size: 1.4rem; // Larger icon
+        animation: bounce 2s infinite; // Add bouncing animation
+      }
+    }
+
+    .scroll-text {
+      font-size: 1rem; // Larger text
+      font-weight: 600; // Bolder text
+      color: #FEF0D1; // Specific color for better visibility
+      opacity: 1; // Full opacity
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); // Add shadow for better readability
+    }
+
+    &:hover {
+      transform: translateY(-8px); // More pronounced hover effect
+
+      .scroll-arrow {
+        background-color: var(--color-deep-koamaru);
+        box-shadow: 0 8px 30px rgba(52, 48, 123, 0.6); // Stronger shadow on hover
+      }
+    }
+  }
+
+  // Animation for the pulsing ring
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 0.4; }
+    100% { transform: scale(0.8); opacity: 0.8; }
+  }
+
+  // Loader overlay styles
+  .loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-carbon);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .loader-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .loader-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--color-vivid-orange);
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: 20px;
+      }
+
+      .loader-text {
+        font-size: 1.2rem;
+        color: var(--color-cashmere);
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Scroll progress bar
+  .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0;
+    background: linear-gradient(
+      to right,
+      var(--color-vivid-orange),
+      var(--color-deep-koamaru)
+    );
+    z-index: 1000;
+  }
+
+  // Animations
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(-15px); }
+    50% { transform: translateY(-20px); }
+    75% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  // Estilos de botón - Usar sistema de diseño consistente
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6em 1.2em; // Usar em para escalabilidad
+    border-radius: var(--border-radius-md); // Usar variable del sistema
+    font-weight: var(--font-weight-medium); // Usar variable del sistema
+    font-family: inherit;
+    transition: all var(--transition-normal) ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: var(--font-size-base); // Usar variable del sistema
+    gap: var(--spacing-sm); // Usar variable del sistema
+    line-height: 1;
+
+    // Iconos
+    i {
+      font-size: 1.1em;
+    }
+
+    // Variante de botón grande
+    &.btn-lg {
+      padding: 0.8em 1.6em;
+      font-size: var(--font-size-large);
+    }
+
+    // Botón pequeño
+    &.btn-sm {
+      padding: 0.4em 0.8em;
+      font-size: var(--font-size-small);
+    }
+
+    // Botón primario (naranja)
+    &.btn-primary {
+      background-color: var(--color-vivid-orange);
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      overflow: hidden; // Contener efectos dentro del botón
+      position: relative;
+
+      &:hover {
+        background-color: color.adjust(#e6531d, $lightness: -10%);
+        transform: translateY(-1px); // Reducido para evitar overflow
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      &:focus {
+        outline: 2px solid white;
+        outline-offset: 2px;
+      }
+    }
+
+    // Botón secundario (verde)
+    &.btn-secondary {
+      background-color: var(--color-forest-green);
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+      &:hover {
+        background-color: color.adjust(#007142, $lightness: -10%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      &:focus {
+        outline: 2px solid white;
+        outline-offset: 2px;
+      }
+    }
+
+    // Botón outline
+    &.btn-outline {
+      background-color: transparent;
+      color: var(--color-cashmere);
+      border: 2px solid var(--color-border);
+      overflow: hidden; // Contener efectos dentro del botón
+      position: relative;
+
+      &:hover {
+        background-color: var(--color-background-light);
+        border-color: var(--color-vivid-orange);
+        color: var(--color-vivid-orange);
+        transform: translateY(-1px); // Efecto sutil de hover
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+
+      &:focus {
+        outline: 2px solid var(--color-vivid-orange);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Animaciones mejoradas para elementos interactivos
+  .interactive-element {
+    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s var(--ease-out);
+
+    &:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+// CRITICAL MOBILE FIXES - Complete responsive overhaul
+// Tablet and medium screens (768px and down)
+@include mixins.media-breakpoint-down(md) {
+  .landing-page {
+    // Remove snap scrolling on mobile for better compatibility
+    scroll-snap-type: none;
+
+    section {
+      padding: 3rem 0; // Consistent padding
+      height: auto; // Always auto height on mobile
+      min-height: auto; // Remove min-height constraints
+      margin-bottom: 0;
+
+      // Ensure proper stacking
+      position: relative;
+      z-index: auto;
+
+      // Fix flex layout for mobile
+      justify-content: flex-start;
+      align-items: stretch;
+
+      .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 1.5rem;
+        margin: 0 auto;
+      }
+
+      // Reduce hero section bottom spacing on mobile
+      &#hero {
+        padding-bottom: 1.5rem; // Reduced from 3rem to 1.5rem
+        margin-bottom: 0;
+      }
+    }
+
+    .section-title {
+      font-size: var(--font-size-h2);
+      margin-bottom: var(--spacing-md);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-base);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    // Ajustar botones en tablet
+    .btn {
+      padding: 0.7em 1.4em;
+      min-height: 44px;
+      font-size: 1rem;
+
+      &.btn-lg {
+        padding: 0.9em 1.8em;
+        min-height: 48px;
+      }
+    }
+  }
+}
+
+// Small mobile screens (576px and down)
+@include mixins.media-breakpoint-down(sm) {
+  .landing-page {
+    section {
+      padding: 2.5rem 0; // Reduced padding for small screens
+      height: auto;
+      min-height: auto;
+      margin-bottom: 0;
+
+      .container {
+        padding: 0 1rem; // Tighter padding
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      // Further reduce hero section bottom spacing on small screens
+      &#hero {
+        padding-bottom: 1rem; // Even more reduced for small screens
+        margin-bottom: 0;
+      }
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 5vw, 2rem); // Responsive font size
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.1;
+      word-wrap: break-word;
+    }
+
+    .section-subtitle {
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      margin-bottom: var(--spacing-md);
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    // Mobile-optimized buttons
+    .btn {
+      padding: 0.8em 1.6em;
+      font-size: clamp(0.9rem, 3vw, 1rem);
+      min-width: 140px;
+      min-height: 44px;
+      width: auto;
+      max-width: 100%;
+
+      &.btn-lg {
+        padding: 1em 2em;
+        font-size: clamp(1rem, 3.5vw, 1.1rem);
+        min-height: 48px;
+      }
+    }
+
+    // Fix grid layouts for small screens
+    .features-grid,
+    .testimonials-grid,
+    .fun-learning-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+  }
+}
+
+// CRITICAL: Extra small devices (320px and up) - Complete mobile optimization
+@media (max-width: 575px) {
+  .landing-page {
+    // Remove all problematic constraints
+    scroll-snap-type: none;
+    overflow-x: hidden;
+
+    section {
+      padding: 2rem 0; // Minimal padding for very small screens
+      height: auto;
+      min-height: auto;
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+
+      // Ensure sections don't overlap or have spacing issues
+      position: relative;
+      z-index: auto;
+      display: block; // Change from flex to block for better mobile layout
+
+      .container {
+        padding: 0 1rem; // Increased padding to prevent edge collision
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+        overflow-x: hidden;
+
+        // Ensure minimum spacing from edges on very small screens
+        @media (max-width: 360px) {
+          padding: 0 1.25rem; // Even more padding for very small screens
+        }
+
+        @media (max-width: 320px) {
+          padding: 0 1.5rem; // Maximum padding for smallest screens
+        }
+      }
+    }
+
+    .section-title {
+      font-size: clamp(1.25rem, 6vw, 1.75rem); // Smaller but readable
+      margin-bottom: 1rem;
+      line-height: 1.1;
+      text-align: center;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
+
+    .section-subtitle {
+      font-size: clamp(0.85rem, 4vw, 1rem);
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+      text-align: center;
+      word-wrap: break-word;
+    }
+
+    // Ultra-mobile optimized buttons
+    .btn {
+      padding: 0.75em 1.25em;
+      font-size: clamp(0.85rem, 4vw, 0.95rem);
+      min-width: 120px;
+      min-height: 44px;
+      width: auto;
+      max-width: 100%;
+      display: inline-block;
+      text-align: center;
+      box-sizing: border-box;
+
+      &.btn-lg {
+        padding: 0.85em 1.5em;
+        font-size: clamp(0.9rem, 4vw, 1rem);
+        min-height: 48px;
+      }
+    }
+
+    // Hero section optimization for very small screens
+    .hero {
+      min-height: auto;
+      padding: 1.5rem 0 0.5rem 0; // Reduced bottom padding significantly
+
+      .container {
+        display: block; // Stack elements vertically
+        text-align: center;
+        gap: 1rem;
+      }
+
+      .hero-content {
+        margin-bottom: 5rem;
+      }
+
+      .hero-title {
+        font-size: clamp(1.25rem, 7vw, 2rem);
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        word-wrap: break-word;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(0.8rem, 4vw, 1rem);
+        line-height: 1.4;
+        margin-bottom: 1.5rem;
+        word-wrap: break-word;
+      }
+
+      .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+
+        .btn {
+          width: 100%;
+          margin: 0;
+        }
+      }
+
+      .hero-image {
+        margin-top: 1rem;
+
+        .tutor-mascot {
+          width: 180px;
+          height: 180px;
+          margin: 0 auto;
+
+          .tutoria-logo {
+            width: 70%;
+          }
+        }
+      }
+    }
+
+    // Grid layouts for very small screens
+    .features-grid,
+    .testimonials-grid,
+    .fun-learning-grid {
+      display: block; // Change from grid to block for better mobile support
+      width: 100%;
+
+      > * {
+        margin-bottom: 1.5rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    // Card layouts for very small screens
+    .feature-card,
+    .testimonial-card,
+    .fun-learning-card {
+      min-height: auto;
+      padding: 1.5rem; // Increased padding for better spacing
+      margin: 0 0.5rem 1.5rem 0.5rem; // Add horizontal margins to prevent edge collision
+      width: calc(100% - 1rem); // Account for horizontal margins
+      max-width: calc(100% - 1rem);
+      box-sizing: border-box;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      // Ensure content doesn't touch card edges
+      h3, p {
+        margin-left: 0;
+        margin-right: 0;
+        word-wrap: break-word;
+        hyphens: auto;
+      }
+
+      // Extra spacing for very small screens
+      @media (max-width: 360px) {
+        margin: 0 0.75rem 1.5rem 0.75rem;
+        width: calc(100% - 1.5rem);
+        max-width: calc(100% - 1.5rem);
+        padding: 1.75rem;
+      }
+
+      @media (max-width: 320px) {
+        margin: 0 1rem 1.5rem 1rem;
+        width: calc(100% - 2rem);
+        max-width: calc(100% - 2rem);
+        padding: 2rem;
+      }
+    }
+  }
+}
+
+// Touch interaction improvements for mobile
+@media (hover: none) and (pointer: coarse) {
+  .landing-page {
+    // Increase touch targets for mobile
+    .btn {
+      min-height: 44px; // iOS recommended touch target size
+      min-width: 44px;
+      padding: 0.8em 1.6em;
+    }
+
+    // Reduce hover effects on touch devices
+    .feature-card,
+    .testimonial-card,
+    .fun-learning-card {
+      &:hover {
+        transform: none; // Disable hover transforms on touch devices
+      }
+    }
+
+    // Improve card spacing for touch
+    .features-grid,
+    .testimonials-grid,
+    .fun-learning-grid {
+      gap: var(--spacing-lg);
+    }
+  }
+}
+
+// Landscape orientation optimizations for mobile
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .landing-page {
+    section {
+      min-height: auto;
+      padding: var(--spacing-lg) 0;
+    }
+
+    .hero {
+      .hero-title {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        margin-bottom: var(--spacing-md);
+      }
+
+      .hero-buttons {
+        flex-direction: row;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-md);
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+/*
+ * Footer
+ * Main footer layout styles
+ */
+
+@use "../utilities/mixins" as mixins;
+
+.footer {
+  background-color: var(--color-background-light);
+  padding: var(--spacing-lg) 0;
+  margin-top: auto;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+
+    @include mixins.media-breakpoint-up(md) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  // Footer sections
+  .footer-section {
+    margin-bottom: var(--spacing-lg);
+
+    @include mixins.media-breakpoint-up(md) {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      font-size: var(--font-size-large);
+      margin-bottom: var(--spacing-md);
+      color: var(--color-primary);
+    }
+
+    ul {
+      li {
+        margin-bottom: var(--spacing-sm);
+
+        a {
+          color: var(--color-text-light);
+          text-decoration: none;
+          transition: color var(--transition-normal);
+
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+    }
+  }
+
+  // Copyright section
+  .footer-copyright {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-light);
+    font-size: var(--font-size-small);
+  }
+}

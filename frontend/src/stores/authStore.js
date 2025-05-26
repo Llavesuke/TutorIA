@@ -137,20 +137,8 @@ const initializeAuth = async () => {
     // First try to load from localStorage
     const hasStoredUser = loadUserFromStorage();
 
-    if (!hasStoredUser) {
-      // If no stored user, check Supabase session
-      const { data: sessionData } = await supabase.auth.getSession();
-
-      if (sessionData?.session) {
-        // Get user data
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData?.user) {
-          user.value = userData.user;
-          saveUserToStorage(userData.user);
-        }
-      }
-    } else if (token.value) {
-      // Validate the token with the backend
+    if (hasStoredUser && token.value) {
+      // If we have a stored user and JWT token, validate the token with the backend
       try {
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
         const response = await fetch(`${baseUrl}/api/auth/me`, {
@@ -163,10 +151,27 @@ const initializeAuth = async () => {
           console.log('Token validation failed, attempting to refresh');
           await refreshAuthToken();
         } else {
-          console.log('Token validated successfully');
+          console.log('Token validated successfully, using stored user data');
+          // Don't overwrite the stored user data - it's from our custom database
         }
       } catch (validationError) {
         console.error('Error validating token:', validationError);
+        // If validation fails, try to refresh token
+        await refreshAuthToken();
+      }
+    } else if (!hasStoredUser) {
+      // Only check Supabase session if we don't have stored user data
+      console.log('No stored user found, checking Supabase session');
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (sessionData?.session) {
+        // Get user data from Supabase (this should only happen in edge cases)
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user) {
+          console.log('Found Supabase session, storing user data');
+          user.value = userData.user;
+          saveUserToStorage(userData.user);
+        }
       }
     }
   } catch (error) {

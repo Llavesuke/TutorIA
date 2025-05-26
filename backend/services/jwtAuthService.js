@@ -118,8 +118,7 @@ class JwtAuthService {
           throw new Error('Usuario no encontrado en tabla personalizada');
         }
 
-        // Sign out from Supabase since we only used it for verification
-        await supabase.auth.signOut();
+        // Note: We don't sign out from Supabase immediately to avoid session conflicts
       } else {
         // For username logins, find user and verify password with our custom table
         const user = await Usuario.getByUsername(identifier);

@@ -442,7 +442,7 @@ const addEmail = async () => {
 
     if (result) {
       // Update the user in the auth store
-      authStore.setUser({
+      await authStore.setUser({
         ...authStore.user.value,
         email: newEmail.value,
         email_verificado: false // New email needs verification
@@ -473,7 +473,7 @@ const changeEmail = async () => {
 
     if (result) {
       // Update the user in the auth store
-      authStore.setUser({
+      await authStore.setUser({
         ...authStore.user.value,
         email: newEmail.value,
         email_verificado: false

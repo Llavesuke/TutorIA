@@ -84,6 +84,40 @@ router.get('/centro/:centroId', async (req, res) => {
   }
 });
 
+// GET /api/usuarios/by-email/:email
+router.get('/by-email/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const decodedEmail = decodeURIComponent(email);
+
+    console.log('Getting user by email:', decodedEmail);
+
+    const usuario = await Usuario.getByEmail(decodedEmail);
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Remove password hash and add user_metadata
+    const { contraseña_hash, ...usuarioSinContraseña } = usuario;
+
+    const userWithMetadata = {
+      ...usuarioSinContraseña,
+      user_metadata: {
+        rol: usuario.rol,
+        nombre_real: usuario.nombre_real,
+        nombre_usuario: usuario.nombre_usuario,
+        centro_id: usuario.centro_id
+      }
+    };
+
+    res.json({ user: userWithMetadata });
+  } catch (error) {
+    console.error(`Error en GET /usuarios/by-email/${req.params.email}:`, error);
+    res.status(500).json({ message: 'Error del servidor', error: error.message });
+  }
+});
+
 // GET /api/usuarios/:id
 router.get('/:id', async (req, res) => {
   try {

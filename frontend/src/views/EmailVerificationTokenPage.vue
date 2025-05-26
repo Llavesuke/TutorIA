@@ -82,7 +82,7 @@ const verifyEmail = async () => {
       // without breaking other user data
       const currentUser = authStore.user.value;
       if (currentUser && currentUser.email === email) {
-        authStore.setUser({
+        await authStore.setUser({
           ...currentUser,
           email_verificado: true
         });

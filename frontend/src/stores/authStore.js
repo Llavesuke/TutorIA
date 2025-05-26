@@ -3,6 +3,7 @@ import supabase from '../utils/supabaseClient';
 import AuthService from '../services/authService';
 import router from '../router';
 import { normalizeUserData, isCompleteUserData } from '../utils/userUtils';
+import ApiService from '../services/apiService';
 
 // Create a reactive state
 const user = ref(null);
@@ -10,6 +11,43 @@ const loading = ref(true);
 const token = ref(null);
 const refreshToken = ref(null);
 const tokenExpiry = ref(null);
+
+// Function to detect if user data is from Supabase Auth (incomplete structure)
+const isSupabaseAuthData = (userData) => {
+  if (!userData) return false;
+
+  // Supabase Auth data has these characteristics:
+  // - Has 'aud', 'role', 'created_at', 'email_confirmed_at'
+  // - Missing 'rol', 'nombre_real', 'nombre_usuario' directly
+  // - Has user_metadata but it's nested differently
+  return !!(
+    userData.aud &&
+    userData.role === 'authenticated' &&
+    userData.created_at &&
+    !userData.rol && // Missing our custom fields
+    !userData.nombre_real &&
+    !userData.nombre_usuario
+  );
+};
+
+// Function to get complete user data from backend using email
+const getCompleteUserDataFromBackend = async (email) => {
+  try {
+    console.log('Getting complete user data from backend for email:', email);
+
+    const result = await ApiService.get(`/api/usuarios/by-email/${encodeURIComponent(email)}`);
+
+    if (result && result.user) {
+      console.log('Got complete user data from backend:', result.user);
+      return normalizeUserData(result.user);
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error getting complete user data from backend:', error);
+    return null;
+  }
+};
 
 // Try to load user from localStorage
 const loadUserFromStorage = () => {
@@ -21,6 +59,23 @@ const loadUserFromStorage = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
+
+      // Check if stored user is Supabase Auth data and replace it
+      if (isSupabaseAuthData(parsedUser)) {
+        console.log('🔍 Detected stored Supabase Auth data, fetching complete user data...');
+        try {
+          const completeUserData = await getCompleteUserDataFromBackend(parsedUser.email);
+          if (completeUserData) {
+            console.log('✅ Replaced stored Supabase data with complete user data');
+            user.value = completeUserData;
+            saveUserToStorage(completeUserData);
+            return true;
+          }
+        } catch (error) {
+          console.error('❌ Error replacing stored Supabase data:', error);
+        }
+      }
+
       user.value = normalizeUserData(parsedUser);
       console.log('Loaded and normalized user from localStorage:', user.value);
     }
@@ -188,24 +243,57 @@ const initializeAuth = async () => {
               saveUserToStorage(normalizedUser);
             }
           } else {
-            // Fallback to basic Supabase user data
+            // Fallback to basic Supabase user data, but try to get complete data
             const { data: userData } = await supabase.auth.getUser();
             if (userData?.user) {
-              console.log('Fallback: using basic Supabase user data');
-              const normalizedUser = normalizeUserData(userData.user);
-              user.value = normalizedUser;
-              saveUserToStorage(normalizedUser);
+              console.log('Fallback: got basic Supabase user data, trying to get complete data...');
+
+              // Try to get complete user data
+              try {
+                const completeUserData = await getCompleteUserDataFromBackend(userData.user.email);
+                if (completeUserData) {
+                  console.log('✅ Got complete user data as fallback:', completeUserData);
+                  user.value = completeUserData;
+                  saveUserToStorage(completeUserData);
+                } else {
+                  console.log('⚠️ Using normalized Supabase data as final fallback');
+                  const normalizedUser = normalizeUserData(userData.user);
+                  user.value = normalizedUser;
+                  saveUserToStorage(normalizedUser);
+                }
+              } catch (error) {
+                console.error('❌ Error getting complete data as fallback:', error);
+                const normalizedUser = normalizeUserData(userData.user);
+                user.value = normalizedUser;
+                saveUserToStorage(normalizedUser);
+              }
             }
           }
         } catch (error) {
           console.error('Error getting user data from backend:', error);
-          // Fallback to basic Supabase user data
+          // Fallback to basic Supabase user data, but try to get complete data
           const { data: userData } = await supabase.auth.getUser();
           if (userData?.user) {
-            console.log('Fallback: using basic Supabase user data');
-            const normalizedUser = normalizeUserData(userData.user);
-            user.value = normalizedUser;
-            saveUserToStorage(normalizedUser);
+            console.log('Fallback: got basic Supabase user data, trying to get complete data...');
+
+            try {
+              const completeUserData = await getCompleteUserDataFromBackend(userData.user.email);
+              if (completeUserData) {
+                console.log('✅ Got complete user data as fallback:', completeUserData);
+                user.value = completeUserData;
+                saveUserToStorage(completeUserData);
+              } else {
+                console.log('⚠️ Using normalized Supabase data as final fallback');
+                const normalizedUser = normalizeUserData(userData.user);
+                user.value = normalizedUser;
+                saveUserToStorage(normalizedUser);
+              }
+            } catch (fallbackError) {
+              console.error('❌ Error getting complete data as fallback:', fallbackError);
+              const normalizedUser = normalizeUserData(userData.user);
+              user.value = normalizedUser;
+              saveUserToStorage(normalizedUser);
+            }
           }
         }
       }
@@ -227,11 +315,35 @@ const isAdmin = computed(() => userRole.value === 'admin');
 const isTeacher = computed(() => userRole.value === 'profesor');
 
 // Methods
-const setUser = (userData, newToken = null, newRefreshToken = null) => {
+const setUser = async (userData, newToken = null, newRefreshToken = null) => {
   console.log('AuthStore.setUser called with:');
   console.log('- userData:', userData);
   console.log('- newToken:', newToken ? 'Present' : 'Missing');
   console.log('- newRefreshToken:', newRefreshToken ? 'Present' : 'Missing');
+
+  // Check if this is Supabase Auth data (incomplete)
+  if (isSupabaseAuthData(userData)) {
+    console.log('🔍 Detected Supabase Auth data, fetching complete user data from backend...');
+
+    try {
+      const completeUserData = await getCompleteUserDataFromBackend(userData.email);
+
+      if (completeUserData) {
+        console.log('✅ Successfully replaced Supabase data with complete user data:', completeUserData);
+        user.value = completeUserData;
+        saveUserToStorage(completeUserData);
+
+        if (newToken) {
+          saveTokenToStorage(newToken, newRefreshToken);
+        }
+        return;
+      } else {
+        console.warn('⚠️ Could not get complete user data, falling back to normalized Supabase data');
+      }
+    } catch (error) {
+      console.error('❌ Error getting complete user data:', error);
+    }
+  }
 
   // Normalize user data to ensure consistent structure
   const normalizedUserData = normalizeUserData(userData);

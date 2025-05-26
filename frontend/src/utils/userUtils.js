@@ -25,7 +25,7 @@ export function normalizeUserData(userData) {
   }
 
   // If it's Supabase Auth data, try to extract from user_metadata
-  if (userData.user_metadata) {
+  if (userData.user_metadata && !userData.rol) {
     const metadata = userData.user_metadata;
     return {
       ...userData,
@@ -62,7 +62,7 @@ export function normalizeUserData(userData) {
  */
 export function isCompleteUserData(userData) {
   if (!userData) return false;
-  
+
   return !!(
     userData.id &&
     userData.rol &&
@@ -79,7 +79,7 @@ export function isCompleteUserData(userData) {
  */
 export function getUserRole(userData) {
   if (!userData) return null;
-  
+
   return userData.rol || userData.user_metadata?.rol || null;
 }
 
@@ -90,12 +90,12 @@ export function getUserRole(userData) {
  */
 export function getUserDisplayName(userData) {
   if (!userData) return 'Usuario';
-  
-  return userData.nombre_real || 
-         userData.user_metadata?.nombre_real || 
-         userData.nombre_usuario || 
-         userData.user_metadata?.nombre_usuario || 
-         userData.email?.split('@')[0] || 
+
+  return userData.nombre_real ||
+         userData.user_metadata?.nombre_real ||
+         userData.nombre_usuario ||
+         userData.user_metadata?.nombre_usuario ||
+         userData.email?.split('@')[0] ||
          'Usuario';
 }
 
@@ -106,9 +106,9 @@ export function getUserDisplayName(userData) {
  */
 export function getUserUsername(userData) {
   if (!userData) return '';
-  
-  return userData.nombre_usuario || 
-         userData.user_metadata?.nombre_usuario || 
-         userData.email?.split('@')[0] || 
+
+  return userData.nombre_usuario ||
+         userData.user_metadata?.nombre_usuario ||
+         userData.email?.split('@')[0] ||
          '';
 }

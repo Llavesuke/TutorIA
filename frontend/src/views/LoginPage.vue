@@ -59,7 +59,7 @@ const handleLogin = async (e) => {
       console.log('Storing user data in auth store:', userData);
 
       // Store user data and tokens
-      authStore.setUser(
+      await authStore.setUser(
         userData,
         result.token,         // JWT token
         result.refreshToken   // Refresh token

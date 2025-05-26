@@ -166,8 +166,22 @@ class SupabaseAuthService {
         }
       }
 
+      // Eliminar la contraseña hash de la respuesta y agregar user_metadata
+      const { contraseña_hash, ...usuarioSinContraseña } = usuario;
+
+      // Asegurar que tenga la estructura completa con user_metadata
+      const userWithMetadata = {
+        ...usuarioSinContraseña,
+        user_metadata: {
+          rol: usuario.rol,
+          nombre_real: usuario.nombre_real,
+          nombre_usuario: usuario.nombre_usuario,
+          centro_id: usuario.centro_id
+        }
+      };
+
       return {
-        user: usuario,
+        user: userWithMetadata,
         session: authData?.session || null
       };
     } catch (error) {
@@ -270,8 +284,19 @@ class SupabaseAuthService {
       // Eliminar la contraseña hash de la respuesta
       const { contraseña_hash, ...usuarioSinContraseña } = usuario;
 
+      // Asegurar que tenga la estructura completa con user_metadata
+      const userWithMetadata = {
+        ...usuarioSinContraseña,
+        user_metadata: {
+          rol: usuario.rol,
+          nombre_real: usuario.nombre_real,
+          nombre_usuario: usuario.nombre_usuario,
+          centro_id: usuario.centro_id
+        }
+      };
+
       return {
-        user: usuarioSinContraseña,
+        user: userWithMetadata,
         session: authData?.session || null,
         isEmailVerified: usuario.email_verificado || isEmailVerified // Usar el estado de verificación de nuestra tabla o de Supabase Auth
       };
@@ -339,7 +364,7 @@ class SupabaseAuthService {
 
   /**
    * Obtener usuario actual
-   * @returns {Object} Usuario actual
+   * @returns {Object} Usuario actual con estructura completa de la tabla personalizada
    */
   static async getCurrentUser() {
     try {
@@ -351,7 +376,24 @@ class SupabaseAuthService {
       // Obtener el usuario de nuestra tabla personalizada
       const usuario = await Usuario.getByEmail(user.email);
 
-      return usuario;
+      if (!usuario) {
+        console.warn('User found in Supabase Auth but not in custom table:', user.email);
+        return null;
+      }
+
+      // Eliminar la contraseña hash de la respuesta
+      const { contraseña_hash, ...usuarioSinContraseña } = usuario;
+
+      // Asegurar que tenga la estructura completa con user_metadata
+      return {
+        ...usuarioSinContraseña,
+        user_metadata: {
+          rol: usuario.rol,
+          nombre_real: usuario.nombre_real,
+          nombre_usuario: usuario.nombre_usuario,
+          centro_id: usuario.centro_id
+        }
+      };
     } catch (error) {
       console.error('Error al obtener usuario actual:', error);
       throw error;

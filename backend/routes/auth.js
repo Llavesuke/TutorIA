@@ -6,6 +6,7 @@ import EmailService from '../services/emailService.js';
 import { requireAuth } from '../middleware/auth.js';
 import Usuario from '../models/usuario.js';
 import db from '../config/db.js';
+import supabase from '../config/supabase.js';
 
 const router = Router();
 
@@ -537,6 +538,54 @@ router.get('/me', requireAuth, async (req, res) => {
     });
   } catch (error) {
     console.error('Error en GET /auth/me:', error);
+    res.status(500).json({ message: 'Error del servidor', error: error.message });
+  }
+});
+
+// Get current user from Supabase session
+router.get('/current-user-from-supabase', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No authorization token provided' });
+    }
+
+    const supabaseToken = authHeader.split(' ')[1];
+
+    // Verify the Supabase token and get user
+    const { data: { user }, error } = await supabase.auth.getUser(supabaseToken);
+
+    if (error || !user) {
+      return res.status(401).json({ message: 'Invalid Supabase token' });
+    }
+
+    // Get the complete user data from our custom table
+    const usuario = await Usuario.getByEmail(user.email);
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'User not found in custom table' });
+    }
+
+    // Remove password hash and add user_metadata
+    const { contraseña_hash, ...usuarioSinContraseña } = usuario;
+
+    const userWithMetadata = {
+      ...usuarioSinContraseña,
+      user_metadata: {
+        rol: usuario.rol,
+        nombre_real: usuario.nombre_real,
+        nombre_usuario: usuario.nombre_usuario,
+        centro_id: usuario.centro_id
+      }
+    };
+
+    res.json({
+      user: userWithMetadata,
+      message: 'User data retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error en GET /auth/current-user-from-supabase:', error);
     res.status(500).json({ message: 'Error del servidor', error: error.message });
   }
 });

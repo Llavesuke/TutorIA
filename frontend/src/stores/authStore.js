@@ -2,6 +2,7 @@ import { ref, computed } from 'vue';
 import supabase from '../utils/supabaseClient';
 import AuthService from '../services/authService';
 import router from '../router';
+import { normalizeUserData, isCompleteUserData } from '../utils/userUtils';
 
 // Create a reactive state
 const user = ref(null);
@@ -19,8 +20,9 @@ const loadUserFromStorage = () => {
     const storedTokenExpiry = localStorage.getItem('tutoria_token_expiry');
 
     if (storedUser) {
-      user.value = JSON.parse(storedUser);
-      console.log('Loaded user from localStorage:', user.value);
+      const parsedUser = JSON.parse(storedUser);
+      user.value = normalizeUserData(parsedUser);
+      console.log('Loaded and normalized user from localStorage:', user.value);
     }
 
     if (storedToken) {
@@ -165,12 +167,46 @@ const initializeAuth = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
 
       if (sessionData?.session) {
-        // Get user data from Supabase (this should only happen in edge cases)
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData?.user) {
-          console.log('Found Supabase session, storing user data');
-          user.value = userData.user;
-          saveUserToStorage(userData.user);
+        // Get user data from our backend using Supabase session
+        try {
+          console.log('Found Supabase session, getting complete user data from backend');
+          const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+          // Try to get the complete user data from our backend
+          const response = await fetch(`${baseUrl}/api/auth/current-user-from-supabase`, {
+            headers: {
+              'Authorization': `Bearer ${sessionData.session.access_token}`
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.user) {
+              console.log('Got complete user data from backend:', result.user);
+              const normalizedUser = normalizeUserData(result.user);
+              user.value = normalizedUser;
+              saveUserToStorage(normalizedUser);
+            }
+          } else {
+            // Fallback to basic Supabase user data
+            const { data: userData } = await supabase.auth.getUser();
+            if (userData?.user) {
+              console.log('Fallback: using basic Supabase user data');
+              const normalizedUser = normalizeUserData(userData.user);
+              user.value = normalizedUser;
+              saveUserToStorage(normalizedUser);
+            }
+          }
+        } catch (error) {
+          console.error('Error getting user data from backend:', error);
+          // Fallback to basic Supabase user data
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user) {
+            console.log('Fallback: using basic Supabase user data');
+            const normalizedUser = normalizeUserData(userData.user);
+            user.value = normalizedUser;
+            saveUserToStorage(normalizedUser);
+          }
         }
       }
     }
@@ -186,7 +222,7 @@ initializeAuth();
 
 // Computed properties
 const isAuthenticated = computed(() => !!user.value);
-const userRole = computed(() => user.value?.user_metadata?.rol || null);
+const userRole = computed(() => user.value?.rol || user.value?.user_metadata?.rol || null);
 const isAdmin = computed(() => userRole.value === 'admin');
 const isTeacher = computed(() => userRole.value === 'profesor');
 
@@ -197,8 +233,13 @@ const setUser = (userData, newToken = null, newRefreshToken = null) => {
   console.log('- newToken:', newToken ? 'Present' : 'Missing');
   console.log('- newRefreshToken:', newRefreshToken ? 'Present' : 'Missing');
 
-  user.value = userData;
-  saveUserToStorage(userData);
+  // Normalize user data to ensure consistent structure
+  const normalizedUserData = normalizeUserData(userData);
+  console.log('- normalizedUserData:', normalizedUserData);
+  console.log('- isComplete:', isCompleteUserData(normalizedUserData));
+
+  user.value = normalizedUserData;
+  saveUserToStorage(normalizedUserData);
 
   if (newToken) {
     saveTokenToStorage(newToken, newRefreshToken);

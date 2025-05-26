@@ -71,11 +71,22 @@ class JwtAuthService {
       const token = generateToken(user);
       const refreshToken = generateRefreshToken(user);
 
-      // Remove password from response
+      // Remove password from response and add user_metadata
       const { contraseña_hash, ...userWithoutPassword } = user;
 
+      // Asegurar que tenga la estructura completa con user_metadata
+      const userWithMetadata = {
+        ...userWithoutPassword,
+        user_metadata: {
+          rol: user.rol,
+          nombre_real: user.nombre_real,
+          nombre_usuario: user.nombre_usuario,
+          centro_id: user.centro_id
+        }
+      };
+
       return {
-        user: userWithoutPassword,
+        user: userWithMetadata,
         token,
         refreshToken
       };
@@ -154,11 +165,22 @@ class JwtAuthService {
         setTokenCookie(res, refreshToken, 'jwt_refresh_token', process.env.JWT_REFRESH_EXPIRES_IN);
       }
 
-      // Remove password from response
+      // Remove password from response and add user_metadata
       const { contraseña_hash, ...userWithoutPassword } = user;
 
+      // Asegurar que tenga la estructura completa con user_metadata
+      const userWithMetadata = {
+        ...userWithoutPassword,
+        user_metadata: {
+          rol: user.rol,
+          nombre_real: user.nombre_real,
+          nombre_usuario: user.nombre_usuario,
+          centro_id: user.centro_id
+        }
+      };
+
       return {
-        user: userWithoutPassword,
+        user: userWithMetadata,
         token,
         refreshToken,
         isEmailVerified: user.email_verificado

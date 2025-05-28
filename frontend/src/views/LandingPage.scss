@@ -1,0 +1,153 @@
+/*
+ * LandingPage Component Styles
+ * Extracted from Vue component for better organization
+ * Brand color implementation with exact hex values for reliability
+ */
+
+// Brand colors (exact hex values for reliability)
+$brand-orange: #e6531d;
+$brand-green: #007142;
+$brand-purple: #34307b;
+
+/* BRAND COLOR IMPLEMENTATION - Direct component styles for maximum specificity */
+
+// TESTIMONIAL CARDS - Brand color rotation
+.testimonial-card {
+  // Orange cards (1st, 4th, 7th, etc.)
+  &:nth-child(3n+1) {
+    background: linear-gradient(135deg, $brand-orange, darken($brand-orange, 5%)) !important;
+    border-top: 4px solid $brand-orange !important;
+    color: white !important;
+
+    .testimonial-content p,
+    .testimonial-author .author-info h4,
+    .testimonial-author .author-info p {
+      color: white !important;
+    }
+
+    .testimonial-author .author-avatar {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    .quote-icon {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+  }
+
+  // Green cards (2nd, 5th, 8th, etc.)
+  &:nth-child(3n+2) {
+    background: linear-gradient(135deg, $brand-green, darken($brand-green, 5%)) !important;
+    border-top: 4px solid $brand-green !important;
+    color: white !important;
+
+    .testimonial-content p,
+    .testimonial-author .author-info h4,
+    .testimonial-author .author-info p {
+      color: white !important;
+    }
+
+    .testimonial-author .author-avatar {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    .quote-icon {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+  }
+
+  // Purple cards (3rd, 6th, 9th, etc.)
+  &:nth-child(3n+3) {
+    background: linear-gradient(135deg, $brand-purple, darken($brand-purple, 5%)) !important;
+    border-top: 4px solid $brand-purple !important;
+    color: white !important;
+
+    .testimonial-content p,
+    .testimonial-author .author-info h4,
+    .testimonial-author .author-info p {
+      color: white !important;
+    }
+
+    .testimonial-author .author-avatar {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    .quote-icon {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+  }
+}
+
+// FUN LEARNING CARDS - Brand color rotation
+.fun-learning-card {
+  // Orange cards (1st, 4th, 7th, etc.)
+  &:nth-child(3n+1) {
+    background: linear-gradient(135deg, $brand-orange, darken($brand-orange, 5%)) !important;
+    border-top: 4px solid $brand-orange !important;
+    color: white !important;
+
+    .card-icon {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    h3, p {
+      color: white !important;
+    }
+  }
+
+  // Green cards (2nd, 5th, 8th, etc.)
+  &:nth-child(3n+2) {
+    background: linear-gradient(135deg, $brand-green, darken($brand-green, 5%)) !important;
+    border-top: 4px solid $brand-green !important;
+    color: white !important;
+
+    .card-icon {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    h3, p {
+      color: white !important;
+    }
+  }
+
+  // Purple cards (3rd, 6th, 9th, etc.)
+  &:nth-child(3n+3) {
+    background: linear-gradient(135deg, $brand-purple, darken($brand-purple, 5%)) !important;
+    border-top: 4px solid $brand-purple !important;
+    color: white !important;
+
+    .card-icon {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    h3, p {
+      color: white !important;
+    }
+  }
+}
+
+// CARD ICONS - Force white color
+.card-icon {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+
+  i {
+    color: white !important;
+  }
+}
+
+// HOW IT WORKS ICONS - Force white color
+.how-it-works {
+  .card-icon {
+    color: white !important;
+
+    i {
+      color: white !important;
+    }
+  }
+}

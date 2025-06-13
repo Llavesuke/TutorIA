@@ -1,9 +1,57 @@
+/**
+ * @fileoverview Rutas de módulos educativos para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de módulos educativos,
+ * incluyendo consulta por diferentes criterios, creación, actualización y eliminación.
+ *
+ * Endpoints disponibles:
+ * - GET /modulos - Obtener todos los módulos
+ * - GET /modulos/:id - Obtener módulo específico
+ * - GET /modulos/centro/:centroId - Obtener módulos por centro educativo
+ * - GET /modulos/curso/:centroId/:curso - Obtener módulos por curso
+ * - GET /modulos/clase/:centroId/:curso/:clase - Obtener módulos por clase
+ * - GET /modulos/profesor/:profesorId/:centroId - Obtener módulos por profesor
+ * - POST /modulos - Crear nuevo módulo (Admin/Profesor)
+ * - PUT /modulos/:id - Actualizar módulo (Admin/Profesor)
+ * - DELETE /modulos/:id - Eliminar módulo (Admin/Profesor)
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import { Modulo } from '../models/index.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 const router = Router();
 
-// GET /api/modulos
+/**
+ * GET /api/modulos
+ *
+ * Obtiene todos los módulos educativos disponibles
+ *
+ * @description Este endpoint devuelve la lista completa de módulos educativos
+ * registrados en el sistema. Requiere autenticación ya que los módulos
+ * contienen información académica específica de cada centro educativo.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @returns {Array} 200 - Lista de módulos con información completa
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "nombre": "Matemáticas",
+ *     "descripcion": "Módulo de matemáticas para 1º ESO",
+ *     "centro_id": "1",
+ *     "curso": "1º ESO",
+ *     "color": "#007142",
+ *     "fecha_creacion": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/', requireAuth, async (req, res) => {
   try {
     const modulos = await Modulo.getAll();
@@ -14,7 +62,39 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/modulos/:id
+/**
+ * GET /api/modulos/:id
+ *
+ * Obtiene un módulo educativo específico por su ID
+ *
+ * @description Devuelve la información detallada de un módulo educativo
+ * identificado por su ID único. Incluye toda la información del módulo
+ * como nombre, descripción, centro asociado, curso y configuración.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @param {string} req.params.id - ID del módulo educativo
+ *
+ * @returns {Object} 200 - Información completa del módulo
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 404 - Módulo no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: /api/modulos/1
+ * // Response:
+ * {
+ *   "id": "1",
+ *   "nombre": "Matemáticas",
+ *   "descripcion": "Módulo de matemáticas para 1º ESO",
+ *   "centro_id": "1",
+ *   "curso": "1º ESO",
+ *   "color": "#007142",
+ *   "fecha_creacion": "2024-01-15T10:30:00Z",
+ *   "unidades_count": 5,
+ *   "estudiantes_inscritos": 25
+ * }
+ */
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;

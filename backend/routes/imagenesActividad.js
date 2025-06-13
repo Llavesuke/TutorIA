@@ -1,9 +1,48 @@
+/**
+ * @fileoverview Rutas de imágenes de actividad para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de imágenes
+ * de actividades educativas, incluyendo consulta por diferentes criterios y eliminación.
+ *
+ * Endpoints disponibles:
+ * - GET /imagenes-actividad - Obtener todas las imágenes de actividad
+ * - GET /imagenes-actividad/:id - Obtener imagen específica
+ * - GET /imagenes-actividad/usuario/:usuarioId - Obtener imágenes por usuario
+ * - GET /imagenes-actividad/unidad/:unidadId - Obtener imágenes por unidad
+ * - DELETE /imagenes-actividad/:id - Eliminar imagen (requiere autenticación)
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 const router = Router();
 import { ImagenActividad } from '../models/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
-// Obtener todas las imágenes de actividad
+/**
+ * GET /api/imagenes-actividad
+ *
+ * Obtiene todas las imágenes de actividad del sistema
+ *
+ * @description Este endpoint devuelve una lista completa de todas las imágenes
+ * de actividades educativas almacenadas en el sistema.
+ *
+ * @returns {Object[]} 200 - Lista de todas las imágenes de actividad
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "url": "https://res.cloudinary.com/tutoria/image/upload/v123/activities/abc123.jpg",
+ *     "public_id": "tutoria/activities/abc123",
+ *     "unidad_id": "456",
+ *     "usuario_id": "789",
+ *     "fecha_subida": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/', async (req, res) => {
   try {
     const imagenes = await ImagenActividad.getAll();

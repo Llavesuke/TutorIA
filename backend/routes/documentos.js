@@ -1,9 +1,52 @@
+/**
+ * @fileoverview Rutas de documentos para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de documentos
+ * educativos, incluyendo consulta por diferentes criterios y eliminación de documentos.
+ *
+ * Endpoints disponibles:
+ * - GET /documentos - Obtener todos los documentos
+ * - GET /documentos/:id - Obtener documento específico
+ * - GET /documentos/modulo/:moduloId - Obtener documentos por módulo
+ * - GET /documentos/unidad/:unidadId - Obtener documentos por unidad
+ * - GET /documentos/usuario/:usuarioId - Obtener documentos por usuario
+ * - GET /documentos/tipo/:tipo - Obtener documentos por tipo
+ * - DELETE /documentos/:id - Eliminar documento (requiere autenticación)
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 const router = Router();
 import { Documento } from '../models/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
-// Obtener todos los documentos
+/**
+ * GET /api/documentos
+ *
+ * Obtiene todos los documentos del sistema
+ *
+ * @description Este endpoint devuelve una lista completa de todos los documentos
+ * educativos almacenados en el sistema, incluyendo PDFs, DOCs, PPTs, etc.
+ *
+ * @returns {Object[]} 200 - Lista de todos los documentos
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "nombre": "Introducción al Álgebra.pdf",
+ *     "tipo": "pdf",
+ *     "url": "https://res.cloudinary.com/...",
+ *     "modulo_id": "123",
+ *     "unidad_id": "456",
+ *     "subido_por": "789",
+ *     "fecha_subida": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/', async (req, res) => {
   try {
     const documentos = await Documento.getAll();

@@ -1,0 +1,153 @@
+{
+	"id": "tutoria-environment",
+	"name": "TutorIA - Entorno de Desarrollo",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"description": "URL base de la API de TutorIA",
+			"enabled": true
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"description": "Token JWT de autenticación (se configura automáticamente al hacer login)",
+			"enabled": true
+		},
+		{
+			"key": "current_user_id",
+			"value": "",
+			"description": "ID del usuario autenticado actualmente",
+			"enabled": true
+		},
+		{
+			"key": "current_user_role",
+			"value": "",
+			"description": "Rol del usuario autenticado (estudiante, profesor, admin)",
+			"enabled": true
+		},
+		{
+			"key": "current_chat_id",
+			"value": "",
+			"description": "ID del chat activo actual",
+			"enabled": true
+		},
+		{
+			"key": "test_email",
+			"value": "estudiante.prueba@tutoria.com",
+			"description": "Email de prueba para testing",
+			"enabled": true
+		},
+		{
+			"key": "test_password",
+			"value": "password123",
+			"description": "Contraseña de prueba para testing",
+			"enabled": true
+		},
+		{
+			"key": "test_username",
+			"value": "estudiante_prueba",
+			"description": "Nombre de usuario de prueba",
+			"enabled": true
+		},
+		{
+			"key": "test_real_name",
+			"value": "Estudiante de Prueba",
+			"description": "Nombre real de prueba",
+			"enabled": true
+		},
+		{
+			"key": "test_centro_id",
+			"value": "1",
+			"description": "ID de centro educativo para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_centro_name",
+			"value": "Centro Educativo de Prueba",
+			"description": "Nombre de centro educativo para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_modulo_id",
+			"value": "1",
+			"description": "ID de módulo para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_modulo_name",
+			"value": "Matemáticas",
+			"description": "Nombre de módulo para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_unidad_id",
+			"value": "1",
+			"description": "ID de unidad para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_unidad_name",
+			"value": "Álgebra Básica",
+			"description": "Nombre de unidad para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_tutor_id",
+			"value": "1",
+			"description": "ID de tutor virtual para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_tutor_name",
+			"value": "Tutor Matemáticas",
+			"description": "Nombre de tutor virtual para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_assignment_id",
+			"value": "1",
+			"description": "ID de tarea para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_document_id",
+			"value": "1",
+			"description": "ID de documento para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_image_id",
+			"value": "1",
+			"description": "ID de imagen para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_invitation_token",
+			"value": "sample-invitation-token-123",
+			"description": "Token de invitación para pruebas",
+			"enabled": true
+		},
+		{
+			"key": "test_user_id_to_delete",
+			"value": "999",
+			"description": "ID de usuario para pruebas de eliminación",
+			"enabled": true
+		},
+		{
+			"key": "test_file_url",
+			"value": "https://example.com/sample-document.pdf",
+			"description": "URL de archivo de prueba",
+			"enabled": true
+		},
+		{
+			"key": "test_image_url",
+			"value": "https://example.com/sample-image.jpg",
+			"description": "URL de imagen de prueba",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-01-01T00:00:00.000Z",
+	"_postman_exported_using": "Postman/10.0.0"
+}

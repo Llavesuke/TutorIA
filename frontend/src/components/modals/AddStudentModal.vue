@@ -37,12 +37,9 @@
               :disabled="isLoading"
             >
               <option value="" disabled selected>Select a grade</option>
-              <option value="1º ESO">1º ESO</option>
-              <option value="2º ESO">2º ESO</option>
-              <option value="3º ESO">3º ESO</option>
-              <option value="4º ESO">4º ESO</option>
-              <option value="1º BACH">1º BACH</option>
-              <option value="2º BACH">2º BACH</option>
+              <option v-for="gradeOption in availableGrades" :key="gradeOption" :value="gradeOption">
+                {{ gradeOption }}
+              </option>
             </select>
           </div>
 
@@ -53,16 +50,21 @@
               v-model="classGroup"
               class="form-control"
               required
-              :disabled="isLoading"
+              :disabled="isLoading || !grade"
             >
-              <option value="" disabled selected>Select a class</option>
+              <option value="" disabled selected>
+                {{ !grade ? 'Select a grade first' : 'Select a class' }}
+              </option>
               <option v-for="classOption in availableClasses" :key="classOption" :value="classOption">
                 {{ classOption }}
               </option>
-              <option v-if="!availableClasses.includes('A')" value="A">A</option>
-              <option v-if="!availableClasses.includes('B')" value="B">B</option>
-              <option v-if="!availableClasses.includes('C')" value="C">C</option>
-              <option v-if="!availableClasses.includes('D')" value="D">D</option>
+              <!-- For admins, show additional class options if not already available -->
+              <template v-if="userRole === 'admin'">
+                <option v-if="!availableClasses.includes('A')" value="A">A</option>
+                <option v-if="!availableClasses.includes('B')" value="B">B</option>
+                <option v-if="!availableClasses.includes('C')" value="C">C</option>
+                <option v-if="!availableClasses.includes('D')" value="D">D</option>
+              </template>
             </select>
             <small class="form-text">
               {{ isNewClass ? 'This will create a new class.' : 'Select an existing class or create a new one.' }}
@@ -140,6 +142,14 @@ const props = defineProps({
   existingClasses: {
     type: Array,
     default: () => []
+  },
+  professorModules: {
+    type: Array,
+    default: () => []
+  },
+  userRole: {
+    type: String,
+    default: 'admin'
   }
 });
 
@@ -162,21 +172,60 @@ watch(() => props.isOpen, (newValue) => {
   }
 });
 
+// Reset class selection when grade changes
+watch(() => grade.value, (newGrade, oldGrade) => {
+  if (newGrade !== oldGrade) {
+    classGroup.value = '';
+    console.log(`Grade changed from ${oldGrade} to ${newGrade}, clearing class selection`);
+  }
+});
+
 // Computed
 const isFormValid = computed(() => {
   return fullName.value.trim() !== '' && grade.value !== '' && classGroup.value !== '';
+});
+
+// Get available grades based on professor's modules (for professors) or all grades (for admins)
+const availableGrades = computed(() => {
+  if (props.userRole === 'profesor' && props.professorModules.length > 0) {
+    // For professors, only show grades from their assigned modules
+    const grades = [...new Set(props.professorModules.map(module => module.curso).filter(Boolean))];
+    console.log('Available grades for professor:', grades);
+    return grades.sort();
+  } else {
+    // For admins, show all grades
+    return ['1º ESO', '2º ESO', '3º ESO', '4º ESO', '1º BACH', '2º BACH'];
+  }
 });
 
 // Get available classes for the selected grade
 const availableClasses = computed(() => {
   if (!grade.value) return [];
 
-  // Filter classes for the selected grade
-  const classesForGrade = props.existingClasses
-    .filter(c => c.grade === grade.value)
-    .map(c => c.class);
+  if (props.userRole === 'profesor' && props.professorModules.length > 0) {
+    // For professors, only show classes from their assigned modules for the selected grade
+    const classesForGrade = props.professorModules
+      .filter(module => module.curso === grade.value)
+      .map(module => module.clase)
+      .filter(Boolean); // Remove null/undefined values
 
-  return classesForGrade;
+    // If no specific classes are defined for the modules, allow all common classes
+    if (classesForGrade.length === 0) {
+      return ['A', 'B', 'C', 'D'];
+    }
+
+    // Remove duplicates and sort
+    const uniqueClasses = [...new Set(classesForGrade)].sort();
+    console.log(`Available classes for professor in grade ${grade.value}:`, uniqueClasses);
+    return uniqueClasses;
+  } else {
+    // For admins, use existing logic
+    const classesForGrade = props.existingClasses
+      .filter(c => c.grade === grade.value)
+      .map(c => c.class);
+
+    return classesForGrade;
+  }
 });
 
 // Check if the selected grade and class combination already exists
@@ -250,6 +299,18 @@ const createStudent = async () => {
   if (!isFormValid.value) {
     errorMessage.value = 'Please fill in all required fields';
     return;
+  }
+
+  // Additional validation for professors
+  if (props.userRole === 'profesor') {
+    const canCreateInThisGradeClass = props.professorModules.some(module =>
+      module.curso === grade.value && (module.clase === classGroup.value || !module.clase)
+    );
+
+    if (!canCreateInThisGradeClass) {
+      errorMessage.value = 'You can only create students in courses and classes assigned to your modules';
+      return;
+    }
   }
 
   try {

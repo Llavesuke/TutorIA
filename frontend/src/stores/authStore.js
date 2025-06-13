@@ -52,10 +52,17 @@ const getCompleteUserDataFromBackend = async (email) => {
 // Try to load user from localStorage
 const loadUserFromStorage = async () => {
   try {
+    console.log('🔄 Loading user from localStorage...');
     const storedUser = localStorage.getItem('tutoria_user');
     const storedToken = localStorage.getItem('tutoria_token');
     const storedRefreshToken = localStorage.getItem('tutoria_refresh_token');
     const storedTokenExpiry = localStorage.getItem('tutoria_token_expiry');
+
+    console.log('📋 localStorage contents:');
+    console.log('- User:', storedUser ? 'Present' : 'Missing');
+    console.log('- Token:', storedToken ? 'Present' : 'Missing');
+    console.log('- Refresh Token:', storedRefreshToken ? 'Present' : 'Missing');
+    console.log('- Token Expiry:', storedTokenExpiry ? 'Present' : 'Missing');
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
@@ -69,41 +76,50 @@ const loadUserFromStorage = async () => {
             console.log('✅ Replaced stored Supabase data with complete user data');
             user.value = completeUserData;
             saveUserToStorage(completeUserData);
-            return true;
+            // Don't return here, continue to load tokens
           }
         } catch (error) {
           console.error('❌ Error replacing stored Supabase data:', error);
         }
+      } else {
+        user.value = normalizeUserData(parsedUser);
+        console.log('✅ Loaded and normalized user from localStorage:', user.value);
       }
-
-      user.value = normalizeUserData(parsedUser);
-      console.log('Loaded and normalized user from localStorage:', user.value);
     }
 
     if (storedToken) {
       token.value = storedToken;
-      console.log('Loaded token from localStorage');
+      console.log('✅ Loaded access token from localStorage');
     }
 
     if (storedRefreshToken) {
       refreshToken.value = storedRefreshToken;
-      console.log('Loaded refresh token from localStorage');
+      console.log('✅ Loaded refresh token from localStorage');
+      console.log('- Refresh token preview:', storedRefreshToken.substring(0, 20) + '...');
+    } else {
+      console.warn('⚠️ No refresh token found in localStorage');
     }
 
     if (storedTokenExpiry) {
       tokenExpiry.value = parseInt(storedTokenExpiry);
-      console.log('Loaded token expiry from localStorage:', new Date(tokenExpiry.value));
+      console.log('✅ Loaded token expiry from localStorage:', new Date(tokenExpiry.value));
 
       // Check if token is expired
       if (tokenExpiry.value < Date.now()) {
-        console.log('Token is expired, attempting to refresh');
+        console.log('⏰ Token is expired, attempting to refresh');
         refreshAuthToken();
       }
     }
 
+    console.log('🔍 Final state after loading from localStorage:');
+    console.log('- User:', !!user.value);
+    console.log('- Access token:', !!token.value);
+    console.log('- Refresh token:', !!refreshToken.value);
+    console.log('- Token expiry:', tokenExpiry.value ? new Date(tokenExpiry.value) : 'Not set');
+
     return !!storedUser;
   } catch (error) {
-    console.error('Error loading user from localStorage:', error);
+    console.error('❌ Error loading user from localStorage:', error);
   }
   return false;
 };
@@ -126,7 +142,20 @@ const saveUserToStorage = (userData) => {
 // Save token to localStorage
 const saveTokenToStorage = (newToken, newRefreshToken) => {
   try {
+    console.log('🔧 saveTokenToStorage called with:');
+    console.log('- newToken:', newToken ? 'Present' : 'Missing');
+    console.log('- newRefreshToken:', newRefreshToken ? 'Present' : 'Missing');
+
+    // Debug: Log the actual values (first 20 chars for security)
     if (newToken) {
+      console.log('- newToken preview:', newToken.substring(0, 20) + '...');
+    }
+    if (newRefreshToken) {
+      console.log('- newRefreshToken preview:', newRefreshToken.substring(0, 20) + '...');
+    }
+
+    if (newToken) {
+      console.log('💾 Saving access token to localStorage...');
       localStorage.setItem('tutoria_token', newToken);
       token.value = newToken;
 
@@ -135,52 +164,84 @@ const saveTokenToStorage = (newToken, newRefreshToken) => {
       localStorage.setItem('tutoria_token_expiry', expiryTime.toString());
       tokenExpiry.value = expiryTime;
 
-      console.log('Token saved to localStorage, expires:', new Date(expiryTime));
-    } else {
+      console.log('✅ Access token saved to localStorage, expires:', new Date(expiryTime));
+    } else if (newToken === null) {
+      console.log('🗑️ Removing access token from localStorage...');
       localStorage.removeItem('tutoria_token');
       localStorage.removeItem('tutoria_token_expiry');
       token.value = null;
       tokenExpiry.value = null;
-      console.log('Token removed from localStorage');
+      console.log('❌ Access token removed from localStorage');
     }
 
     if (newRefreshToken) {
+      console.log('💾 Saving refresh token to localStorage...');
       localStorage.setItem('tutoria_refresh_token', newRefreshToken);
       refreshToken.value = newRefreshToken;
-      console.log('Refresh token saved to localStorage');
-    } else {
+      console.log('✅ Refresh token saved to localStorage');
+
+      // Verify it was actually saved
+      const savedRefreshToken = localStorage.getItem('tutoria_refresh_token');
+      console.log('🔍 Verification - refresh token in localStorage:', savedRefreshToken ? 'Present' : 'Missing');
+    } else if (newRefreshToken === null) {
+      console.log('🗑️ Removing refresh token from localStorage...');
       localStorage.removeItem('tutoria_refresh_token');
       refreshToken.value = null;
-      console.log('Refresh token removed from localStorage');
+      console.log('❌ Refresh token removed from localStorage');
     }
+
+    // Log current state
+    console.log('📊 Current token state after save:');
+    console.log('- Access token in memory:', token.value ? 'Present' : 'Missing');
+    console.log('- Refresh token in memory:', refreshToken.value ? 'Present' : 'Missing');
+    console.log('- Token expiry:', tokenExpiry.value ? new Date(tokenExpiry.value) : 'Not set');
+
+    // Verify localStorage state
+    console.log('📊 Current localStorage state:');
+    console.log('- tutoria_token:', localStorage.getItem('tutoria_token') ? 'Present' : 'Missing');
+    console.log('- tutoria_refresh_token:', localStorage.getItem('tutoria_refresh_token') ? 'Present' : 'Missing');
+    console.log('- tutoria_token_expiry:', localStorage.getItem('tutoria_token_expiry') ? 'Present' : 'Missing');
   } catch (error) {
-    console.error('Error saving token to localStorage:', error);
+    console.error('❌ Error saving token to localStorage:', error);
   }
 };
 
 // Refresh the authentication token
 const refreshAuthToken = async () => {
   try {
+    console.log('refreshAuthToken called');
+    console.log('Current refresh token:', refreshToken.value ? 'Present' : 'Missing');
+
     if (!refreshToken.value) {
-      console.error('No refresh token available');
+      console.error('No refresh token available - user needs to login again');
+      clearAuth();
+      router.push('/login');
       return false;
     }
 
-    console.log('Attempting to refresh token');
+    console.log('Attempting to refresh token with refresh token:', refreshToken.value.substring(0, 20) + '...');
     const result = await AuthService.refreshToken(refreshToken.value);
+    console.log('Refresh token result:', result);
 
     if (result.success && result.token) {
       console.log('Token refreshed successfully');
+      // Keep the same refresh token, only update the access token
       saveTokenToStorage(result.token, refreshToken.value);
+      console.log('New access token saved, refresh token preserved');
       return true;
     } else {
       console.error('Failed to refresh token:', result);
+      console.error('Clearing auth and redirecting to login');
+      clearAuth();
+      router.push('/login');
       return false;
     }
   } catch (error) {
     console.error('Error refreshing token:', error);
+    console.error('Error details:', error.message);
 
     // If refresh fails, redirect to login
+    console.log('Clearing auth due to refresh error');
     clearAuth();
     router.push('/login');
     return false;
@@ -189,14 +250,21 @@ const refreshAuthToken = async () => {
 
 // Initialize the store by checking for existing session
 const initializeAuth = async () => {
+  console.log('🚀 Initializing auth store...');
   loading.value = true;
   try {
     // First try to load from localStorage
     const hasStoredUser = await loadUserFromStorage();
 
+    console.log('📋 Auth initialization state:');
+    console.log('- Has stored user:', hasStoredUser);
+    console.log('- Has access token:', !!token.value);
+    console.log('- Has refresh token:', !!refreshToken.value);
+
     if (hasStoredUser && token.value) {
       // If we have a stored user and JWT token, validate the token with the backend
       try {
+        console.log('🔍 Validating stored token with backend...');
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
         const response = await fetch(`${baseUrl}/api/auth/me`, {
           headers: {
@@ -205,16 +273,26 @@ const initializeAuth = async () => {
         });
 
         if (!response.ok) {
-          console.log('Token validation failed, attempting to refresh');
+          console.log('❌ Token validation failed, attempting to refresh');
           await refreshAuthToken();
         } else {
-          console.log('Token validated successfully, using stored user data');
+          console.log('✅ Token validated successfully, using stored user data');
           // Don't overwrite the stored user data - it's from our custom database
         }
       } catch (validationError) {
-        console.error('Error validating token:', validationError);
+        console.error('❌ Error validating token:', validationError);
         // If validation fails, try to refresh token
+        console.log('🔄 Attempting to refresh token due to validation error');
         await refreshAuthToken();
+      }
+    } else if (hasStoredUser && !token.value) {
+      console.warn('⚠️ User found but no access token - this might indicate a problem');
+      if (refreshToken.value) {
+        console.log('🔄 Attempting to refresh token since we have refresh token');
+        await refreshAuthToken();
+      } else {
+        console.warn('⚠️ No refresh token available, user needs to login again');
+        clearAuth();
       }
     } else if (!hasStoredUser) {
       // Only check Supabase session if we don't have stored user data
@@ -316,7 +394,7 @@ const isTeacher = computed(() => userRole.value === 'profesor');
 
 // Methods
 const setUser = async (userData, newToken = null, newRefreshToken = null) => {
-  console.log('AuthStore.setUser called with:');
+  console.log('🔐 AuthStore.setUser called with:');
   console.log('- userData:', userData);
   console.log('- newToken:', newToken ? 'Present' : 'Missing');
   console.log('- newRefreshToken:', newRefreshToken ? 'Present' : 'Missing');
@@ -334,6 +412,7 @@ const setUser = async (userData, newToken = null, newRefreshToken = null) => {
         saveUserToStorage(completeUserData);
 
         if (newToken) {
+          console.log('💾 Saving tokens from Supabase flow');
           saveTokenToStorage(newToken, newRefreshToken);
         }
         return;
@@ -354,8 +433,14 @@ const setUser = async (userData, newToken = null, newRefreshToken = null) => {
   saveUserToStorage(normalizedUserData);
 
   if (newToken) {
+    console.log('💾 Saving tokens from direct login flow');
     saveTokenToStorage(newToken, newRefreshToken);
   }
+
+  console.log('🔐 setUser completed. Final state:');
+  console.log('- User set:', !!user.value);
+  console.log('- Access token:', !!token.value);
+  console.log('- Refresh token:', !!refreshToken.value);
 };
 
 const clearAuth = () => {
@@ -411,6 +496,37 @@ const getToken = () => {
   return token.value;
 };
 
+// Test function to verify token saving works
+const testTokenSaving = () => {
+  console.log('🧪 Testing token saving functionality...');
+  const testToken = 'test_access_token_12345';
+  const testRefreshToken = 'test_refresh_token_67890';
+
+  console.log('🔧 Calling saveTokenToStorage with test tokens...');
+  saveTokenToStorage(testToken, testRefreshToken);
+
+  console.log('🔍 Verifying test results...');
+  const savedToken = localStorage.getItem('tutoria_token');
+  const savedRefreshToken = localStorage.getItem('tutoria_refresh_token');
+
+  console.log('Results:');
+  console.log('- Access token saved correctly:', savedToken === testToken);
+  console.log('- Refresh token saved correctly:', savedRefreshToken === testRefreshToken);
+  console.log('- Access token in memory:', token.value === testToken);
+  console.log('- Refresh token in memory:', refreshToken.value === testRefreshToken);
+
+  // Clean up test tokens
+  console.log('🧹 Cleaning up test tokens...');
+  saveTokenToStorage(null, null);
+
+  return {
+    accessTokenSaved: savedToken === testToken,
+    refreshTokenSaved: savedRefreshToken === testRefreshToken,
+    accessTokenInMemory: token.value === testToken,
+    refreshTokenInMemory: refreshToken.value === testRefreshToken
+  };
+};
+
 // Export the store
 export default {
   user,
@@ -427,5 +543,6 @@ export default {
   logout,
   refreshAuthToken,
   initializeAuth,
-  getToken
+  getToken,
+  testTokenSaving
 };

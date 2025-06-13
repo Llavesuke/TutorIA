@@ -1,3 +1,22 @@
+/**
+ * @fileoverview Rutas de chat para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con los chats entre estudiantes
+ * y tutores virtuales, incluyendo inicio de conversaciones, continuación de chats, análisis de imágenes
+ * y obtención de historial de conversaciones.
+ *
+ * Endpoints disponibles:
+ * - POST /chats/start - Iniciar nueva conversación con tutor virtual
+ * - POST /chats/continue - Continuar conversación existente
+ * - POST /chats/image - Analizar imagen con tutor virtual
+ * - POST /chats/generate - Generar texto simple con Gemini
+ * - GET /chats/user/:userId/tutor/:tutorId - Obtener chats entre usuario y tutor específico
+ * - GET /chats/user/:userId - Obtener todos los chats de un usuario
+ * - GET /chats/:chatId/messages - Obtener mensajes de un chat específico
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 const router = Router();
 import GeminiService from '../services/geminiService.js';
@@ -5,7 +24,46 @@ import { requireAuth } from '../middleware/auth.js';
 import Chat from '../models/chat.js';
 import MensajeChat from '../models/mensajeChat.js';
 
-// Iniciar una conversación con un tutor virtual
+/**
+ * POST /api/chats/start
+ *
+ * Inicia una nueva conversación con un tutor virtual
+ *
+ * @description Este endpoint permite a los estudiantes iniciar una nueva conversación
+ * con un tutor virtual específico. Utiliza el servicio de Gemini AI para generar
+ * respuestas inteligentes y contextualmente relevantes. La conversación se guarda
+ * en la base de datos para mantener el historial.
+ *
+ * @param {Object} req.body - Datos para iniciar la conversación
+ * @param {string} req.body.tutorId - ID del tutor virtual (requerido)
+ * @param {string} req.body.message - Mensaje inicial del estudiante (requerido)
+ * @param {string} [req.body.imageUrl] - URL de imagen adjunta (opcional)
+ *
+ * @returns {Object} 201 - Conversación iniciada exitosamente
+ * @returns {Object} 400 - Parámetros faltantes o inválidos
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "tutorId": "1",
+ *   "message": "Hola, necesito ayuda con ecuaciones lineales",
+ *   "imageUrl": null
+ * }
+ *
+ * // Response:
+ * {
+ *   "chat": {
+ *     "id": "123",
+ *     "tutor_virtual_id": "1",
+ *     "usuario_id": "456",
+ *     "fecha_inicio": "2024-01-15T10:30:00Z"
+ *   },
+ *   "response": "¡Hola! Soy tu tutor de matemáticas...",
+ *   "message": "Conversación iniciada exitosamente"
+ * }
+ */
 router.post('/start', requireAuth, async (req, res) => {
   try {
     const { tutorId, message, imageUrl } = req.body;
@@ -43,7 +101,42 @@ router.post('/start', requireAuth, async (req, res) => {
   }
 });
 
-// Continuar una conversación existente
+/**
+ * POST /api/chats/continue
+ *
+ * Continúa una conversación existente con un tutor virtual
+ *
+ * @description Este endpoint permite a los estudiantes continuar una conversación
+ * previamente iniciada con un tutor virtual. Verifica que el chat existe y que
+ * el usuario tiene permisos para acceder a él antes de generar la respuesta.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {Object} req.body - Datos para continuar la conversación
+ * @param {string} req.body.chatId - ID del chat existente (requerido)
+ * @param {string} req.body.message - Nuevo mensaje del estudiante (requerido)
+ * @param {string} [req.body.imageUrl] - URL de imagen adjunta (opcional)
+ *
+ * @returns {Object} 200 - Respuesta generada exitosamente
+ * @returns {Object} 400 - Parámetros faltantes o inválidos
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 403 - Sin permisos para acceder al chat
+ * @returns {Object} 404 - Chat no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "chatId": "123",
+ *   "message": "¿Puedes explicarme más sobre las ecuaciones cuadráticas?",
+ *   "imageUrl": null
+ * }
+ *
+ * // Response:
+ * {
+ *   "response": "Por supuesto, las ecuaciones cuadráticas son..."
+ * }
+ */
 router.post('/continue', requireAuth, async (req, res) => {
   try {
     const { chatId, message, imageUrl } = req.body;
@@ -97,7 +190,38 @@ router.post('/continue', requireAuth, async (req, res) => {
   }
 });
 
-// Generar respuesta a partir de una imagen
+/**
+ * POST /api/chats/image
+ *
+ * Genera respuesta a partir de análisis de imagen
+ *
+ * @description Este endpoint permite analizar una imagen utilizando Gemini AI
+ * y generar una respuesta basada en el contenido visual y un prompt proporcionado.
+ * Útil para resolver problemas matemáticos, analizar diagramas, etc.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {Object} req.body - Datos para análisis de imagen
+ * @param {string} req.body.prompt - Pregunta o instrucción sobre la imagen (requerido)
+ * @param {string} req.body.imageUrl - URL de la imagen a analizar (requerido)
+ *
+ * @returns {Object} 200 - Análisis generado exitosamente
+ * @returns {Object} 400 - Prompt e imageUrl requeridos
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "prompt": "¿Puedes resolver esta ecuación matemática?",
+ *   "imageUrl": "https://example.com/math-problem.jpg"
+ * }
+ *
+ * // Response:
+ * {
+ *   "response": "Veo una ecuación cuadrática. La solución es..."
+ * }
+ */
 router.post('/image', requireAuth, async (req, res) => {
   try {
     const { prompt, imageUrl } = req.body;
@@ -114,7 +238,36 @@ router.post('/image', requireAuth, async (req, res) => {
   }
 });
 
-// Generar texto simple con Gemini
+/**
+ * POST /api/chats/generate
+ *
+ * Genera texto simple utilizando Gemini AI
+ *
+ * @description Este endpoint permite generar texto utilizando Gemini AI
+ * sin necesidad de un contexto de chat específico. Útil para generar
+ * contenido educativo, explicaciones rápidas, etc.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {Object} req.body - Datos para generación de texto
+ * @param {string} req.body.prompt - Prompt para generar texto (requerido)
+ *
+ * @returns {Object} 200 - Texto generado exitosamente
+ * @returns {Object} 400 - Prompt requerido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "prompt": "Explica qué son los números primos"
+ * }
+ *
+ * // Response:
+ * {
+ *   "response": "Los números primos son números naturales mayores que 1..."
+ * }
+ */
 router.post('/generate', requireAuth, async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -131,7 +284,38 @@ router.post('/generate', requireAuth, async (req, res) => {
   }
 });
 
-// Obtener chats de un usuario con un tutor específico
+/**
+ * GET /api/chats/user/:userId/tutor/:tutorId
+ *
+ * Obtiene chats entre un usuario específico y un tutor virtual
+ *
+ * @description Este endpoint devuelve todos los chats entre un usuario específico
+ * y un tutor virtual determinado. Solo el propio usuario, profesores y administradores
+ * pueden acceder a esta información.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {string} req.params.userId - ID del usuario
+ * @param {string} req.params.tutorId - ID del tutor virtual
+ *
+ * @returns {Object[]} 200 - Lista de chats entre el usuario y tutor
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 403 - Sin permisos para acceder a estos chats
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/chats/user/123/tutor/456
+ *
+ * // Response:
+ * [
+ *   {
+ *     "id": "789",
+ *     "usuario_id": "123",
+ *     "tutor_virtual_id": "456",
+ *     "fecha_inicio": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/user/:userId/tutor/:tutorId', requireAuth, async (req, res) => {
   try {
     const { userId, tutorId } = req.params;
@@ -156,7 +340,37 @@ router.get('/user/:userId/tutor/:tutorId', requireAuth, async (req, res) => {
   }
 });
 
-// Obtener todos los chats de un usuario
+/**
+ * GET /api/chats/user/:userId
+ *
+ * Obtiene todos los chats de un usuario específico
+ *
+ * @description Este endpoint devuelve todos los chats de un usuario determinado,
+ * independientemente del tutor virtual. Solo el propio usuario, profesores
+ * y administradores pueden acceder a esta información.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {string} req.params.userId - ID del usuario
+ *
+ * @returns {Object[]} 200 - Lista de todos los chats del usuario
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 403 - Sin permisos para acceder a estos chats
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/chats/user/123
+ *
+ * // Response:
+ * [
+ *   {
+ *     "id": "789",
+ *     "usuario_id": "123",
+ *     "tutor_virtual_id": "456",
+ *     "fecha_inicio": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/user/:userId', requireAuth, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -174,7 +388,46 @@ router.get('/user/:userId', requireAuth, async (req, res) => {
   }
 });
 
-// Obtener mensajes de un chat específico
+/**
+ * GET /api/chats/:chatId/messages
+ *
+ * Obtiene todos los mensajes de un chat específico
+ *
+ * @description Este endpoint devuelve todos los mensajes de una conversación específica.
+ * Verifica que el chat existe y que el usuario tiene permisos para acceder a él.
+ * Solo el propietario del chat, profesores y administradores pueden ver los mensajes.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {string} req.params.chatId - ID del chat
+ *
+ * @returns {Object[]} 200 - Lista de mensajes del chat
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 403 - Sin permisos para acceder a estos mensajes
+ * @returns {Object} 404 - Chat no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/chats/123/messages
+ *
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "chat_id": "123",
+ *     "remitente": "usuario",
+ *     "contenido": "Hola, necesito ayuda",
+ *     "fecha_envio": "2024-01-15T10:30:00Z"
+ *   },
+ *   {
+ *     "id": "2",
+ *     "chat_id": "123",
+ *     "remitente": "tutor",
+ *     "contenido": "¡Hola! ¿En qué puedo ayudarte?",
+ *     "fecha_envio": "2024-01-15T10:31:00Z"
+ *   }
+ * ]
+ */
 router.get('/:chatId/messages', requireAuth, async (req, res) => {
   try {
     const { chatId } = req.params;

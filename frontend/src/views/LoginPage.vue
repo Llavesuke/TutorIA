@@ -36,12 +36,17 @@ const handleLogin = async (e) => {
     // Authenticate with Supabase
     const result = await AuthService.login(identifier.value, password.value);
 
-    console.log('Login successful:', result);
-    console.log('Login result details:');
+    console.log('🎉 Login successful:', result);
+    console.log('📋 Login result details:');
     console.log('- User:', result.user);
     console.log('- Token:', result.token ? 'Present' : 'Missing');
     console.log('- RefreshToken:', result.refreshToken ? 'Present' : 'Missing');
     console.log('- IsEmailVerified:', result.isEmailVerified);
+
+    // Log the actual refresh token value (first 20 chars for security)
+    if (result.refreshToken) {
+      console.log('- RefreshToken preview:', result.refreshToken.substring(0, 20) + '...');
+    }
 
     // Store user in auth store
     if (result.user) {
@@ -56,7 +61,7 @@ const handleLogin = async (e) => {
         }
       };
 
-      console.log('Storing user data in auth store:', userData);
+      console.log('💾 Storing user data in auth store:', userData);
 
       // Store user data and tokens
       await authStore.setUser(
@@ -65,8 +70,18 @@ const handleLogin = async (e) => {
         result.refreshToken   // Refresh token
       );
 
-      console.log('JWT token stored:', result.token ? 'Yes' : 'No');
-      console.log('Refresh token stored:', result.refreshToken ? 'Yes' : 'No');
+      console.log('✅ JWT token stored:', result.token ? 'Yes' : 'No');
+      console.log('✅ Refresh token stored:', result.refreshToken ? 'Yes' : 'No');
+
+      // Verify tokens are actually in localStorage
+      const storedToken = localStorage.getItem('tutoria_token');
+      const storedRefreshToken = localStorage.getItem('tutoria_refresh_token');
+      console.log('🔍 Verification - Token in localStorage:', storedToken ? 'Present' : 'Missing');
+      console.log('🔍 Verification - Refresh token in localStorage:', storedRefreshToken ? 'Present' : 'Missing');
+
+      // Verify tokens are in authStore
+      console.log('🔍 Verification - Token in authStore:', authStore.token.value ? 'Present' : 'Missing');
+      console.log('🔍 Verification - Refresh token in authStore:', authStore.refreshToken.value ? 'Present' : 'Missing');
     }
 
     // Check if the user has an email that needs verification

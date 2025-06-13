@@ -133,7 +133,58 @@ $brand-cashmere: #FEF0D1;
   p {
     font-size: 1.1rem;
     max-width: 400px;
-    margin: 0 auto;
+    margin: 0 auto 1.5rem;
+  }
+
+  .create-module-btn {
+    background: linear-gradient(135deg, $brand-orange, darken($brand-orange, 10%));
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba($brand-orange, 0.4);
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  .help-info {
+    background: rgba($brand-purple, 0.1);
+    border: 1px solid rgba($brand-purple, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+
+    i {
+      color: $brand-purple;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      color: rgba($brand-cashmere, 0.9);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
   }
 }
 

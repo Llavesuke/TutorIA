@@ -1,9 +1,41 @@
+/**
+ * @fileoverview Rutas de subida de archivos para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la subida de archivos
+ * al sistema, incluyendo imágenes de perfil, imágenes de actividad, documentos y archivos
+ * para assignments. Utiliza Cloudinary como servicio de almacenamiento en la nube.
+ *
+ * Endpoints disponibles:
+ * - POST /uploads - Subida genérica de archivos (detecta automáticamente el tipo)
+ * - POST /uploads/profile - Subir imagen de perfil de usuario
+ * - POST /uploads/activity - Subir imagen de actividad educativa
+ * - POST /uploads/chat-image - Subir imagen para usar en chats
+ * - POST /uploads/document - Subir documento educativo
+ * - POST /uploads/assignment - Subir archivo para assignment/tarea
+ * - DELETE /uploads/image/:publicId - Eliminar imagen de Cloudinary
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 const router = Router();
 import UploadService from '../services/uploadService.js';
 import { requireAuth } from '../middleware/auth.js';
 
-// Middleware para verificar que se ha subido un archivo
+/**
+ * Middleware para verificar que se ha subido un archivo
+ *
+ * @description Valida que la request contenga al menos un archivo en req.files.
+ * Este middleware es esencial para todos los endpoints de upload ya que
+ * previene errores cuando no se proporciona ningún archivo.
+ *
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ *
+ * @returns {Object} 400 - Si no se ha subido ningún archivo
+ * @returns {void} - Continúa al siguiente middleware si hay archivos
+ */
 const validateFileUpload = (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({ message: 'No se ha subido ningún archivo' });
@@ -11,7 +43,43 @@ const validateFileUpload = (req, res, next) => {
   next();
 };
 
-// Ruta genérica para subir archivos
+/**
+ * POST /api/uploads
+ *
+ * Ruta genérica para subir archivos (detecta automáticamente el tipo)
+ *
+ * @description Este endpoint permite subir archivos de diferentes tipos y los procesa
+ * automáticamente según su contenido y parámetros. Puede manejar imágenes de perfil,
+ * imágenes de actividad, documentos y archivos genéricos.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Al menos un archivo debe ser subido
+ *
+ * @param {File} req.files.image - Archivo de imagen (para imágenes)
+ * @param {File} req.files.document - Archivo de documento (para documentos)
+ * @param {File} req.files.file - Archivo genérico
+ * @param {string} [req.body.unidadId] - ID de unidad (para imágenes de actividad)
+ * @param {string} [req.body.moduloId] - ID de módulo (para documentos)
+ *
+ * @returns {Object} 201 - Archivo subido exitosamente
+ * @returns {Object} 400 - No se ha subido ningún archivo o tipo inválido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // image: [archivo de imagen]
+ * // unidadId: "123" (opcional)
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/...",
+ *   "public_id": "tutoria/uploads/abc123",
+ *   "format": "jpg",
+ *   "width": 800,
+ *   "height": 600
+ * }
+ */
 router.post('/', requireAuth, validateFileUpload, async (req, res) => {
   try {
     console.log('Recibida solicitud de carga de archivo en /api/uploads');
@@ -93,7 +161,36 @@ router.post('/', requireAuth, validateFileUpload, async (req, res) => {
   }
 });
 
-// Subir imagen de perfil
+/**
+ * POST /api/uploads/profile
+ *
+ * Subir imagen de perfil de usuario
+ *
+ * @description Este endpoint permite a los usuarios subir una imagen de perfil.
+ * La imagen se almacena en Cloudinary y se actualiza la información del usuario
+ * en la base de datos con la nueva URL de la imagen.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Archivo de imagen requerido
+ *
+ * @param {File} req.files.image - Archivo de imagen de perfil
+ *
+ * @returns {Object} 201 - Imagen de perfil subida exitosamente
+ * @returns {Object} 400 - No se ha subido imagen o formato inválido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // image: [archivo de imagen JPG/PNG]
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/tutoria/image/upload/v123/profiles/user_456.jpg",
+ *   "public_id": "tutoria/profiles/user_456",
+ *   "message": "Imagen de perfil actualizada exitosamente"
+ * }
+ */
 router.post('/profile', requireAuth, validateFileUpload, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -112,7 +209,42 @@ router.post('/profile', requireAuth, validateFileUpload, async (req, res) => {
   }
 });
 
-// Subir imagen de actividad
+/**
+ * POST /api/uploads/activity
+ *
+ * Subir imagen de actividad educativa
+ *
+ * @description Este endpoint permite a los usuarios subir imágenes relacionadas
+ * con actividades educativas específicas de una unidad. Las imágenes se almacenan
+ * en Cloudinary y se registran en la base de datos asociadas a la unidad correspondiente.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Archivo de imagen requerido
+ *
+ * @param {File} req.files.image - Archivo de imagen de actividad
+ * @param {string} req.body.unidadId - ID de la unidad educativa (requerido)
+ *
+ * @returns {Object} 201 - Imagen de actividad subida exitosamente
+ * @returns {Object} 400 - Parámetros faltantes o formato inválido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // image: [archivo de imagen]
+ * // unidadId: "123"
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/tutoria/image/upload/v123/activities/abc123.jpg",
+ *   "public_id": "tutoria/activities/abc123",
+ *   "imagen_actividad": {
+ *     "id": "456",
+ *     "unidad_id": "123",
+ *     "usuario_id": "789"
+ *   }
+ * }
+ */
 router.post('/activity', requireAuth, validateFileUpload, async (req, res) => {
   try {
     const { unidadId } = req.body;
@@ -136,7 +268,39 @@ router.post('/activity', requireAuth, validateFileUpload, async (req, res) => {
   }
 });
 
-// Subir imagen para chat
+/**
+ * POST /api/uploads/chat-image
+ *
+ * Subir imagen para usar en chats con tutores virtuales
+ *
+ * @description Este endpoint permite subir imágenes que serán utilizadas en
+ * conversaciones con tutores virtuales. Las imágenes se almacenan en Cloudinary
+ * y pueden ser analizadas por Gemini AI para generar respuestas contextuales.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Archivo de imagen requerido
+ *
+ * @param {File} req.files.image - Archivo de imagen para chat
+ *
+ * @returns {Object} 201 - Imagen subida exitosamente
+ * @returns {Object} 400 - No se ha subido imagen o formato inválido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // image: [archivo de imagen JPG/PNG]
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/tutoria/image/upload/v123/chat-images/abc123.jpg",
+ *   "public_id": "tutoria/chat-images/abc123",
+ *   "format": "jpg",
+ *   "width": 800,
+ *   "height": 600,
+ *   "bytes": 245760
+ * }
+ */
 router.post('/chat-image', requireAuth, validateFileUpload, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -164,7 +328,46 @@ router.post('/chat-image', requireAuth, validateFileUpload, async (req, res) => 
   }
 });
 
-// Subir documento
+/**
+ * POST /api/uploads/document
+ *
+ * Subir documento educativo
+ *
+ * @description Este endpoint permite subir documentos educativos (PDF, DOC, DOCX, PPT, PPTX, TXT)
+ * que se asocian a módulos o unidades específicas. Los documentos se almacenan en Cloudinary
+ * y se registran en la base de datos para su posterior consulta y gestión.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Archivo de documento requerido
+ *
+ * @param {File} req.files.document - Archivo de documento
+ * @param {string} [req.body.moduloId] - ID del módulo (opcional)
+ * @param {string} [req.body.unidadId] - ID de la unidad (opcional)
+ *
+ * @returns {Object} 201 - Documento subido exitosamente
+ * @returns {Object} 400 - Parámetros faltantes o tipo de archivo no permitido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // document: [archivo PDF/DOC/DOCX/PPT/PPTX/TXT]
+ * // moduloId: "123" (opcional)
+ * // unidadId: "456" (opcional)
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/tutoria/raw/upload/v123/documents/abc123.pdf",
+ *   "public_id": "tutoria/documents/abc123",
+ *   "format": "pdf",
+ *   "bytes": 1048576,
+ *   "documento": {
+ *     "id": "789",
+ *     "modulo_id": "123",
+ *     "unidad_id": "456"
+ *   }
+ * }
+ */
 router.post('/document', requireAuth, validateFileUpload, async (req, res) => {
   try {
     const { moduloId, unidadId } = req.body;
@@ -193,7 +396,37 @@ router.post('/document', requireAuth, validateFileUpload, async (req, res) => {
   }
 });
 
-// Subir archivo para assignment
+/**
+ * POST /api/uploads/assignment
+ *
+ * Subir archivo para assignment/tarea
+ *
+ * @description Este endpoint permite a los estudiantes subir archivos como parte
+ * de la entrega de assignments/tareas. Los archivos se almacenan en Cloudinary
+ * sin registrarse en la base de datos, ya que se asocian directamente al envío de la tarea.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ * @requires File - Archivo requerido
+ *
+ * @param {File} req.files.file - Archivo para la tarea (cualquier tipo)
+ *
+ * @returns {Object} 201 - Archivo subido exitosamente
+ * @returns {Object} 400 - No se ha subido ningún archivo
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Form data:
+ * // file: [cualquier tipo de archivo]
+ *
+ * // Response:
+ * {
+ *   "url": "https://res.cloudinary.com/tutoria/raw/upload/v123/assignments/abc123.pdf",
+ *   "public_id": "tutoria/assignments/abc123",
+ *   "format": "pdf",
+ *   "bytes": 2097152
+ * }
+ */
 router.post('/assignment', requireAuth, validateFileUpload, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -241,7 +474,35 @@ router.post('/assignment', requireAuth, validateFileUpload, async (req, res) => 
   }
 });
 
-// Eliminar imagen
+/**
+ * DELETE /api/uploads/image/:publicId
+ *
+ * Eliminar imagen de Cloudinary
+ *
+ * @description Este endpoint permite eliminar una imagen específica de Cloudinary
+ * utilizando su ID público. Solo usuarios autenticados pueden eliminar imágenes.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {string} req.params.publicId - ID público de la imagen en Cloudinary
+ *
+ * @returns {Object} 200 - Imagen eliminada correctamente
+ * @returns {Object} 400 - ID público requerido
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 404 - Imagen no encontrada o ya eliminada
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: DELETE /api/uploads/image/tutoria%2Fuploads%2Fabc123
+ *
+ * // Response:
+ * {
+ *   "message": "Imagen eliminada correctamente",
+ *   "result": {
+ *     "result": "ok"
+ *   }
+ * }
+ */
 router.delete('/image/:publicId', requireAuth, async (req, res) => {
   try {
     const { publicId } = req.params;

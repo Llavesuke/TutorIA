@@ -1,9 +1,60 @@
+/**
+ * @fileoverview Rutas de assignments (tareas) para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de assignments/tareas,
+ * incluyendo creación, actualización, eliminación, envío de tareas por estudiantes y calificación por profesores.
+ *
+ * Endpoints disponibles:
+ * - GET /assignments - Obtener todas las tareas
+ * - GET /assignments/my-submissions - Obtener envíos del usuario actual
+ * - GET /assignments/unidad/:unidadId - Obtener tareas por unidad
+ * - GET /assignments/:id - Obtener tarea específica
+ * - POST /assignments - Crear nueva tarea (Admin/Profesor)
+ * - PUT /assignments/:id - Actualizar tarea (Admin/Profesor)
+ * - DELETE /assignments/:id - Eliminar tarea (Admin/Profesor)
+ * - GET /assignments/:id/submissions - Obtener envíos de una tarea (Admin/Profesor)
+ * - GET /assignments/:id/my-submission - Obtener envío propio de una tarea
+ * - POST /assignments/:id/submit - Enviar tarea
+ * - POST /assignments/submissions/:submissionId/grade - Calificar envío (Admin/Profesor)
+ * - POST /assignments/submissions/:submissionId/feedback - Dar feedback (Admin/Profesor)
+ * - PUT /assignments/:id/active - Activar/desactivar tarea (Admin/Profesor)
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import Assignment from '../models/assignment.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 const router = Router();
 
-// GET /api/assignments
+/**
+ * GET /api/assignments
+ *
+ * Obtiene todas las tareas del sistema
+ *
+ * @description Este endpoint devuelve una lista de todas las tareas/assignments
+ * disponibles en el sistema. Solo usuarios autenticados pueden acceder.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @returns {Object[]} 200 - Lista de todas las tareas
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "titulo": "Ejercicios de Álgebra",
+ *     "descripcion": "Resolver ecuaciones lineales",
+ *     "unidad_id": "123",
+ *     "fecha_entrega": "2024-02-15T23:59:59Z",
+ *     "puntuacion_maxima": 100,
+ *     "activa": true
+ *   }
+ * ]
+ */
 router.get('/', requireAuth, async (req, res) => {
   try {
     const assignments = await Assignment.getAll();
@@ -14,7 +65,33 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/assignments/my-submissions
+/**
+ * GET /api/assignments/my-submissions
+ *
+ * Obtiene los envíos de tareas del usuario autenticado
+ *
+ * @description Este endpoint devuelve todos los envíos de tareas realizados
+ * por el usuario actualmente autenticado, incluyendo estado y calificaciones.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @returns {Object[]} 200 - Lista de envíos del usuario
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "assignment_id": "123",
+ *     "titulo_assignment": "Ejercicios de Álgebra",
+ *     "fecha_envio": "2024-01-20T14:30:00Z",
+ *     "calificacion": 85,
+ *     "estado": "calificado"
+ *   }
+ * ]
+ */
 router.get('/my-submissions', requireAuth, async (req, res) => {
   try {
     const usuarioId = req.user.id;
@@ -26,7 +103,38 @@ router.get('/my-submissions', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/assignments/unidad/:unidadId
+/**
+ * GET /api/assignments/unidad/:unidadId
+ *
+ * Obtiene todas las tareas de una unidad específica
+ *
+ * @description Este endpoint devuelve las tareas asociadas a una unidad educativa.
+ * Para estudiantes, solo muestra tareas activas. Para profesores y administradores,
+ * muestra todas las tareas independientemente de su estado.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {string} req.params.unidadId - ID de la unidad educativa
+ *
+ * @returns {Object[]} 200 - Lista de tareas de la unidad
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/assignments/unidad/123
+ *
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "titulo": "Ejercicios de Álgebra",
+ *     "descripcion": "Resolver ecuaciones lineales",
+ *     "fecha_entrega": "2024-02-15T23:59:59Z",
+ *     "puntuacion_maxima": 100,
+ *     "activa": true
+ *   }
+ * ]
+ */
 router.get('/unidad/:unidadId', requireAuth, async (req, res) => {
   try {
     const { unidadId } = req.params;

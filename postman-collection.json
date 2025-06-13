@@ -1,0 +1,1177 @@
+{
+	"info": {
+		"_postman_id": "tutoria-api-collection",
+		"name": "TutorIA API - Colección Completa",
+		"description": "Colección completa de endpoints para la API de TutorIA - Plataforma Educativa con IA\n\n## Descripción\nEsta colección incluye todos los endpoints disponibles en la API de TutorIA, organizados por funcionalidad.\n\n## Configuración\n1. Importa las variables de entorno incluidas\n2. Configura la URL base en las variables de entorno\n3. Ejecuta el endpoint de login para obtener el token de autenticación\n4. Los tokens se configuran automáticamente mediante scripts\n\n## Estructura\n- **Autenticación**: Registro, login, logout y gestión de usuarios\n- **Centros Educativos**: CRUD de centros educativos\n- **Usuarios**: Gestión de usuarios del sistema\n- **Módulos**: Gestión de módulos educativos\n- **Unidades**: Gestión de unidades dentro de módulos\n- **Tutores Virtuales**: Configuración de tutores IA\n- **Chats**: Sistema de conversación con tutores\n- **Documentos**: Gestión de documentos del sistema\n- **Uploads**: Subida de archivos e imágenes\n- **RAG**: Sistema de recuperación aumentada\n- **Y más...**",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Autenticación",
+			"description": "Endpoints para autenticación y gestión de sesiones de usuario",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\",\n  \"nombreUsuario\": \"{{test_username}}\",\n  \"nombreReal\": \"{{test_real_name}}\",\n  \"rol\": \"estudiante\",\n  \"centroId\": \"{{test_centro_id}}\",\n  \"curso\": \"1º ESO\",\n  \"clase\": \"A\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Registra un nuevo usuario en el sistema.\n\n**Parámetros requeridos:**\n- email: Correo electrónico del usuario\n- password: Contraseña (mínimo 6 caracteres)\n- nombreUsuario: Nombre de usuario único\n- nombreReal: Nombre real del usuario\n- rol: Rol del usuario (estudiante, profesor, admin)\n- centroId: ID del centro educativo\n\n**Parámetros opcionales:**\n- curso: Curso del estudiante\n- clase: Clase del estudiante\n- fotoPerfil: URL de la foto de perfil"
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Guardar token de autenticación automáticamente",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.token) {",
+									"        pm.environment.set('auth_token', responseJson.token);",
+									"        console.log('Token de autenticación guardado');",
+									"    }",
+									"    if (responseJson.user) {",
+									"        pm.environment.set('current_user_id', responseJson.user.id);",
+									"        pm.environment.set('current_user_role', responseJson.user.rol);",
+									"        console.log('Información de usuario guardada');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Inicia sesión en el sistema con email/usuario y contraseña.\n\n**Parámetros:**\n- identifier: Email o nombre de usuario\n- password: Contraseña del usuario\n\n**Respuesta:**\n- token: Token JWT para autenticación\n- user: Información del usuario\n- isEmailVerified: Estado de verificación del email"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						},
+						"description": "Obtiene la información del usuario autenticado actualmente.\n\n**Autenticación:** Requerida\n\n**Respuesta:**\n- user: Información completa del usuario autenticado\n- message: Mensaje de confirmación"
+					},
+					"response": []
+				},
+				{
+					"name": "Cerrar Sesión",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Cierra la sesión del usuario actual.\n\n**Autenticación:** Requerida\n\n**Respuesta:**\n- message: Confirmación de cierre de sesión"
+					},
+					"response": []
+				},
+				{
+					"name": "Solicitar Restablecimiento de Contraseña",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{test_email}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/reset-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "reset-password"]
+						},
+						"description": "Solicita el restablecimiento de contraseña enviando un email con instrucciones.\n\n**Parámetros:**\n- email: Correo electrónico del usuario\n\n**Respuesta:**\n- message: Confirmación de envío del email"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Contraseña",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"{{test_password}}\",\n  \"newPassword\": \"nueva_contraseña_123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/update-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "update-password"]
+						},
+						"description": "Actualiza la contraseña del usuario autenticado.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- currentPassword: Contraseña actual\n- newPassword: Nueva contraseña\n\n**Respuesta:**\n- message: Confirmación de actualización"
+					},
+					"response": []
+				},
+				{
+					"name": "Diagnóstico del Sistema",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/diagnostic",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "diagnostic"]
+						},
+						"description": "Endpoint de diagnóstico para verificar el estado del sistema de autenticación.\n\n**Respuesta:**\n- timestamp: Marca de tiempo actual\n- environment: Entorno de ejecución\n- database: Estado de la conexión a base de datos\n- jwt: Estado de configuración JWT"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🏫 Centros Educativos",
+			"description": "Gestión de centros educativos del sistema",
+			"item": [
+				{
+					"name": "Obtener Todos los Centros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/centros-educativos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "centros-educativos"]
+						},
+						"description": "Obtiene la lista completa de centros educativos registrados.\n\n**Respuesta:**\n- Array de centros educativos con id, nombre y fecha de creación"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Centro por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/centros-educativos/{{test_centro_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "centros-educativos", "{{test_centro_id}}"]
+						},
+						"description": "Obtiene la información detallada de un centro educativo específico.\n\n**Parámetros de URL:**\n- id: ID del centro educativo\n\n**Respuesta:**\n- Información completa del centro educativo"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Centro Educativo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"{{test_centro_name}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/centros-educativos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "centros-educativos"]
+						},
+						"description": "Crea un nuevo centro educativo en el sistema.\n\n**Parámetros requeridos:**\n- nombre: Nombre del centro educativo\n\n**Respuesta:**\n- Información del centro educativo creado"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Centro Educativo",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"{{test_centro_name}} - Actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/centros-educativos/{{test_centro_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "centros-educativos", "{{test_centro_id}}"]
+						},
+						"description": "Actualiza la información de un centro educativo existente.\n\n**Parámetros de URL:**\n- id: ID del centro educativo\n\n**Parámetros del cuerpo:**\n- nombre: Nuevo nombre del centro educativo\n\n**Respuesta:**\n- Información actualizada del centro educativo"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Centro Educativo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/centros-educativos/{{test_centro_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "centros-educativos", "{{test_centro_id}}"]
+						},
+						"description": "Elimina un centro educativo del sistema.\n\n**Parámetros de URL:**\n- id: ID del centro educativo a eliminar\n\n**Respuesta:**\n- Confirmación de eliminación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👥 Usuarios",
+			"description": "Gestión de usuarios del sistema",
+			"item": [
+				{
+					"name": "Obtener Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios"]
+						},
+						"description": "Obtiene la lista completa de usuarios registrados en el sistema.\n\n**Respuesta:**\n- Array de usuarios con información básica"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{current_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "{{current_user_id}}"]
+						},
+						"description": "Obtiene la información detallada de un usuario específico.\n\n**Parámetros de URL:**\n- id: ID del usuario\n\n**Respuesta:**\n- Información completa del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/by-email/{{test_email}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "by-email", "{{test_email}}"]
+						},
+						"description": "Obtiene la información de un usuario por su dirección de email.\n\n**Parámetros de URL:**\n- email: Dirección de email del usuario\n\n**Respuesta:**\n- Información del usuario con metadatos"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuarios por Centro",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/centro/{{test_centro_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "centro", "{{test_centro_id}}"]
+						},
+						"description": "Obtiene todos los usuarios pertenecientes a un centro educativo específico.\n\n**Parámetros de URL:**\n- centroId: ID del centro educativo\n\n**Respuesta:**\n- Array de usuarios del centro especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuarios por Rol",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/rol/estudiante",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "rol", "estudiante"]
+						},
+						"description": "Obtiene todos los usuarios con un rol específico.\n\n**Parámetros de URL:**\n- rol: Rol del usuario (estudiante, profesor, admin)\n\n**Respuesta:**\n- Array de usuarios con el rol especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombreUsuario\": \"{{test_username}}_actualizado\",\n  \"email\": \"{{test_email}}\",\n  \"fotoPerfil\": \"https://example.com/nueva-foto.jpg\",\n  \"curso\": \"2º ESO\",\n  \"clase\": \"B\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{current_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "{{current_user_id}}"]
+						},
+						"description": "Actualiza la información de un usuario existente.\n\n**Parámetros de URL:**\n- id: ID del usuario\n\n**Parámetros del cuerpo:**\n- nombreUsuario: Nuevo nombre de usuario\n- email: Nuevo email\n- fotoPerfil: Nueva URL de foto de perfil\n- curso: Nuevo curso\n- clase: Nueva clase\n\n**Respuesta:**\n- Información actualizada del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{test_user_id_to_delete}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "{{test_user_id_to_delete}}"]
+						},
+						"description": "Elimina un usuario del sistema.\n\n**Parámetros de URL:**\n- id: ID del usuario a eliminar\n\n**Respuesta:**\n- Confirmación de eliminación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📚 Módulos",
+			"description": "Gestión de módulos educativos",
+			"item": [
+				{
+					"name": "Obtener Todos los Módulos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/modulos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos"]
+						},
+						"description": "Obtiene la lista completa de módulos educativos.\n\n**Autenticación:** Requerida\n\n**Respuesta:**\n- Array de módulos con información completa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Módulo por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/modulos/{{test_modulo_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos", "{{test_modulo_id}}"]
+						},
+						"description": "Obtiene la información detallada de un módulo específico.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- id: ID del módulo\n\n**Respuesta:**\n- Información completa del módulo"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Módulos por Centro",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/modulos/centro/{{test_centro_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos", "centro", "{{test_centro_id}}"]
+						},
+						"description": "Obtiene todos los módulos de un centro educativo específico.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- centroId: ID del centro educativo\n\n**Respuesta:**\n- Array de módulos del centro especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Módulo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"{{test_modulo_name}}\",\n  \"descripcion\": \"Descripción del módulo de prueba\",\n  \"centroId\": \"{{test_centro_id}}\",\n  \"curso\": \"1º ESO\",\n  \"color\": \"#007142\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/modulos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos"]
+						},
+						"description": "Crea un nuevo módulo educativo.\n\n**Autenticación:** Requerida (Admin/Profesor)\n\n**Parámetros requeridos:**\n- nombre: Nombre del módulo\n- descripcion: Descripción del módulo\n- centroId: ID del centro educativo\n- curso: Curso al que pertenece\n\n**Parámetros opcionales:**\n- color: Color identificativo del módulo\n\n**Respuesta:**\n- Información del módulo creado"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Módulo",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"{{test_modulo_name}} - Actualizado\",\n  \"descripcion\": \"Descripción actualizada del módulo\",\n  \"curso\": \"2º ESO\",\n  \"color\": \"#e6531d\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/modulos/{{test_modulo_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos", "{{test_modulo_id}}"]
+						},
+						"description": "Actualiza la información de un módulo existente.\n\n**Autenticación:** Requerida (Admin/Profesor)\n\n**Parámetros de URL:**\n- id: ID del módulo\n\n**Parámetros del cuerpo:**\n- nombre: Nuevo nombre del módulo\n- descripcion: Nueva descripción\n- curso: Nuevo curso\n- color: Nuevo color\n\n**Respuesta:**\n- Información actualizada del módulo"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Módulo",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/modulos/{{test_modulo_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "modulos", "{{test_modulo_id}}"]
+						},
+						"description": "Elimina un módulo del sistema.\n\n**Autenticación:** Requerida (Admin)\n\n**Parámetros de URL:**\n- id: ID del módulo a eliminar\n\n**Respuesta:**\n- Confirmación de eliminación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📖 Unidades",
+			"description": "Gestión de unidades dentro de módulos",
+			"item": [
+				{
+					"name": "Obtener Todas las Unidades",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/unidades",
+							"host": ["{{base_url}}"],
+							"path": ["api", "unidades"]
+						},
+						"description": "Obtiene la lista completa de unidades educativas.\n\n**Autenticación:** Requerida\n\n**Respuesta:**\n- Array de unidades con información completa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Unidad por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/unidades/{{test_unidad_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "unidades", "{{test_unidad_id}}"]
+						},
+						"description": "Obtiene la información detallada de una unidad específica.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- id: ID de la unidad\n\n**Respuesta:**\n- Información completa de la unidad"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Unidades por Módulo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/unidades/modulo/{{test_modulo_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "unidades", "modulo", "{{test_modulo_id}}"]
+						},
+						"description": "Obtiene todas las unidades de un módulo específico.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- moduloId: ID del módulo\n\n**Respuesta:**\n- Array de unidades del módulo especificado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🤖 Tutores Virtuales",
+			"description": "Gestión de tutores virtuales con IA",
+			"item": [
+				{
+					"name": "Obtener Todos los Tutores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tutores-virtuales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tutores-virtuales"]
+						},
+						"description": "Obtiene la lista completa de tutores virtuales disponibles.\n\n**Autenticación:** Requerida\n\n**Respuesta:**\n- Array de tutores virtuales con información completa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Tutor por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tutores-virtuales/{{test_tutor_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tutores-virtuales", "{{test_tutor_id}}"]
+						},
+						"description": "Obtiene la información detallada de un tutor virtual específico.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- id: ID del tutor virtual\n\n**Respuesta:**\n- Información completa del tutor virtual"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Tutores por Unidad",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tutores-virtuales/unidad/{{test_unidad_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tutores-virtuales", "unidad", "{{test_unidad_id}}"]
+						},
+						"description": "Obtiene todos los tutores virtuales asignados a una unidad específica.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- unidadId: ID de la unidad\n\n**Respuesta:**\n- Array de tutores virtuales de la unidad especificada"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Tutor Virtual",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"{{test_tutor_name}}\",\n  \"descripcion\": \"Tutor especializado en matemáticas\",\n  \"tipo\": \"teorico\",\n  \"unidadId\": \"{{test_unidad_id}}\",\n  \"personalidad\": \"Amigable y paciente, explica conceptos paso a paso\",\n  \"objetivos\": \"Ayudar a los estudiantes a comprender conceptos matemáticos fundamentales\",\n  \"instrucciones_especificas\": \"Siempre proporciona ejemplos prácticos y verifica la comprensión del estudiante\",\n  \"avatar\": \"https://example.com/avatar-matematicas.png\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tutores-virtuales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tutores-virtuales"]
+						},
+						"description": "Crea un nuevo tutor virtual.\n\n**Autenticación:** Requerida (Admin/Profesor)\n\n**Parámetros requeridos:**\n- nombre: Nombre del tutor virtual\n- descripcion: Descripción del tutor\n- tipo: Tipo de tutor (teorico, practico, evaluador, general)\n- unidadId: ID de la unidad asignada\n\n**Parámetros opcionales:**\n- personalidad: Personalidad del tutor\n- objetivos: Objetivos del tutor\n- instrucciones_especificas: Instrucciones específicas\n- avatar: URL del avatar\n\n**Respuesta:**\n- Información del tutor virtual creado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "💬 Chats",
+			"description": "Sistema de conversación con tutores virtuales",
+			"item": [
+				{
+					"name": "Iniciar Conversación",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Guardar ID del chat creado",
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.chat && responseJson.chat.id) {",
+									"        pm.environment.set('current_chat_id', responseJson.chat.id);",
+									"        console.log('Chat ID guardado:', responseJson.chat.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tutorId\": \"{{test_tutor_id}}\",\n  \"message\": \"Hola, necesito ayuda con ecuaciones lineales\",\n  \"imageUrl\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/chats/start",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chats", "start"]
+						},
+						"description": "Inicia una nueva conversación con un tutor virtual.\n\n**Autenticación:** Requerida\n\n**Parámetros requeridos:**\n- tutorId: ID del tutor virtual\n- message: Mensaje inicial del estudiante\n\n**Parámetros opcionales:**\n- imageUrl: URL de imagen adjunta\n\n**Respuesta:**\n- chat: Información del chat creado\n- response: Respuesta inicial del tutor\n- message: Mensaje del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Continuar Conversación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chatId\": \"{{current_chat_id}}\",\n  \"message\": \"¿Puedes explicarme cómo resolver 2x + 5 = 15?\",\n  \"imageUrl\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/chats/continue",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chats", "continue"]
+						},
+						"description": "Continúa una conversación existente con un tutor virtual.\n\n**Autenticación:** Requerida\n\n**Parámetros requeridos:**\n- chatId: ID del chat existente\n- message: Nuevo mensaje del estudiante\n\n**Parámetros opcionales:**\n- imageUrl: URL de imagen adjunta\n\n**Respuesta:**\n- response: Respuesta del tutor\n- message: Mensaje del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Enviar Imagen al Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tutorId\": \"{{test_tutor_id}}\",\n  \"imageUrl\": \"https://example.com/problema-matematico.jpg\",\n  \"message\": \"¿Puedes ayudarme a resolver este problema?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/chats/image",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chats", "image"]
+						},
+						"description": "Envía una imagen al tutor virtual para análisis.\n\n**Autenticación:** Requerida\n\n**Parámetros requeridos:**\n- tutorId: ID del tutor virtual\n- imageUrl: URL de la imagen a analizar\n\n**Parámetros opcionales:**\n- message: Mensaje adicional sobre la imagen\n\n**Respuesta:**\n- response: Análisis del tutor sobre la imagen\n- message: Mensaje del sistema"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📁 Documentos",
+			"description": "Gestión de documentos del sistema",
+			"item": [
+				{
+					"name": "Obtener Todos los Documentos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos"]
+						},
+						"description": "Obtiene la lista completa de documentos en el sistema.\n\n**Respuesta:**\n- Array de documentos con información completa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documento por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/{{test_document_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "{{test_document_id}}"]
+						},
+						"description": "Obtiene la información detallada de un documento específico.\n\n**Parámetros de URL:**\n- id: ID del documento\n\n**Respuesta:**\n- Información completa del documento"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documentos por Módulo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/modulo/{{test_modulo_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "modulo", "{{test_modulo_id}}"]
+						},
+						"description": "Obtiene todos los documentos asociados a un módulo específico.\n\n**Parámetros de URL:**\n- moduloId: ID del módulo\n\n**Respuesta:**\n- Array de documentos del módulo especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documentos por Unidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/unidad/{{test_unidad_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "unidad", "{{test_unidad_id}}"]
+						},
+						"description": "Obtiene todos los documentos asociados a una unidad específica.\n\n**Parámetros de URL:**\n- unidadId: ID de la unidad\n\n**Respuesta:**\n- Array de documentos de la unidad especificada"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documentos por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/usuario/{{current_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "usuario", "{{current_user_id}}"]
+						},
+						"description": "Obtiene todos los documentos subidos por un usuario específico.\n\n**Parámetros de URL:**\n- usuarioId: ID del usuario\n\n**Respuesta:**\n- Array de documentos del usuario especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documentos por Tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/tipo/pdf",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "tipo", "pdf"]
+						},
+						"description": "Obtiene todos los documentos de un tipo específico.\n\n**Parámetros de URL:**\n- tipo: Tipo de documento (pdf, doc, docx, ppt, pptx, txt)\n\n**Respuesta:**\n- Array de documentos del tipo especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Documento",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/documentos/{{test_document_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "documentos", "{{test_document_id}}"]
+						},
+						"description": "Elimina un documento del sistema.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- id: ID del documento a eliminar\n\n**Nota:** Solo el propietario del documento o un administrador puede eliminarlo.\n\n**Respuesta:**\n- Confirmación de eliminación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🖼️ Imágenes de Actividad",
+			"description": "Gestión de imágenes de actividades",
+			"item": [
+				{
+					"name": "Obtener Todas las Imágenes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/imagenes-actividad",
+							"host": ["{{base_url}}"],
+							"path": ["api", "imagenes-actividad"]
+						},
+						"description": "Obtiene la lista completa de imágenes de actividad.\n\n**Respuesta:**\n- Array de imágenes con información completa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Imagen por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/imagenes-actividad/{{test_image_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "imagenes-actividad", "{{test_image_id}}"]
+						},
+						"description": "Obtiene la información detallada de una imagen específica.\n\n**Parámetros de URL:**\n- id: ID de la imagen\n\n**Respuesta:**\n- Información completa de la imagen"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Imágenes por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/imagenes-actividad/usuario/{{current_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "imagenes-actividad", "usuario", "{{current_user_id}}"]
+						},
+						"description": "Obtiene todas las imágenes subidas por un usuario específico.\n\n**Parámetros de URL:**\n- usuarioId: ID del usuario\n\n**Respuesta:**\n- Array de imágenes del usuario especificado"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Imágenes por Unidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/imagenes-actividad/unidad/{{test_unidad_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "imagenes-actividad", "unidad", "{{test_unidad_id}}"]
+						},
+						"description": "Obtiene todas las imágenes asociadas a una unidad específica.\n\n**Parámetros de URL:**\n- unidadId: ID de la unidad\n\n**Respuesta:**\n- Array de imágenes de la unidad especificada"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Imagen de Actividad",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/imagenes-actividad/{{test_image_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "imagenes-actividad", "{{test_image_id}}"]
+						},
+						"description": "Elimina una imagen de actividad del sistema.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- id: ID de la imagen a eliminar\n\n**Nota:** Solo el propietario de la imagen o un administrador puede eliminarla.\n\n**Respuesta:**\n- Confirmación de eliminación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📤 Uploads",
+			"description": "Subida de archivos e imágenes",
+			"item": [
+				{
+					"name": "Subir Archivo Genérico",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Archivo de imagen"
+								},
+								{
+									"key": "unidadId",
+									"value": "{{test_unidad_id}}",
+									"type": "text",
+									"description": "ID de unidad (para imágenes de actividad)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/uploads",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads"]
+						},
+						"description": "Sube un archivo genérico al sistema.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- image/document/file: Archivo a subir\n- unidadId: ID de unidad (para imágenes de actividad)\n- moduloId: ID de módulo (para documentos)\n\n**Respuesta:**\n- url: URL del archivo subido\n- public_id: ID público en Cloudinary\n- Información adicional del archivo"
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Imagen de Perfil",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Imagen de perfil"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/uploads/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads", "profile"]
+						},
+						"description": "Sube una imagen de perfil para el usuario autenticado.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- image: Archivo de imagen (JPG, PNG, etc.)\n\n**Respuesta:**\n- url: URL de la imagen subida\n- public_id: ID público en Cloudinary"
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Imagen de Actividad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Imagen de actividad"
+								},
+								{
+									"key": "unidadId",
+									"value": "{{test_unidad_id}}",
+									"type": "text",
+									"description": "ID de la unidad"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/uploads/activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads", "activity"]
+						},
+						"description": "Sube una imagen relacionada con una actividad educativa.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- image: Archivo de imagen\n- unidadId: ID de la unidad educativa\n\n**Respuesta:**\n- url: URL de la imagen subida\n- Información de la imagen en la base de datos"
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Imagen para Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Imagen para chat"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/uploads/chat-image",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads", "chat-image"]
+						},
+						"description": "Sube una imagen para usar en conversaciones de chat.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- image: Archivo de imagen\n\n**Respuesta:**\n- url: URL de la imagen subida\n- Metadatos de la imagen (dimensiones, formato, etc.)"
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Documento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": [],
+									"description": "Archivo de documento"
+								},
+								{
+									"key": "moduloId",
+									"value": "{{test_modulo_id}}",
+									"type": "text",
+									"description": "ID del módulo (opcional)"
+								},
+								{
+									"key": "unidadId",
+									"value": "{{test_unidad_id}}",
+									"type": "text",
+									"description": "ID de la unidad (opcional)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/uploads/document",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads", "document"]
+						},
+						"description": "Sube un documento al sistema.\n\n**Autenticación:** Requerida\n\n**Parámetros:**\n- document: Archivo de documento (PDF, DOC, DOCX, PPT, PPTX, TXT)\n- moduloId: ID del módulo (opcional)\n- unidadId: ID de la unidad (opcional)\n\n**Respuesta:**\n- url: URL del documento subido\n- Información del documento en la base de datos"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Imagen",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/uploads/image/sample_public_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "uploads", "image", "sample_public_id"]
+						},
+						"description": "Elimina una imagen de Cloudinary.\n\n**Autenticación:** Requerida\n\n**Parámetros de URL:**\n- publicId: ID público de la imagen en Cloudinary\n\n**Respuesta:**\n- message: Confirmación de eliminación\n- result: Resultado de la operación"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

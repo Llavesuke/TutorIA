@@ -1,10 +1,57 @@
+/**
+ * @fileoverview Rutas de usuarios para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de usuarios,
+ * incluyendo consulta, actualización, eliminación y operaciones específicas por rol y centro educativo.
+ *
+ * Endpoints disponibles:
+ * - GET /usuarios - Obtener todos los usuarios
+ * - GET /usuarios/rol/:rol - Obtener usuarios por rol
+ * - GET /usuarios/centro/:centroId - Obtener usuarios por centro educativo
+ * - GET /usuarios/by-email/:email - Obtener usuario por email
+ * - GET /usuarios/:id - Obtener usuario específico
+ * - POST /usuarios - Crear nuevo usuario (placeholder)
+ * - PUT /usuarios/:id - Actualizar usuario
+ * - DELETE /usuarios/:id - Eliminar usuario
+ * - POST /usuarios/update-email - Actualizar email del usuario actual
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import Usuario from '../models/usuario.js';
 import db from '../config/db.js';
 import { requireAuth } from '../middleware/auth.js';
 const router = Router();
 
-// GET /api/usuarios
+/**
+ * GET /api/usuarios
+ *
+ * Obtiene todos los usuarios registrados en el sistema
+ *
+ * @description Este endpoint devuelve la lista completa de usuarios registrados
+ * en la plataforma TutorIA. No requiere autenticación ya que es información
+ * necesaria para la gestión administrativa del sistema.
+ *
+ * @returns {Array} 200 - Lista de usuarios con información básica
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "email": "juan@colegio.com",
+ *     "nombre_usuario": "juan_perez",
+ *     "nombre_real": "Juan Pérez García",
+ *     "rol": "estudiante",
+ *     "centro_id": "1",
+ *     "curso": "1º ESO",
+ *     "clase": "A",
+ *     "fecha_registro": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/', async (req, res) => {
   try {
     const usuarios = await Usuario.getAll();
@@ -72,7 +119,39 @@ router.get('/rol/:rol', async (req, res) => {
   }
 });
 
-// GET /api/usuarios/centro/:centroId
+/**
+ * GET /api/usuarios/centro/:centroId
+ *
+ * Obtiene todos los usuarios de un centro educativo específico
+ *
+ * @description Devuelve la lista de usuarios (estudiantes, profesores, administradores)
+ * que pertenecen a un centro educativo determinado. Útil para la gestión
+ * administrativa y la organización por centros.
+ *
+ * @param {string} req.params.centroId - ID del centro educativo
+ *
+ * @returns {Array} 200 - Lista de usuarios del centro especificado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: /api/usuarios/centro/1
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "nombre_real": "Juan Pérez",
+ *     "rol": "estudiante",
+ *     "curso": "1º ESO",
+ *     "clase": "A"
+ *   },
+ *   {
+ *     "id": "2",
+ *     "nombre_real": "María García",
+ *     "rol": "profesor",
+ *     "especialidad": "Matemáticas"
+ *   }
+ * ]
+ */
 router.get('/centro/:centroId', async (req, res) => {
   try {
     const { centroId } = req.params;
@@ -84,7 +163,41 @@ router.get('/centro/:centroId', async (req, res) => {
   }
 });
 
-// GET /api/usuarios/by-email/:email
+/**
+ * GET /api/usuarios/by-email/:email
+ *
+ * Busca un usuario por su dirección de correo electrónico
+ *
+ * @description Permite buscar un usuario específico utilizando su email.
+ * Devuelve información completa del usuario incluyendo metadatos.
+ * El email debe estar codificado en URL si contiene caracteres especiales.
+ *
+ * @param {string} req.params.email - Dirección de email del usuario (URL encoded)
+ *
+ * @returns {Object} 200 - Usuario encontrado con metadatos
+ * @returns {Object} 404 - Usuario no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: /api/usuarios/by-email/juan%40colegio.com
+ * // Response:
+ * {
+ *   "user": {
+ *     "id": "1",
+ *     "email": "juan@colegio.com",
+ *     "nombre_usuario": "juan_perez",
+ *     "nombre_real": "Juan Pérez García",
+ *     "rol": "estudiante",
+ *     "centro_id": "1",
+ *     "user_metadata": {
+ *       "rol": "estudiante",
+ *       "nombre_real": "Juan Pérez García",
+ *       "nombre_usuario": "juan_perez",
+ *       "centro_id": "1"
+ *     }
+ *   }
+ * }
+ */
 router.get('/by-email/:email', async (req, res) => {
   try {
     const { email } = req.params;

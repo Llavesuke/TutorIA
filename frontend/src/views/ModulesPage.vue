@@ -37,8 +37,30 @@
             <div class="no-modules-icon">
               <i class="fas fa-book-open"></i>
             </div>
-            <h3>No modules found</h3>
-            <p>Start by creating your first module to organize your academic content</p>
+
+            <!-- Different messages based on user role -->
+            <div v-if="userRole === 'admin'">
+              <h3>No modules created yet</h3>
+              <p>Start by creating your first module to organize your academic content</p>
+              <button @click="openAddModuleModal" class="create-module-btn">
+                <i class="fas fa-plus"></i>
+                Create First Module
+              </button>
+            </div>
+
+            <div v-else-if="userRole === 'profesor'">
+              <h3>No modules assigned</h3>
+              <p>You don't have any modules assigned to you yet. Please contact your administrator to assign modules to your account.</p>
+              <div class="help-info">
+                <i class="fas fa-info-circle"></i>
+                <span>As a professor, you need an administrator to assign modules to you before you can start teaching.</span>
+              </div>
+            </div>
+
+            <div v-else>
+              <h3>No modules found</h3>
+              <p>No academic content is available at the moment.</p>
+            </div>
           </div>
 
           <!-- Academic years view -->

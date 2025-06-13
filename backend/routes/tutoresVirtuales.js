@@ -1,10 +1,62 @@
+/**
+ * @fileoverview Rutas de tutores virtuales para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de tutores virtuales,
+ * incluyendo consulta, creación, actualización, eliminación y gestión del estado activo.
+ * Los tutores virtuales son agentes de IA especializados en diferentes tipos de enseñanza.
+ *
+ * Endpoints disponibles:
+ * - GET /tutores-virtuales - Obtener todos los tutores virtuales
+ * - GET /tutores-virtuales/unidad/:unidadId - Obtener tutores por unidad
+ * - GET /tutores-virtuales/:id - Obtener tutor específico
+ * - POST /tutores-virtuales - Crear nuevo tutor virtual
+ * - PUT /tutores-virtuales/:id - Actualizar tutor virtual
+ * - DELETE /tutores-virtuales/:id - Eliminar tutor virtual
+ * - PATCH /tutores-virtuales/:id/active - Cambiar estado activo del tutor
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import TutorVirtual from '../models/tutorVirtual.js';
 import { requireAuth } from '../middleware/auth.js';
 import db from '../config/db.js';
 const router = Router();
 
-// GET /api/tutores-virtuales
+/**
+ * GET /api/tutores-virtuales
+ *
+ * Obtiene todos los tutores virtuales disponibles en el sistema
+ *
+ * @description Este endpoint devuelve la lista completa de tutores virtuales
+ * configurados en la plataforma. Los tutores virtuales son agentes de IA
+ * especializados en diferentes tipos de enseñanza (teórico, práctico, evaluador, general).
+ * Cada tutor tiene personalidad, objetivos e instrucciones específicas.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @returns {Array} 200 - Lista de tutores virtuales con información completa
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "nombre": "Tutor de Matemáticas",
+ *     "descripcion": "Especialista en álgebra y geometría",
+ *     "tipo": "teorico",
+ *     "unidad_id": "1",
+ *     "personalidad": "Paciente y didáctico",
+ *     "objetivos": "Ayudar a comprender conceptos matemáticos",
+ *     "instrucciones_especificas": "Usar ejemplos visuales",
+ *     "avatar": "https://example.com/avatar-math.png",
+ *     "activo": true,
+ *     "fecha_creacion": "2024-01-15T10:30:00Z"
+ *   }
+ * ]
+ */
 router.get('/', requireAuth, async (req, res) => {
   try {
     const tutores = await TutorVirtual.getAll();
@@ -37,7 +89,48 @@ router.get('/unidad/:unidadId', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/tutores-virtuales/:id
+/**
+ * GET /api/tutores-virtuales/:id
+ *
+ * Obtiene un tutor virtual específico por su ID
+ *
+ * @description Devuelve la información detallada de un tutor virtual específico,
+ * incluyendo su configuración de personalidad, objetivos, instrucciones especiales
+ * y toda la información necesaria para las interacciones de IA.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @param {string} req.params.id - ID del tutor virtual
+ *
+ * @returns {Object} 200 - Información completa del tutor virtual
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 404 - Tutor virtual no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: /api/tutores-virtuales/1
+ * // Response:
+ * {
+ *   "id": "1",
+ *   "nombre": "Tutor de Matemáticas",
+ *   "descripcion": "Especialista en álgebra y geometría",
+ *   "tipo": "teorico",
+ *   "unidad_id": "1",
+ *   "personalidad": "Paciente y didáctico, explica paso a paso",
+ *   "objetivos": "Ayudar a los estudiantes a comprender conceptos matemáticos fundamentales",
+ *   "instrucciones_especificas": "Siempre usar ejemplos visuales y verificar comprensión",
+ *   "avatar": "https://example.com/avatar-math.png",
+ *   "activo": true,
+ *   "configuracion_ia": {
+ *     "temperatura": 0.7,
+ *     "max_tokens": 1000
+ *   },
+ *   "estadisticas": {
+ *     "conversaciones_totales": 150,
+ *     "estudiantes_atendidos": 45
+ *   }
+ * }
+ */
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;

@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Rutas de invitaciones para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de invitaciones
+ * para profesores y administradores, incluyendo creación, validación, uso y eliminación.
+ *
+ * Endpoints disponibles:
+ * - GET /invitaciones/centro/:centroId - Obtener invitaciones activas por centro
+ * - POST /invitaciones - Crear nueva invitación
+ * - GET /invitaciones/validate/:token - Validar invitación por token
+ * - PUT /invitaciones/use/:token - Marcar invitación como usada
+ * - DELETE /invitaciones/:token - Eliminar invitación
+ * - POST /invitaciones/resend/:token - Reenviar invitación
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import InvitationService from '../services/invitationService.js';
 
@@ -10,7 +27,36 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-// GET all active invitations for a center
+/**
+ * GET /api/invitaciones/centro/:centroId
+ *
+ * Obtiene todas las invitaciones activas para un centro educativo
+ *
+ * @description Este endpoint devuelve todas las invitaciones pendientes y activas
+ * para un centro educativo específico. Solo administradores pueden acceder.
+ *
+ * @requires Admin - Solo administradores pueden ver invitaciones
+ *
+ * @param {string} req.params.centroId - ID del centro educativo
+ *
+ * @returns {Object[]} 200 - Lista de invitaciones activas
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "token": "abc123def456",
+ *     "email": "profesor@email.com",
+ *     "tipo_rol": "profesor",
+ *     "centro_id": "1",
+ *     "fecha_creacion": "2024-01-15T10:30:00Z",
+ *     "fecha_expiracion": "2024-01-22T10:30:00Z",
+ *     "usado": false
+ *   }
+ * ]
+ */
 router.get('/centro/:centroId', isAdmin, async (req, res) => {
   try {
     const invitations = await InvitationService.getActiveInvitationsByCentro(req.params.centroId);

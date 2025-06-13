@@ -37,6 +37,44 @@
           <button @click="fetchStudents" class="retry-button">Retry</button>
         </div>
 
+        <!-- Check if professor has modules assigned -->
+        <div v-else-if="userRole === 'profesor' && !hasModulesAssigned && !isLoadingModules" class="no-modules-warning">
+          <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3>No Modules Assigned</h3>
+          <p>You don't have any modules assigned to you yet. Students are associated with specific modules, so you need to have modules assigned before you can manage students.</p>
+          <div class="help-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Please contact your administrator to assign modules to your account. Once you have modules assigned, you'll be able to see and manage students enrolled in those modules.</span>
+          </div>
+          <div class="action-buttons">
+            <router-link to="/teacher/modules" class="modules-link">
+              <i class="fas fa-book"></i>
+              View Modules
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Check if professor has modules assigned -->
+        <div v-else-if="userRole === 'profesor' && !hasModulesAssigned && !isLoadingModules" class="no-modules-warning">
+          <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3>No Modules Assigned</h3>
+          <p>You don't have any modules assigned to you yet. Students are associated with specific modules, so you need to have modules assigned before you can manage students.</p>
+          <div class="help-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Please contact your administrator to assign modules to your account. Once you have modules assigned, you'll be able to see and manage students enrolled in those modules.</span>
+          </div>
+          <div class="action-buttons">
+            <router-link to="/teacher/modules" class="modules-link">
+              <i class="fas fa-book"></i>
+              View Modules
+            </router-link>
+          </div>
+        </div>
+
         <!-- Tabla de estudiantes -->
         <UserTable
           v-else
@@ -56,6 +94,8 @@
       :isOpen="isAddStudentModalOpen"
       :centerId="centerId"
       :existingClasses="existingClasses"
+      :professorModules="userRole === 'profesor' ? professorModules : []"
+      :userRole="userRole"
       @close="isAddStudentModalOpen = false"
       @student-created="handleStudentCreated"
     />
@@ -82,12 +122,21 @@ import AddStudentModal from '@/components/modals/AddStudentModal.vue';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal.vue';
 import authStore from '@/stores/authStore';
 import UserService from '@/services/userService';
+import ModuleService from '@/services/moduleService';
 
 // Initialize empty students array
 const students = ref([]);
 const existingClasses = ref([]);
 const isLoading = ref(false);
 const errorMessage = ref('');
+
+// Module-related state for professors
+const professorModules = ref([]);
+const isLoadingModules = ref(false);
+const hasModulesAssigned = computed(() => professorModules.value.length > 0);
+
+// User role
+const userRole = computed(() => authStore.userRole.value);
 
 // Modal states
 const isAddStudentModalOpen = ref(false);
@@ -113,6 +162,15 @@ const centerId = computed(() => {
   }
 
   return id;
+});
+
+// Get user ID from authenticated user
+const userId = computed(() => {
+  const user = authStore.user.value;
+  if (!user) return null;
+
+  // Check different possible locations for user ID
+  return user.id || user.user_metadata?.id || user.app_metadata?.id;
 });
 
 // Methods for handling user actions
@@ -178,6 +236,75 @@ const handleDeleteConfirmed = async () => {
   }
 };
 
+// Function to check if professor has modules assigned
+const checkProfessorModules = async () => {
+  if (userRole.value !== 'profesor') return;
+
+  try {
+    isLoadingModules.value = true;
+    console.log('Checking modules for professor...');
+    console.log('Professor ID:', userId.value);
+    console.log('Center ID:', centerId.value);
+
+    if (!userId.value || !centerId.value) {
+      console.error('Missing user ID or center ID');
+      professorModules.value = [];
+      return;
+    }
+
+    // Get modules assigned to this specific professor
+    const modules = await ModuleService.getModulesByProfessor(userId.value, centerId.value);
+    professorModules.value = modules;
+
+    console.log('Professor modules:', modules);
+    console.log('Number of modules found:', modules.length);
+
+    // Log details about each module for debugging
+    modules.forEach((module, index) => {
+      console.log(`Module ${index + 1}:`, {
+        id: module.id,
+        nombre: module.nombre,
+        curso: module.curso,
+        clase: module.clase
+      });
+    });
+  } catch (error) {
+    console.error('Error fetching professor modules:', error);
+    professorModules.value = [];
+  } finally {
+    isLoadingModules.value = false;
+  }
+};
+
+// Get unique curso/clase combinations from professor's modules
+const getProfessorCursoClases = computed(() => {
+  if (userRole.value !== 'profesor') return [];
+
+  const cursoClases = [];
+  professorModules.value.forEach(module => {
+    if (module.curso) {
+      // If module has a specific clase, add that combination
+      if (module.clase) {
+        cursoClases.push({ curso: module.curso, clase: module.clase });
+      } else {
+        // If module doesn't have a specific clase, it applies to all classes in that curso
+        // Add common classes for that curso
+        ['A', 'B', 'C', 'D'].forEach(clase => {
+          cursoClases.push({ curso: module.curso, clase: clase });
+        });
+      }
+    }
+  });
+
+  // Remove duplicates
+  const uniqueCursoClases = cursoClases.filter((item, index, self) =>
+    index === self.findIndex(t => t.curso === item.curso && t.clase === item.clase)
+  );
+
+  console.log('Professor can manage students in:', uniqueCursoClases);
+  return uniqueCursoClases;
+});
+
 // Function to fetch students from the API
 const fetchStudents = async () => {
   try {
@@ -192,9 +319,28 @@ const fetchStudents = async () => {
 
     console.log('Fetching students for center ID:', centerId.value);
 
+    // For professors, check if they have modules first
+    if (userRole.value === 'profesor' && !hasModulesAssigned.value) {
+      console.log('Professor has no modules assigned, skipping student fetch');
+      students.value = [];
+      return;
+    }
+
     // Fetch students from the API with center ID
     const data = await UserService.getUsersByRole('estudiante', centerId.value);
-    students.value = data;
+
+    // For professors, filter students to only show those in their assigned modules
+    if (userRole.value === 'profesor') {
+      const allowedCursoClases = getProfessorCursoClases.value;
+      students.value = data.filter(student =>
+        allowedCursoClases.some(cc =>
+          cc.curso === student.curso && cc.clase === student.clase
+        )
+      );
+      console.log(`Filtered ${data.length} students to ${students.value.length} for professor's modules`);
+    } else {
+      students.value = data;
+    }
 
     // Extract unique grade/class combinations
     extractExistingClasses();
@@ -224,9 +370,14 @@ const extractExistingClasses = () => {
   console.log('Extracted existing classes:', existingClasses.value);
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Añadir clase al body para estilos globales
   document.body.classList.add('minimalist-theme');
+
+  // For professors, check modules first
+  if (userRole.value === 'profesor') {
+    await checkProfessorModules();
+  }
 
   // Fetch students from the API
   fetchStudents();
@@ -315,5 +466,95 @@ onMounted(() => {
 
 .action-button i {
   font-size: 1rem;
+}
+
+// Styles for no modules warning
+.no-modules-warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--color-cashmere);
+  max-width: 600px;
+  margin: 0 auto;
+
+  .warning-icon {
+    font-size: 4rem;
+    color: #f39c12;
+    margin-bottom: 1.5rem;
+
+    i {
+      opacity: 0.8;
+    }
+  }
+
+  h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-cashmere);
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .help-info {
+    background: rgba(156, 39, 176, 0.1);
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+
+    i {
+      color: #9c27b0;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    span {
+      color: rgba(var(--color-cashmere-rgb), 0.9);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    .modules-link {
+      background: linear-gradient(135deg, var(--color-orange), #d14817);
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(230, 83, 29, 0.4);
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
 }
 </style>

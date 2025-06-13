@@ -590,3 +590,183 @@
     }
   }
 }
+
+// Responsive Design
+@media (max-width: 768px) {
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    .search-container {
+      max-width: none;
+      order: 1;
+    }
+
+    .filters {
+      order: 2;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      .filter-dropdown {
+        flex: 1;
+        min-width: 120px;
+
+        select {
+          width: 100%;
+          min-width: auto;
+        }
+      }
+    }
+
+    .add-user-btn {
+      order: 3;
+      align-self: center;
+      width: auto;
+      min-width: 200px;
+    }
+  }
+
+  .table-wrapper {
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1rem;
+  }
+
+  .user-table {
+    font-size: 0.8rem;
+
+    th, td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    thead th {
+      font-size: 0.75rem;
+    }
+
+    .user-name {
+      gap: 0.5rem;
+
+      .user-avatar {
+        width: 2rem;
+        height: 2rem;
+
+        &.default-avatar {
+          font-size: 0.8rem;
+        }
+      }
+
+      span {
+        font-size: 0.8rem;
+      }
+    }
+
+    .ai-interaction-badge, .status-badge {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+    }
+
+    .class-badge {
+      padding: 0.2rem 0.5rem !important;
+      font-size: 0.7rem !important;
+    }
+
+    .action-buttons {
+      gap: 0.25rem;
+
+      button {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+        padding: 0.4rem;
+      }
+    }
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .pagination-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .page-numbers {
+      gap: 0.25rem;
+
+      .page-number {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .table-controls {
+    .filters {
+      .filter-dropdown {
+        min-width: 100px;
+
+        select {
+          font-size: 0.8rem;
+          padding: 0.5rem 2rem 0.5rem 0.75rem;
+        }
+      }
+    }
+
+    .add-user-btn {
+      min-width: 180px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  .user-table {
+    // En pantallas muy pequeñas, ocultar algunas columnas menos importantes
+    th:nth-child(3), td:nth-child(3) { // Date column
+      display: none;
+    }
+
+    th:nth-child(6), td:nth-child(6) { // AI Interaction column
+      display: none;
+    }
+
+    th, td {
+      padding: 0.5rem 0.25rem;
+    }
+
+    .user-name {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+
+      .user-avatar {
+        width: 1.5rem;
+        height: 1.5rem;
+
+        &.default-avatar {
+          font-size: 0.7rem;
+        }
+      }
+
+      span {
+        font-size: 0.75rem;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  .pagination {
+    .page-numbers {
+      // En móviles, mostrar solo algunas páginas
+      .page-number:not(.active) {
+        &:not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+          display: none;
+        }
+      }
+    }
+  }
+}

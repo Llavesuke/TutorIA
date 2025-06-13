@@ -1,3 +1,27 @@
+/**
+ * @fileoverview Rutas RAG (Retrieval-Augmented Generation) para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con el sistema RAG,
+ * incluyendo subida y procesamiento de documentos, búsqueda semántica, gestión de chunks
+ * de texto y endpoints de debug para el sistema de generación aumentada por recuperación.
+ *
+ * Endpoints disponibles:
+ * - GET /rag/documentos - Obtener documentos RAG con filtros opcionales
+ * - GET /rag/documentos/:id - Obtener documento RAG específico
+ * - POST /rag/upload - Subir documento para procesamiento RAG
+ * - POST /rag/process/:id - Procesar documento manualmente (deprecated)
+ * - DELETE /rag/documentos/:id - Eliminar documento RAG
+ * - GET /rag/chunks/:documentoId - Obtener chunks de un documento
+ * - POST /rag/search - Búsqueda semántica en chunks
+ * - GET /rag/estadisticas/:tutorId - Estadísticas RAG por tutor
+ * - GET /rag/status - Estado general del sistema RAG
+ * - POST /rag/debug/test-processing - Test de procesamiento (debug)
+ * - GET /rag/debug/enhanced - Test del sistema RAG mejorado (debug)
+ * - POST /rag/debug/test-rag-integration - Test de integración RAG (debug)
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 const router = Router();
 import { requireAuth } from '../middleware/auth.js';

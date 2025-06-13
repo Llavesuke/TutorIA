@@ -1,3 +1,24 @@
+/**
+ * @fileoverview Rutas de autenticación para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la autenticación de usuarios,
+ * incluyendo registro, login, logout, restablecimiento de contraseñas y gestión de tokens JWT.
+ *
+ * Endpoints disponibles:
+ * - POST /auth/register - Registrar nuevo usuario
+ * - POST /auth/login - Iniciar sesión
+ * - POST /auth/logout - Cerrar sesión
+ * - GET /auth/me - Obtener usuario actual
+ * - POST /auth/refresh-token - Renovar token JWT
+ * - POST /auth/forgot-password - Solicitar restablecimiento de contraseña
+ * - POST /auth/reset-password - Restablecer contraseña con token
+ * - POST /auth/change-password - Cambiar contraseña (requiere autenticación)
+ * - GET /auth/validate-reset-token/:token - Validar token de restablecimiento
+ * - GET /auth/verify-email-status - Verificar estado de verificación de email
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import crypto from 'crypto';
 import SupabaseAuthService from '../services/supabaseAuthService.js';
@@ -10,7 +31,43 @@ import supabase from '../config/supabase.js';
 
 const router = Router();
 
-// Registrar un nuevo usuario
+/**
+ * POST /api/auth/register
+ *
+ * Registra un nuevo usuario en el sistema
+ *
+ * @description Este endpoint permite registrar nuevos usuarios en la plataforma TutorIA.
+ * Valida los datos de entrada, verifica que el email y nombre de usuario sean únicos,
+ * y crea el usuario tanto en la base de datos local como en Supabase Auth.
+ *
+ * @param {Object} req.body - Datos del usuario a registrar
+ * @param {string} req.body.email - Correo electrónico único del usuario
+ * @param {string} req.body.password - Contraseña del usuario (mínimo 6 caracteres)
+ * @param {string} req.body.nombreUsuario - Nombre de usuario único
+ * @param {string} req.body.nombreReal - Nombre real del usuario
+ * @param {string} req.body.rol - Rol del usuario (estudiante, profesor, admin)
+ * @param {string} req.body.centroId - ID del centro educativo al que pertenece
+ * @param {string} [req.body.curso] - Curso del estudiante (opcional)
+ * @param {string} [req.body.clase] - Clase del estudiante (opcional)
+ * @param {string} [req.body.fotoPerfil] - URL de la foto de perfil (opcional)
+ *
+ * @returns {Object} 201 - Usuario registrado exitosamente
+ * @returns {Object} 400 - Error de validación o datos duplicados
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "email": "estudiante@colegio.com",
+ *   "password": "password123",
+ *   "nombreUsuario": "juan_perez",
+ *   "nombreReal": "Juan Pérez García",
+ *   "rol": "estudiante",
+ *   "centroId": "1",
+ *   "curso": "1º ESO",
+ *   "clase": "A"
+ * }
+ */
 router.post('/register', async (req, res) => {
   try {
     const userData = req.body;
@@ -130,7 +187,41 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Iniciar sesión
+/**
+ * POST /api/auth/login
+ *
+ * Inicia sesión de usuario en el sistema
+ *
+ * @description Este endpoint autentica a un usuario utilizando email/nombre de usuario y contraseña.
+ * Primero intenta autenticación JWT local, y si falla, utiliza Supabase Auth como respaldo.
+ * Devuelve un token JWT para autenticación en requests posteriores.
+ *
+ * @param {Object} req.body - Credenciales de login
+ * @param {string} req.body.identifier - Email o nombre de usuario
+ * @param {string} req.body.password - Contraseña del usuario
+ *
+ * @returns {Object} 200 - Login exitoso con token y datos de usuario
+ * @returns {Object} 401 - Credenciales inválidas
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "identifier": "juan_perez",
+ *   "password": "password123"
+ * }
+ *
+ * // Response:
+ * {
+ *   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+ *   "user": {
+ *     "id": "123",
+ *     "email": "juan@colegio.com",
+ *     "rol": "estudiante"
+ *   },
+ *   "isEmailVerified": true
+ * }
+ */
 router.post('/login', async (req, res) => {
   try {
     const { identifier, password } = req.body;
@@ -197,7 +288,32 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Cerrar sesión
+/**
+ * POST /api/auth/logout
+ *
+ * Cierra la sesión del usuario actual
+ *
+ * @description Este endpoint cierra la sesión del usuario autenticado.
+ * Invalida el token JWT actual y limpia las cookies de autenticación.
+ * Intenta cerrar sesión tanto en JWT como en Supabase Auth.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @returns {Object} 200 - Logout exitoso
+ * @returns {Object} 401 - Token de autenticación inválido o faltante
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Headers:
+ * {
+ *   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ * }
+ *
+ * // Response:
+ * {
+ *   "message": "Logout successful"
+ * }
+ */
 router.post('/logout', requireAuth, async (req, res) => {
   try {
     // Try JWT logout first
@@ -229,7 +345,34 @@ router.post('/logout', requireAuth, async (req, res) => {
 
 
 
-// Refresh token
+/**
+ * POST /api/auth/refresh-token
+ *
+ * Renueva el token JWT de autenticación
+ *
+ * @description Este endpoint permite renovar un token JWT expirado utilizando un refresh token válido.
+ * El refresh token puede enviarse en el cuerpo de la petición o en las cookies.
+ *
+ * @param {Object} req.body - Datos de renovación
+ * @param {string} [req.body.refreshToken] - Refresh token (opcional si está en cookies)
+ *
+ * @returns {Object} 200 - Token renovado exitosamente
+ * @returns {Object} 400 - Refresh token requerido
+ * @returns {Object} 401 - Refresh token inválido o expirado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ * }
+ *
+ * // Response:
+ * {
+ *   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+ *   "message": "Token refreshed successfully"
+ * }
+ */
 router.post('/refresh-token', async (req, res) => {
   try {
     // Get refresh token from request body or cookies
@@ -261,7 +404,32 @@ router.post('/refresh-token', async (req, res) => {
   }
 });
 
-// Actualizar contraseña
+/**
+ * POST /api/auth/update-password
+ *
+ * Actualiza la contraseña del usuario (sin autenticación previa)
+ *
+ * @description Este endpoint permite actualizar la contraseña de un usuario utilizando Supabase Auth.
+ * Generalmente se usa después de un proceso de restablecimiento de contraseña.
+ *
+ * @param {Object} req.body - Datos de actualización
+ * @param {string} req.body.newPassword - Nueva contraseña del usuario
+ *
+ * @returns {Object} 200 - Contraseña actualizada exitosamente
+ * @returns {Object} 400 - Nueva contraseña requerida
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "newPassword": "nuevaPassword123"
+ * }
+ *
+ * // Response:
+ * {
+ *   "message": "Contraseña actualizada exitosamente"
+ * }
+ */
 router.post('/update-password', async (req, res) => {
   try {
     const { newPassword } = req.body;
@@ -278,7 +446,33 @@ router.post('/update-password', async (req, res) => {
   }
 });
 
-// Solicitar restablecimiento de contraseña
+/**
+ * POST /api/auth/forgot-password
+ *
+ * Solicita el restablecimiento de contraseña por email
+ *
+ * @description Este endpoint inicia el proceso de restablecimiento de contraseña.
+ * Envía un email con un enlace de restablecimiento si el email existe en el sistema.
+ * Por seguridad, siempre devuelve el mismo mensaje independientemente de si el email existe.
+ *
+ * @param {Object} req.body - Datos de solicitud
+ * @param {string} req.body.email - Email del usuario que solicita el restablecimiento
+ *
+ * @returns {Object} 200 - Solicitud procesada (siempre exitosa por seguridad)
+ * @returns {Object} 400 - Email requerido
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "email": "usuario@colegio.com"
+ * }
+ *
+ * // Response:
+ * {
+ *   "message": "If the email exists in our system, you will receive a password reset link."
+ * }
+ */
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
@@ -321,7 +515,34 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// Restablecer contraseña con token
+/**
+ * POST /api/auth/reset-password
+ *
+ * Restablece la contraseña utilizando un token de restablecimiento
+ *
+ * @description Este endpoint permite restablecer la contraseña de un usuario utilizando
+ * un token válido recibido por email. El token debe ser válido y no haber expirado.
+ *
+ * @param {Object} req.body - Datos de restablecimiento
+ * @param {string} req.body.token - Token de restablecimiento recibido por email
+ * @param {string} req.body.newPassword - Nueva contraseña (mínimo 6 caracteres)
+ *
+ * @returns {Object} 200 - Contraseña restablecida exitosamente
+ * @returns {Object} 400 - Token y nueva contraseña requeridos, o token inválido/expirado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Request body:
+ * {
+ *   "token": "abc123def456...",
+ *   "newPassword": "nuevaPassword123"
+ * }
+ *
+ * // Response:
+ * {
+ *   "message": "Password reset successfully"
+ * }
+ */
 router.post('/reset-password', async (req, res) => {
   try {
     const { token, newPassword } = req.body;
@@ -349,7 +570,36 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// Validar token de restablecimiento
+/**
+ * GET /api/auth/validate-reset-token/:token
+ *
+ * Valida un token de restablecimiento de contraseña
+ *
+ * @description Este endpoint verifica si un token de restablecimiento de contraseña
+ * es válido y no ha expirado. Útil para validar tokens antes de mostrar el formulario
+ * de restablecimiento de contraseña.
+ *
+ * @param {string} req.params.token - Token de restablecimiento a validar
+ *
+ * @returns {Object} 200 - Token válido
+ * @returns {Object} 400 - Token requerido o inválido/expirado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/auth/validate-reset-token/abc123def456...
+ *
+ * // Response (token válido):
+ * {
+ *   "valid": true,
+ *   "message": "Valid token"
+ * }
+ *
+ * // Response (token inválido):
+ * {
+ *   "valid": false,
+ *   "message": "Invalid or expired token"
+ * }
+ */
 router.get('/validate-reset-token/:token', async (req, res) => {
   try {
     const { token } = req.params;
@@ -371,7 +621,43 @@ router.get('/validate-reset-token/:token', async (req, res) => {
   }
 });
 
-// Cambiar contraseña (requiere contraseña actual)
+/**
+ * POST /api/auth/change-password
+ *
+ * Cambia la contraseña del usuario autenticado
+ *
+ * @description Este endpoint permite a un usuario autenticado cambiar su contraseña.
+ * Requiere proporcionar la contraseña actual para verificar la identidad antes del cambio.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @param {Object} req.body - Datos de cambio de contraseña
+ * @param {string} req.body.currentPassword - Contraseña actual del usuario
+ * @param {string} req.body.newPassword - Nueva contraseña del usuario
+ *
+ * @returns {Object} 200 - Contraseña actualizada exitosamente
+ * @returns {Object} 400 - Contraseñas requeridas o contraseña actual incorrecta
+ * @returns {Object} 401 - Token de autenticación inválido o faltante
+ * @returns {Object} 404 - Usuario no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Headers:
+ * {
+ *   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ * }
+ *
+ * // Request body:
+ * {
+ *   "currentPassword": "passwordActual123",
+ *   "newPassword": "nuevaPassword456"
+ * }
+ *
+ * // Response:
+ * {
+ *   "message": "Contraseña actualizada exitosamente"
+ * }
+ */
 router.post('/change-password', requireAuth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -403,7 +689,32 @@ router.post('/change-password', requireAuth, async (req, res) => {
   }
 });
 
-// Verificar estado de verificación de correo electrónico
+/**
+ * GET /api/auth/verify-email-status
+ *
+ * Verifica el estado de verificación del correo electrónico
+ *
+ * @description Este endpoint verifica si el correo electrónico de un usuario
+ * ha sido verificado en el sistema. Útil para determinar si se debe mostrar
+ * un mensaje de verificación pendiente.
+ *
+ * @param {string} req.query.email - Email del usuario a verificar
+ *
+ * @returns {Object} 200 - Estado de verificación obtenido exitosamente
+ * @returns {Object} 400 - Email requerido
+ * @returns {Object} 404 - Usuario no encontrado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: GET /api/auth/verify-email-status?email=usuario@colegio.com
+ *
+ * // Response:
+ * {
+ *   "success": true,
+ *   "isEmailVerified": true,
+ *   "message": "Email verification status retrieved successfully"
+ * }
+ */
 router.get('/verify-email-status', async (req, res) => {
   try {
     const { email } = req.query;
@@ -529,7 +840,39 @@ router.get('/verify-email/:token', async (req, res) => {
   }
 });
 
-// Get current user (protected route)
+/**
+ * GET /api/auth/me
+ *
+ * Obtiene la información del usuario autenticado
+ *
+ * @description Este endpoint devuelve la información del usuario actualmente autenticado.
+ * Útil para verificar el estado de autenticación y obtener datos del usuario en el frontend.
+ *
+ * @requires Authentication - Token JWT válido requerido
+ *
+ * @returns {Object} 200 - Información del usuario obtenida exitosamente
+ * @returns {Object} 401 - Token de autenticación inválido o faltante
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Headers:
+ * {
+ *   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ * }
+ *
+ * // Response:
+ * {
+ *   "user": {
+ *     "id": "123",
+ *     "email": "usuario@colegio.com",
+ *     "nombre_usuario": "juan_perez",
+ *     "nombre_real": "Juan Pérez",
+ *     "rol": "estudiante",
+ *     "centro_id": "1"
+ *   },
+ *   "message": "Authentication valid"
+ * }
+ */
 router.get('/me', requireAuth, async (req, res) => {
   try {
     res.json({

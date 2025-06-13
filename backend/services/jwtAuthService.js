@@ -116,58 +116,32 @@ class JwtAuthService {
       const isEmail = identifier.includes('@');
       console.log('🔍 Identifier type:', isEmail ? 'email' : 'username');
 
-      // For email logins, verify credentials with Supabase Auth first
-      if (isEmail) {
-        console.log('Verifying email credentials with Supabase Auth');
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: identifier,
-          password: password
-        });
-
-        if (error) {
-          console.error('Supabase Auth verification failed:', error.message);
-          throw new Error('Credenciales inválidas');
-        }
-
-        console.log('Supabase Auth verification successful');
-
-        // Now get user from our custom table
-        console.log('🔍 Getting user from custom table for email:', identifier);
-        const user = await Usuario.getByEmail(identifier);
-        if (!user) {
-          console.error('❌ User not found in custom table for email:', identifier);
-          throw new Error('Usuario no encontrado en tabla personalizada');
-        }
-        console.log('✅ User found in custom table:', { id: user.id, rol: user.rol, nombre_real: user.nombre_real });
-
-        // Note: We don't sign out from Supabase immediately to avoid session conflicts
-      } else {
-        // For username logins, find user and verify password with our custom table
-        console.log('🔍 Getting user from custom table for username:', identifier);
-        const user = await Usuario.getByUsername(identifier);
-        if (!user) {
-          console.error('❌ User not found in custom table for username:', identifier);
-          throw new Error('Usuario no encontrado');
-        }
-        console.log('✅ User found in custom table:', { id: user.id, rol: user.rol, nombre_real: user.nombre_real });
-
-        // Verify password
-        console.log('🔍 Verifying password for user:', user.id);
-        const isPasswordValid = await Usuario.verifyPassword(password, user.contraseña_hash);
-        if (!isPasswordValid) {
-          console.error('❌ Password verification failed for user:', user.id);
-          throw new Error('Contraseña incorrecta');
-        }
-        console.log('✅ Password verified successfully for user:', user.id);
-      }
-
-      // Get user data for token generation
+      // First, try to find user in our custom table and verify password
       let user;
       if (isEmail) {
+        console.log('🔍 Getting user from custom table for email:', identifier);
         user = await Usuario.getByEmail(identifier);
       } else {
+        console.log('🔍 Getting user from custom table for username:', identifier);
         user = await Usuario.getByUsername(identifier);
       }
+
+      if (!user) {
+        console.error('❌ User not found in custom table for identifier:', identifier);
+        throw new Error('Usuario no encontrado');
+      }
+      console.log('✅ User found in custom table:', { id: user.id, rol: user.rol, nombre_real: user.nombre_real });
+
+      // Verify password with our custom table
+      console.log('🔍 Verifying password for user:', user.id);
+      const isPasswordValid = await Usuario.verifyPassword(password, user.contraseña_hash);
+      if (!isPasswordValid) {
+        console.error('❌ Password verification failed for user:', user.id);
+        throw new Error('Contraseña incorrecta');
+      }
+      console.log('✅ Password verified successfully for user:', user.id);
+
+      // User is already obtained above, no need to get it again
 
       // Generate tokens
       const token = generateToken(user);

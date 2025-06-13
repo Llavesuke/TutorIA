@@ -9,8 +9,8 @@
       Dashboard
     </router-link>
     <router-link
-      :to="isAdmin ? '/manage-users' : '/teacher/students'"
-      :class="['nav-link', { 'active': isAdmin ? isActive('/manage-users') || isActive('/manage-professors') || isActive('/manage-students') : isActive('/teacher/students'), 'mobile-link': isMobile }]"
+      :to="isAdmin ? '/manage-users' : '/manage-students'"
+      :class="['nav-link', { 'active': isAdmin ? isActive('/manage-users') || isActive('/manage-professors') || isActive('/manage-students') : isActive('/manage-students'), 'mobile-link': isMobile }]"
       @click="isMobile ? $emit('linkClicked') : null"
     >
       {{ isAdmin ? 'Manage' : 'Students' }}

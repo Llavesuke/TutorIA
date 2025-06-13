@@ -81,18 +81,28 @@ class ApiService {
    * @returns {Promise} - Promise with the retry result
    */
   static async handleUnauthorized(endpoint, options, method, body = null) {
-    console.log('Handling 401 Unauthorized error, attempting to refresh token');
+    console.log('🔄 Handling 401 Unauthorized error, attempting to refresh token');
+    console.log('- Endpoint:', endpoint);
+    console.log('- Method:', method);
+    console.log('- Current refresh token available:', !!authStore.refreshToken.value);
 
     try {
-      // Try to refresh the token
-      const refreshResult = await authStore.refreshAuthToken();
-
-      if (!refreshResult) {
-        console.error('Token refresh failed');
+      // Check if we have a refresh token before attempting refresh
+      if (!authStore.refreshToken.value) {
+        console.error('❌ No refresh token available, cannot refresh');
         throw new Error('Session expired. Please log in again.');
       }
 
-      console.log('Token refreshed successfully, retrying request');
+      // Try to refresh the token
+      console.log('🔄 Attempting to refresh token...');
+      const refreshResult = await authStore.refreshAuthToken();
+
+      if (!refreshResult) {
+        console.error('❌ Token refresh failed');
+        throw new Error('Session expired. Please log in again.');
+      }
+
+      console.log('✅ Token refreshed successfully, retrying request');
 
       // Get the new token from authStore
       const newToken = authStore.token.value;

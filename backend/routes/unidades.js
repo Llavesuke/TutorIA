@@ -1,9 +1,57 @@
+/**
+ * @fileoverview Rutas de unidades educativas para TutorIA
+ * @description Este archivo contiene todas las rutas relacionadas con la gestión de unidades educativas,
+ * que son subdivisiones de los módulos que organizan el contenido en temas específicos.
+ *
+ * Endpoints disponibles:
+ * - GET /unidades - Obtener todas las unidades educativas
+ * - GET /unidades/:id - Obtener unidad específica
+ * - GET /unidades/modulo/:moduloId - Obtener unidades por módulo
+ * - POST /unidades - Crear nueva unidad educativa
+ * - PUT /unidades/:id - Actualizar unidad educativa
+ * - DELETE /unidades/:id - Eliminar unidad educativa
+ *
+ * @author TutorIA Team
+ * @version 1.0.0
+ */
+
 import { Router } from 'express';
 import { Unidad } from '../models/index.js';
 import { requireAuth } from '../middleware/auth.js';
 const router = Router();
 
-// GET /api/unidades
+/**
+ * GET /api/unidades
+ *
+ * Obtiene todas las unidades educativas disponibles
+ *
+ * @description Este endpoint devuelve la lista completa de unidades educativas
+ * registradas en el sistema. Las unidades son subdivisiones de los módulos
+ * que organizan el contenido educativo en temas específicos. Cada unidad
+ * puede tener tutores virtuales, documentos y actividades asociadas.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @returns {Array} 200 - Lista de unidades con información completa
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // Response:
+ * [
+ *   {
+ *     "id": "1",
+ *     "nombre": "Álgebra Básica",
+ *     "descripcion": "Introducción a las ecuaciones lineales",
+ *     "modulo_id": "1",
+ *     "orden": 1,
+ *     "activa": true,
+ *     "fecha_creacion": "2024-01-15T10:30:00Z",
+ *     "tutores_count": 3,
+ *     "documentos_count": 5
+ *   }
+ * ]
+ */
 router.get('/', requireAuth, async (req, res) => {
   try {
     const unidades = await Unidad.getAll();
@@ -14,7 +62,51 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/unidades/:id
+/**
+ * GET /api/unidades/:id
+ *
+ * Obtiene una unidad educativa específica por su ID
+ *
+ * @description Devuelve la información detallada de una unidad educativa
+ * específica, incluyendo su contenido, tutores asociados, documentos
+ * y estadísticas de uso. Es fundamental para la navegación del contenido
+ * educativo y la configuración de tutores virtuales.
+ *
+ * @middleware requireAuth - Requiere usuario autenticado
+ *
+ * @param {string} req.params.id - ID de la unidad educativa
+ *
+ * @returns {Object} 200 - Información completa de la unidad
+ * @returns {Object} 401 - Usuario no autenticado
+ * @returns {Object} 404 - Unidad no encontrada
+ * @returns {Object} 500 - Error interno del servidor
+ *
+ * @example
+ * // URL: /api/unidades/1
+ * // Response:
+ * {
+ *   "id": "1",
+ *   "nombre": "Álgebra Básica",
+ *   "descripcion": "Introducción a las ecuaciones lineales y sistemas",
+ *   "modulo_id": "1",
+ *   "orden": 1,
+ *   "activa": true,
+ *   "contenido": "Contenido detallado de la unidad...",
+ *   "objetivos": ["Resolver ecuaciones lineales", "Entender sistemas de ecuaciones"],
+ *   "fecha_creacion": "2024-01-15T10:30:00Z",
+ *   "tutores_virtuales": [
+ *     {
+ *       "id": "1",
+ *       "nombre": "Tutor Teórico",
+ *       "tipo": "teorico"
+ *     }
+ *   ],
+ *   "estadisticas": {
+ *     "estudiantes_activos": 25,
+ *     "conversaciones_totales": 150
+ *   }
+ * }
+ */
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;

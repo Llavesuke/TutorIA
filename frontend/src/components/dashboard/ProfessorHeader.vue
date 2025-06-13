@@ -112,23 +112,27 @@ const onAssignmentCreated = (assignment) => {
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
 
     @media (max-width: 768px) {
-      display: block;
+      display: flex;
     }
 
     .bar {
       display: block;
-      width: 25px;
-      height: 3px;
-      margin: 5px auto;
+      width: 100%;
+      height: 2px;
       background-color: #FEF0D1;
       transition: all 0.3s ease;
+      border-radius: 1px;
     }
 
     &.active {
       .bar:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
+        transform: translateY(9px) rotate(45deg);
       }
 
       .bar:nth-child(2) {
@@ -136,7 +140,7 @@ const onAssignmentCreated = (assignment) => {
       }
 
       .bar:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
+        transform: translateY(-9px) rotate(-45deg);
       }
     }
   }
@@ -196,6 +200,7 @@ const onAssignmentCreated = (assignment) => {
   <MobileMenu
     :isOpen="isMenuOpen"
     @close="toggleMenu"
+    @openCreateModal="openCreateModal"
     id="mobile-menu"
   />
   </header>

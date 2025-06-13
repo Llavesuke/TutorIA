@@ -519,5 +519,5 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import './ChatInterface.scss';
+@import '@/assets/sass/components/chat_interface';
 </style>

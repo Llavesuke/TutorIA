@@ -729,5 +729,5 @@ const closeModal = () => {
 </script>
 
 <style lang="scss" scoped>
-@import './AddTutorModal.scss';
+@import '@/assets/sass/components/add_tutor_modal';
 </style>

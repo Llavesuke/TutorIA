@@ -69,8 +69,9 @@ const isActive = (path) => {
     .nav-link {
       color: var(--color-cashmere);
       text-decoration: none;
-      padding: 1rem;
-      font-size: 1.2rem;
+      padding: 1.5rem 1rem;
+      font-size: 1.4rem;
+      font-weight: 500;
       border-bottom: 1px solid var(--color-border);
       transition: color var(--transition-normal);
 

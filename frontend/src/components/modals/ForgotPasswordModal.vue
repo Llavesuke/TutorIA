@@ -176,5 +176,5 @@ const closeModal = () => {
 </script>
 
 <style lang="scss" scoped>
-@import './ForgotPasswordModal.scss';
+@import '@/assets/sass/components/forgot_password_modal';
 </style>

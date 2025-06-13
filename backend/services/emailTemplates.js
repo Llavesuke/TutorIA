@@ -184,7 +184,7 @@ class EmailTemplates {
                   <td align="center">
                     <!-- Logo TutorIA -->
                     <div style="margin-bottom: 16px;">
-                      <img src="${process.env.FRONTEND_URL}/src/assets/images/logo_sin_fondo.png" alt="TutorIA Logo" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                      <img src="https://res.cloudinary.com/drhxjofkq/image/upload/v1748645657/logo_sin_fondo_bljzgg.png" alt="TutorIA Logo" style="width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
                       <!-- Fallback logo CSS -->
                       <div style="display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #E6531D 0%, #ff7043 100%); border-radius: 50%; position: relative; box-shadow: 0 4px 12px rgba(230, 83, 29, 0.3); margin: 0 auto;">
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background-color: #FEF0D1; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -195,7 +195,7 @@ class EmailTemplates {
 
                     <!-- Brand name with text logo -->
                     <div style="margin-bottom: 8px;">
-                      <img src="${process.env.FRONTEND_URL}/src/assets/images/text_logo.png" alt="TutorIA" style="height: 40px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                      <img src="https://res.cloudinary.com/drhxjofkq/image/upload/v1748645651/text_logo_lruoed.png" alt="TutorIA" style="height: 40px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
                       <!-- Fallback text -->
                       <h1 style="display: none; font-family: 'Poppins', Arial, sans-serif; font-size: 32px; font-weight: 700; color: #fef0d1; margin: 0;">TutorIA</h1>
                     </div>

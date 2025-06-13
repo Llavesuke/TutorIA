@@ -69,8 +69,7 @@ const verifyEmail = async () => {
     }
 
     // Use our custom email verification system
-    const apiService = new ApiService();
-    const response = await apiService.post('/api/auth/verify-email', {
+    const response = await ApiService.post('/api/auth/verify-email', {
       email,
       userId
     });

@@ -61,6 +61,11 @@ app.use(fileUpload({
   createParentPath: true
 }));
 
+// Serve static files from frontend public folder for email images
+const frontendPublicPath = path.resolve(__dirname, '../frontend/public');
+console.log('Serving static files from:', frontendPublicPath);
+app.use(express.static(frontendPublicPath));
+
 // Welcome route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to TutorIA API' });

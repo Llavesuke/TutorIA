@@ -1,7 +1,9 @@
 <template>
   <div class="mobile-menu" :class="{ 'active': isOpen }" aria-hidden="!isOpen">
     <div class="mobile-menu-header">
-      <div class="logo" aria-label="TutorIA Logo">TutorIA</div>
+      <div class="logo" aria-label="TutorIA Logo">
+        <img src="@/assets/images/text_logo.png" alt="TutorIA Logo" class="logo-image" />
+      </div>
       <button
         class="close-menu"
         @click="$emit('close')"
@@ -19,9 +21,9 @@
     </div>
 
     <div class="mobile-menu-footer">
-      <button class="logout-btn" @click="logout" aria-label="Log out">
-        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
-        <span>Logout</span>
+      <button class="create-btn" @click="openCreateModal" aria-label="Create new item">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <span>Create</span>
       </button>
     </div>
   </div>
@@ -30,7 +32,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import NavigationLinks from './NavigationLinks.vue';
-import authStore from '@/stores/authStore';
 
 const props = defineProps({
   isOpen: {
@@ -39,19 +40,14 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'openCreateModal']);
 
 const router = useRouter();
 
-// Function to handle logout
-const logout = async () => {
-  try {
-    await authStore.logout();
-    router.push('/login');
-    emit('close');
-  } catch (error) {
-    console.error('Error during logout:', error);
-  }
+// Function to handle opening create modal
+const openCreateModal = () => {
+  emit('openCreateModal');
+  emit('close');
 };
 </script>
 

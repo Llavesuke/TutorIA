@@ -86,6 +86,13 @@ class ApiService {
     console.log('- Method:', method);
     console.log('- Current refresh token available:', !!authStore.refreshToken.value);
 
+    // Don't try to refresh tokens for auth endpoints (login, register, etc.)
+    const authEndpoints = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh-token'];
+    if (authEndpoints.some(authEndpoint => endpoint.includes(authEndpoint))) {
+      console.log('❌ 401 error on auth endpoint - this is likely invalid credentials, not expired token');
+      throw new Error('Invalid credentials');
+    }
+
     try {
       // Check if we have a refresh token before attempting refresh
       if (!authStore.refreshToken.value) {

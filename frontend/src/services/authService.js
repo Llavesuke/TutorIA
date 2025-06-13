@@ -138,39 +138,8 @@ class AuthService {
           ...result
         };
       } catch (apiError) {
-        console.warn('Backend API login failed, falling back to direct Supabase:', apiError);
-
-        // If it's not an email, we can't use Supabase Auth directly
-        if (!isEmail) {
-          console.error('Cannot use Supabase Auth directly with username');
-          throw new Error('Login failed. Please try again or contact support.');
-        }
-
-        // Fallback to direct Supabase login for email
-        console.log('Trying direct Supabase login with email...');
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: identifier,
-          password
-        });
-
-        if (error) {
-          console.error('Supabase login error:', error);
-          throw error;
-        }
-
-        console.log('Direct Supabase login successful:', data);
-
-        // Check if email is verified
-        const isVerified = !!data.user?.email_confirmed_at;
-        console.log('Email verification status from Supabase login:', isVerified);
-        console.log('Email confirmation timestamp:', data.user?.email_confirmed_at);
-
-        return {
-          success: true,
-          isEmailVerified: isVerified,
-          user: data.user,
-          session: data.session
-        };
+        console.error('Backend API login failed:', apiError);
+        throw apiError;
       }
     } catch (error) {
       console.error('Login error:', error);

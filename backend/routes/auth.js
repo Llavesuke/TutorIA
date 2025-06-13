@@ -232,7 +232,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Identificador y contraseña son requeridos' });
     }
 
-    // Try JWT authentication first
+    // Use JWT authentication only - no fallback to Supabase
     try {
       console.log('Attempting JWT authentication for identifier:', identifier);
       const jwtResult = await JwtAuthService.login(identifier, password, res);
@@ -254,22 +254,11 @@ router.post('/login', async (req, res) => {
     } catch (jwtError) {
       console.error('JWT authentication failed, error details:', jwtError.message);
       console.error('Full JWT error:', jwtError);
-      console.log('Falling back to Supabase authentication');
 
-      // If JWT auth fails, fall back to Supabase auth
-      const result = await SupabaseAuthService.login(identifier, password);
-
-      // Log the verification status
-      if (result.isEmailVerified !== undefined) {
-        console.log('Supabase login successful, email verification status:', result.isEmailVerified);
-      } else {
-        console.log('Supabase login successful, no email verification status (probably a student without email)');
-      }
-
-      // Include the verification status in the response
-      return res.json({
-        ...result,
-        isEmailVerified: result.isEmailVerified
+      // Return the error instead of falling back to Supabase
+      return res.status(401).json({
+        message: 'Invalid credentials',
+        error: jwtError.message
       });
     }
   } catch (error) {

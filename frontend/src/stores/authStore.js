@@ -467,12 +467,7 @@ const logout = async () => {
       }
     }
 
-    // Also try Supabase logout
-    try {
-      await AuthService.logout();
-    } catch (supabaseError) {
-      console.error('Error during Supabase logout:', supabaseError);
-    }
+    // Note: No need for Supabase logout since we're using JWT only
 
     // Clear local auth state
     clearAuth();
